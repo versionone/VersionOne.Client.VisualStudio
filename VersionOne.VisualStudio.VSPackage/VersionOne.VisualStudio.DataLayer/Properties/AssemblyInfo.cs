@@ -8,7 +8,7 @@ using System.Runtime.InteropServices;
 [assembly: AssemblyTitle("VersionOne.VisualStudio.DataLayer")]
 [assembly: AssemblyDescription("")]
 [assembly: AssemblyConfiguration("")]
-[assembly: AssemblyCompany("STAR")]
+[assembly: AssemblyCompany("VersionOne")]
 [assembly: AssemblyProduct("VersionOne.VisualStudio.DataLayer")]
 [assembly: AssemblyCopyright("Copyright © VersionOne 2010")]
 [assembly: AssemblyTrademark("")]
