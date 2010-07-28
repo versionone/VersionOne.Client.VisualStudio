@@ -117,5 +117,10 @@ namespace VersionOne.VisualStudio.DataLayer {
         /// <param name="parent">Parent workitem, if exists</param>
         /// <returns>Newly created workitem</returns>
         Workitem CreateWorkitem(string workitemType, Workitem parent);
+
+        /// <summary>
+        /// Non-existing project token.
+        /// </summary>
+        string NullProjectToken { get; }
     }
 }

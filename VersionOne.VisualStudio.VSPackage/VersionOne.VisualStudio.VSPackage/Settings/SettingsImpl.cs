@@ -1,20 +1,18 @@
 using System;
 using System.IO;
 using System.Xml.Serialization;
-
-// TODO resolve by getting non-APIClient types from DL
-// using VersionOne.SDK.APIClient;
+using VersionOne.VisualStudio.DataLayer;
 
 namespace VersionOne.VisualStudio.VSPackage.Settings {
     [XmlRoot("Settings")]
     public class SettingsImpl : ISettings {
+        private readonly IDataLayer dataLayer = ApiDataLayer.Instance;
+
         private string username;
         private string password;
         private string applicationUrl;
-        
-        // TODO APIClient types usage in DL only. The following uncommented code would not work but would compile.
-        //private string selectedScopeToken = Oid.Null.Token;
-        private string selectedScopeToken = "Oid.Null.Token";
+
+        private string selectedScopeToken;
         
         private bool integratedAuth;
         private static SettingsImpl settings;
@@ -56,6 +54,10 @@ namespace VersionOne.VisualStudio.VSPackage.Settings {
                     selectedScopeToken = value;
                 }
             }
+        }
+
+        public SettingsImpl() {
+            selectedScopeToken = dataLayer.NullProjectToken;
         }
 
         private void Save(string file) {

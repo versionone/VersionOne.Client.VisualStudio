@@ -69,6 +69,10 @@ namespace VersionOne.VisualStudio.DataLayer {
             set { connector.ApiVersion = value; }
         }
 
+        public string NullProjectToken {
+            get { return Oid.Null.Token; }
+        }
+
         private string currentProjectId;
         public string CurrentProjectId {
             get { return currentProjectId; }
