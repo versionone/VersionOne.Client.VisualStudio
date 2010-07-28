@@ -8,6 +8,7 @@ using Microsoft.VisualStudio.TestTools.UnitTesting;
 using VersionOne.VisualStudio.VSPackage;
 
 namespace VersionOne.VisualStudio.Tests {
+    // TODO port this class to NUnit and remove all MSTest references
     [TestClass]
     public class VSPackageTester {
         [TestMethod]
