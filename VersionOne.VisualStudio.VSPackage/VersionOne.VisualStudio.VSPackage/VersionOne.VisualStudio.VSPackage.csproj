@@ -113,22 +113,157 @@
     </COMReference>
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Controllers\ProjectTreeController.cs" />
+    <Compile Include="Controllers\WorkitemTreeController.cs" />
+    <Compile Include="Controls\ErrorMessageControl.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="Controls\ErrorMessageControl.Designer.cs">
+      <DependentUpon>ErrorMessageControl.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Controls\IProjectTreeView.cs" />
+    <Compile Include="Controls\IWorkitemTreeView.cs" />
+    <Compile Include="Controls\OptionsPageControl.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="Controls\OptionsPageControl.Designer.cs">
+      <DependentUpon>OptionsPageControl.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Controls\ProjectTreeControl.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="Controls\ProjectTreeControl.Designer.cs">
+      <DependentUpon>ProjectTreeControl.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Controls\RichTextEditorControl.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="Controls\RichTextEditorControl.Designer.cs">
+      <DependentUpon>RichTextEditorControl.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Controls\V1UserControl.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="Controls\V1UserControl.Designer.cs">
+      <DependentUpon>V1UserControl.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Controls\WorkitemTreeControl.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="Controls\WorkitemTreeControl.Designer.cs">
+      <DependentUpon>WorkitemTreeControl.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Descriptors\IconDescriptor.cs" />
+    <Compile Include="Descriptors\WorkitemDescriptor.cs" />
+    <Compile Include="Descriptors\WorkitemPropertyDescriptor.cs" />
+    <Compile Include="Events\EventDispatcher.cs" />
+    <Compile Include="Events\IEventDispatcher.cs" />
+    <Compile Include="Events\ModelChangedArgs.cs" />
+    <Compile Include="Events\PropertyUpdateSource.cs" />
+    <Compile Include="Events\WorkitemPropertiesUpdatedArgs.cs" />
+    <Compile Include="Forms\CloseWorkitemDialog.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Forms\CloseWorkitemDialog.Designer.cs">
+      <DependentUpon>CloseWorkitemDialog.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Forms\OptionsDialog.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Forms\OptionsDialog.Designer.cs">
+      <DependentUpon>OptionsDialog.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Forms\RichTextEditorDialog.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Forms\RichTextEditorDialog.Designer.cs">
+      <DependentUpon>RichTextEditorDialog.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Forms\ValidationDialog.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Forms\ValidationDialog.Designer.cs">
+      <DependentUpon>ValidationDialog.cs</DependentUpon>
+    </Compile>
+    <Compile Include="IParentWindow.cs" />
     <Compile Include="MyControl.xaml.cs">
       <DependentUpon>MyControl.xaml</DependentUpon>
     </Compile>
     <Compile Include="MyToolWindow.cs" />
     <Compile Include="Guids.cs" />
+    <Compile Include="OptionsPage.cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="OptionsPage.designer.cs">
+      <DependentUpon>OptionsPage.cs</DependentUpon>
+    </Compile>
+    <Compile Include="ProjectsWindow.cs" />
+    <Compile Include="PropertyEditors\ListPropertyEditor.cs" />
+    <Compile Include="PropertyEditors\MultiValueEditor.cs" />
+    <Compile Include="PropertyEditors\PropertyGridListBox.cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="PropertyEditors\RichTextTypeEditor.cs" />
     <Compile Include="Resources.Designer.cs">
       <AutoGen>True</AutoGen>
       <DesignTime>True</DesignTime>
       <DependentUpon>Resources.resx</DependentUpon>
     </Compile>
     <Compile Include="GlobalSuppressions.cs" />
+    <Compile Include="Settings\AssetDetailSettings.cs" />
+    <Compile Include="Settings\ColumnSetting.cs" />
+    <Compile Include="Settings\Configuration.cs" />
+    <Compile Include="Settings\GridSettings.cs" />
+    <Compile Include="Settings\ISettings.cs" />
+    <Compile Include="Settings\ProjectTreeSettings.cs" />
+    <Compile Include="Settings\SettingsImpl.cs" />
+    <Compile Include="StoryTreeModel.cs" />
+    <Compile Include="TaskWindow.cs" />
+    <Compile Include="TreeViewEditors\CustomNodeTextBox.cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="TreeViewEditors\NodeComboBox.cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="TreeViewEditors\NodeListBox.cs">
+      <SubType>Component</SubType>
+    </Compile>
     <Compile Include="VersionOne.VisualStudio.VSPackagePackage.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="PkgCmdID.cs" />
+    <Compile Include="VsPkg.cs" />
   </ItemGroup>
   <ItemGroup>
+    <EmbeddedResource Include="Controls\ErrorMessageControl.resx">
+      <DependentUpon>ErrorMessageControl.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Controls\OptionsPageControl.resx">
+      <DependentUpon>OptionsPageControl.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Controls\ProjectTreeControl.resx">
+      <DependentUpon>ProjectTreeControl.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Controls\RichTextEditorControl.resx">
+      <DependentUpon>RichTextEditorControl.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Controls\V1UserControl.resx">
+      <DependentUpon>V1UserControl.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Controls\WorkitemTreeControl.resx">
+      <DependentUpon>WorkitemTreeControl.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Forms\CloseWorkitemDialog.resx">
+      <DependentUpon>CloseWorkitemDialog.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Forms\OptionsDialog.resx">
+      <DependentUpon>OptionsDialog.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Forms\RichTextEditorDialog.resx">
+      <DependentUpon>RichTextEditorDialog.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Forms\ValidationDialog.resx">
+      <DependentUpon>ValidationDialog.cs</DependentUpon>
+    </EmbeddedResource>
     <EmbeddedResource Include="Resources.resx">
       <Generator>ResXFileCodeGenerator</Generator>
       <LastGenOutput>Resources.Designer.cs</LastGenOutput>
@@ -140,10 +275,38 @@
     </EmbeddedResource>
   </ItemGroup>
   <ItemGroup>
+    <Resource Include="configuration.xml" />
     <Content Include="License.rtf">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
       <IncludeInVSIX>true</IncludeInVSIX>
     </Content>
+    <Resource Include="Resources\AddDefect.gif" />
+    <Resource Include="Resources\AddStory.gif" />
+    <Resource Include="Resources\AddTask.gif" />
+    <Resource Include="Resources\AddTest.gif" />
+    <Resource Include="Resources\bold.gif" />
+    <Resource Include="Resources\bulletedlist.gif" />
+    <Resource Include="Resources\Defect-Icon.gif" />
+    <Resource Include="Resources\indent.gif" />
+    <Resource Include="Resources\italic.gif" />
+    <Resource Include="Resources\justifycenter.gif" />
+    <Resource Include="Resources\justifyfull.gif" />
+    <Resource Include="Resources\justifyleft.gif" />
+    <Resource Include="Resources\justifyright.gif" />
+    <Resource Include="Resources\Logo.ico" />
+    <Resource Include="Resources\Member.gif" />
+    <Resource Include="Resources\numberedlist.gif" />
+    <Resource Include="Resources\outdent.gif" />
+    <Resource Include="Resources\redo.gif" />
+    <Resource Include="Resources\refresh.bmp" />
+    <Resource Include="Resources\removeformat.gif" />
+    <Resource Include="Resources\save.bmp" />
+    <Resource Include="Resources\Story-Icon.gif" />
+    <Resource Include="Resources\strikethrough.gif" />
+    <Resource Include="Resources\Task-Icon.gif" />
+    <Resource Include="Resources\Test-Icon.gif" />
+    <Resource Include="Resources\underline.gif" />
+    <Resource Include="Resources\undo.gif" />
     <None Include="source.extension.vsixmanifest">
       <SubType>Designer</SubType>
     </None>
@@ -168,6 +331,20 @@
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\Aga.Controls\Aga.Controls.csproj">
+      <Project>{E73BB233-D88B-44A7-A98F-D71EE158381D}</Project>
+      <Name>Aga.Controls</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\HtmlEditor\HtmlEditor.csproj">
+      <Project>{46B962CC-097B-4E5E-8835-6D89E548ED12}</Project>
+      <Name>HtmlEditor</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\VersionOne.VisualStudio.DataLayer\VersionOne.VisualStudio.DataLayer.csproj">
+      <Project>{1BD989CB-941F-412A-8D95-52067EEC9F58}</Project>
+      <Name>VersionOne.VisualStudio.DataLayer</Name>
+    </ProjectReference>
   </ItemGroup>
   <PropertyGroup>
     <UseCodebase>true</UseCodebase>

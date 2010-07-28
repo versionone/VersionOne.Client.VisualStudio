@@ -60,6 +60,48 @@ namespace VersionOne.VisualStudio.VSPackage {
             }
         }
         
+        internal static System.Drawing.Bitmap AddDefectIcon {
+            get {
+                object obj = ResourceManager.GetObject("AddDefectIcon", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
+        internal static System.Drawing.Bitmap AddStoryIcon {
+            get {
+                object obj = ResourceManager.GetObject("AddStoryIcon", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
+        internal static System.Drawing.Bitmap AddTaskIcon {
+            get {
+                object obj = ResourceManager.GetObject("AddTaskIcon", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
+        internal static System.Drawing.Bitmap AddTestIcon {
+            get {
+                object obj = ResourceManager.GetObject("AddTestIcon", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
+        internal static System.Drawing.Bitmap Bold {
+            get {
+                object obj = ResourceManager.GetObject("Bold", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
+        internal static System.Drawing.Bitmap BulletedList {
+            get {
+                object obj = ResourceManager.GetObject("BulletedList", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
         /// <summary>
         ///   Looks up a localized string similar to Can not create tool window..
         /// </summary>
@@ -69,12 +111,161 @@ namespace VersionOne.VisualStudio.VSPackage {
             }
         }
         
+        internal static System.Drawing.Bitmap Defect_Icon {
+            get {
+                object obj = ResourceManager.GetObject("Defect_Icon", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
+        internal static System.Drawing.Bitmap Indent {
+            get {
+                object obj = ResourceManager.GetObject("Indent", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
+        internal static System.Drawing.Bitmap Italic {
+            get {
+                object obj = ResourceManager.GetObject("Italic", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
+        internal static System.Drawing.Bitmap JustifyCenter {
+            get {
+                object obj = ResourceManager.GetObject("JustifyCenter", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
+        internal static System.Drawing.Bitmap JustifyFull {
+            get {
+                object obj = ResourceManager.GetObject("JustifyFull", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
+        internal static System.Drawing.Bitmap JustifyLeft {
+            get {
+                object obj = ResourceManager.GetObject("JustifyLeft", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
+        internal static System.Drawing.Bitmap JustifyRight {
+            get {
+                object obj = ResourceManager.GetObject("JustifyRight", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
+        internal static System.Drawing.Bitmap MemberIcon {
+            get {
+                object obj = ResourceManager.GetObject("MemberIcon", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
+        internal static System.Drawing.Bitmap NumberedList {
+            get {
+                object obj = ResourceManager.GetObject("NumberedList", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
+        internal static System.Drawing.Bitmap Outdent {
+            get {
+                object obj = ResourceManager.GetObject("Outdent", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
         /// <summary>
         ///   Looks up a localized string similar to VersionOne Projects.
+        /// </summary>
+        internal static string ProjectsWindowTitle {
+            get {
+                return ResourceManager.GetString("ProjectsWindowTitle", resourceCulture);
+            }
+        }
+        
+        internal static System.Drawing.Bitmap Redo {
+            get {
+                object obj = ResourceManager.GetObject("Redo", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
+        internal static System.Drawing.Bitmap RefreshIcon {
+            get {
+                object obj = ResourceManager.GetObject("RefreshIcon", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
+        internal static System.Drawing.Bitmap RemoveFormat {
+            get {
+                object obj = ResourceManager.GetObject("RemoveFormat", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
+        internal static System.Drawing.Bitmap SaveIcon {
+            get {
+                object obj = ResourceManager.GetObject("SaveIcon", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
+        internal static System.Drawing.Bitmap Story_Icon {
+            get {
+                object obj = ResourceManager.GetObject("Story_Icon", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
+        internal static System.Drawing.Bitmap Strikethrough {
+            get {
+                object obj = ResourceManager.GetObject("Strikethrough", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
+        internal static System.Drawing.Bitmap Task_Icon {
+            get {
+                object obj = ResourceManager.GetObject("Task_Icon", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
+        internal static System.Drawing.Bitmap Test_Icon {
+            get {
+                object obj = ResourceManager.GetObject("Test_Icon", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to VersionOne Workitems.
         /// </summary>
         internal static string ToolWindowTitle {
             get {
                 return ResourceManager.GetString("ToolWindowTitle", resourceCulture);
+            }
+        }
+        
+        internal static System.Drawing.Bitmap Underline {
+            get {
+                object obj = ResourceManager.GetObject("Underline", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
+        internal static System.Drawing.Bitmap Undo {
+            get {
+                object obj = ResourceManager.GetObject("Undo", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
             }
         }
     }
