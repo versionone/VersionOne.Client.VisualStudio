@@ -275,7 +275,10 @@
     </EmbeddedResource>
   </ItemGroup>
   <ItemGroup>
-    <Resource Include="configuration.xml" />
+    <Content Include="configuration.xml">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+      <IncludeInVSIX>true</IncludeInVSIX>
+    </Content>
     <Content Include="License.rtf">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
       <IncludeInVSIX>true</IncludeInVSIX>
@@ -315,7 +318,7 @@
     <None Include="Key.snk" />
   </ItemGroup>
   <ItemGroup>
-    <VSCTCompile Include="VersionOne.VisualStudio.VSPackage.vsct">
+    <VSCTCompile Include="V1Tracker.vsct">
       <ResourceName>Menus.ctmenu</ResourceName>
     </VSCTCompile>
   </ItemGroup>

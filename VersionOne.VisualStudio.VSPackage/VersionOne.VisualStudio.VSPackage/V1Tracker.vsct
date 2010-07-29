@@ -28,7 +28,7 @@
 
   <!--The Commands section is where we the commands, menus and menu groups are defined.
       This section uses a Guid to identify the package that provides the command defined inside it. -->
-  <Commands package="guidVersionOne_VisualStudio_VSPackagePkg">
+  <Commands package="guidVersionOneTrackerPkg">
     <!-- Inside this section we have different sub-sections: one for the menus, another  
     for the menu groups, one for the buttons (the actual commands), one for the combos 
     and the last one for the bitmaps used. Each element is identified by a command id that  
@@ -44,7 +44,7 @@
          must be a menu. -->
     <Groups>
 
-      <Group guid="guidVersionOne_VisualStudio_VSPackageCmdSet" id="MyMenuGroup" priority="0x0600">
+      <Group guid="guidVersionOneTrackerCmdSet" id="MyMenuGroup" priority="0x0600">
         <Parent guid="guidSHLMainMenu" id="IDM_VS_MENU_TOOLS"/>
       </Group>
       
@@ -64,8 +64,8 @@
               <CommandFlag>DynamicVisibility</CommandFlag>
           If you do not want an image next to your command, remove the Icon node or set it to <Icon guid="guidOfficeIcon" id="msotcidNoIcon" /> -->
 
-      <Button guid="guidVersionOne_VisualStudio_VSPackageCmdSet" id="cmdidVersionOneProjects" priority="0x0100" type="Button">
-        <Parent guid="guidVersionOne_VisualStudio_VSPackageCmdSet" id="MyMenuGroup" />
+      <Button guid="guidVersionOneTrackerCmdSet" id="cmdidVersionOneProjects" priority="0x0100" type="Button">
+        <Parent guid="guidSHLMainMenu" id="IDG_VS_WNDO_OTRWNDWS1"/>
         <Icon guid="guidImages" id="bmpPic1" />
         <Strings>
           <CommandName>cmdidVersionOneProjects</CommandName>
@@ -73,13 +73,12 @@
         </Strings>
       </Button>
 
-
-      <Button guid="guidVersionOne_VisualStudio_VSPackageCmdSet" id="cmdidVersionOneProjectsTool" priority="0x0100" type="Button">
+      <Button guid="guidVersionOneTrackerCmdSet" id="cmdidVersionOneTasks" priority="0x0100" type="Button">
         <Parent guid="guidSHLMainMenu" id="IDG_VS_WNDO_OTRWNDWS1"/>
         <Icon guid="guidImages" id="bmpPic2" />
         <Strings>
-          <CommandName>cmdidVersionOneProjectsTool</CommandName>
-          <ButtonText>VersionOne Projects</ButtonText>
+          <CommandName>cmdidVersionOneTasks</CommandName>
+          <ButtonText>VersionOne Tasks</ButtonText>
         </Strings>
       </Button>
 
@@ -99,22 +98,21 @@
  
   </Commands>
 
-
-
-
+  
+  
 
   <Symbols>
     <!-- This is the package guid. -->
-    <GuidSymbol name="guidVersionOne_VisualStudio_VSPackagePkg" value="{9423c8f0-ca04-432e-af2d-89aa9bc5ebe5}" />
+    <GuidSymbol name="guidVersionOneTrackerPkg" value="{9423c8f0-ca04-432e-af2d-89aa9bc5ebe5}" />
     
     <!-- This is the guid used to group the menu commands together -->
-    <GuidSymbol name="guidVersionOne_VisualStudio_VSPackageCmdSet" value="{2c4566ea-865a-453f-b55e-32b199bbace4}">
+    <GuidSymbol name="guidVersionOneTrackerCmdSet" value="{2c4566ea-865a-453f-b55e-32b199bbace4}">
 
       <IDSymbol name="MyMenuGroup" value="0x1020" />
-      <IDSymbol name="cmdidVersionOneProjects" value="0x0100" />
-      <IDSymbol name="cmdidVersionOneProjectsTool" value="0x0101" />
+      <IDSymbol name="cmdidVersionOneTasks" value="0x0101" />
+      <IDSymbol name="cmdidVersionOneProjects" value="0x0102" />
     </GuidSymbol>
-    
+
     
     
     <GuidSymbol name="guidImages" value="{7f510b4e-d771-4e03-aaa8-79f31371ada3}" >
