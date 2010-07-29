@@ -1,5 +1,6 @@
 using System;
 using System.ComponentModel;
+using System.Diagnostics;
 using System.Drawing.Design;
 using System.Globalization;
 using VersionOne.VisualStudio.DataLayer;
@@ -86,7 +87,8 @@ namespace VersionOne.VisualStudio.VSPackage.Descriptors {
                 } 
                 return value;
             } catch (Exception ex) {
-                ApiDataLayer.Warning(string.Format("Cannot get value of {0} of asset {1}.", Attribute, item), ex);
+                // TODO use logger and/or exception manager
+                Debug.WriteLine(string.Format("Cannot get value of {0} of asset {1}.", Attribute, item), ex);
                 return string.Empty;
             }
         }

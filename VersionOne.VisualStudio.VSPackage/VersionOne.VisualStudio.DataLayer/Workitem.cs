@@ -5,7 +5,12 @@ using VersionOne.SDK.APIClient;
 
 namespace VersionOne.VisualStudio.DataLayer {
     public class Workitem : Entity {
-        protected internal Workitem Parent;
+        private Workitem parent;
+
+        public Workitem Parent {
+            get { return parent; }
+            protected internal set { parent = value; }
+        }
 
         // TODO move exception off the property
         public override string TypePrefix {
