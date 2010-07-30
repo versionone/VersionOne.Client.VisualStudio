@@ -1,14 +1,13 @@
-using NUnit.Framework;
+﻿using NUnit.Framework;
 using Rhino.Mocks;
 using Rhino.Mocks.Interfaces;
-
-using VersionOne.VisualStudio.VSPackage;
+using VersionOne.VisualStudio.DataLayer;
 using VersionOne.VisualStudio.VSPackage.Controllers;
 using VersionOne.VisualStudio.VSPackage.Controls;
-using VersionOne.VisualStudio.VSPackage.DataLayer;
 using VersionOne.VisualStudio.VSPackage.Events;
+using VersionOne.VisualStudio.VSPackage.Settings;
 
-namespace VersionOne.VSPackage.Tests {
+namespace VersionOne.VisualStudio.Tests {
     [TestFixture]
     public class ProjectTreeControllerTester {
         private ProjectTreeController controller;

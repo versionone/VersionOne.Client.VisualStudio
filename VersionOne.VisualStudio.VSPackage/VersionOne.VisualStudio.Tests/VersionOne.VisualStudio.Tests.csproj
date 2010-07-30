@@ -52,18 +52,37 @@
     <Reference Include="Microsoft.VisualStudio.Shell.Interop.9.0, Version=9.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a" />
     <Reference Include="Microsoft.VSSDK.TestHostFramework, Version=10.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL" />
     <Reference Include="Microsoft.VSSDK.UnitTestLibrary, Version=10.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL" />
+    <Reference Include="nunit.framework, Version=2.4.8.0, Culture=neutral, PublicKeyToken=96d09a1eb7f44a77, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\Common\nunit.framework.dll</HintPath>
+    </Reference>
+    <Reference Include="Rhino.Mocks">
+      <HintPath>..\Common\Rhino.Mocks.dll</HintPath>
+    </Reference>
     <Reference Include="System" />
     <Reference Include="System.Core" />
+    <Reference Include="System.Windows.Forms" />
     <Reference Include="System.Xml.Linq" />
     <Reference Include="Microsoft.CSharp" />
     <Reference Include="System.Data" />
     <Reference Include="System.Xml" />
+    <Reference Include="VersionOne.SDK.APIClient, Version=8.0.478.0, Culture=neutral, PublicKeyToken=e0f410c10d2e7630, processorArchitecture=MSIL" />
+    <Reference Include="VersionOne.SDK.ObjectModel">
+      <HintPath>..\Common\VersionOne.SDK.ObjectModel.dll</HintPath>
+    </Reference>
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="DataLayerTests.cs" />
+    <Compile Include="ProjectTreeControllerTester.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="VSPackageTester.cs" />
+    <Compile Include="WorkitemTreeControllerTester.cs" />
   </ItemGroup>
   <ItemGroup>
+    <ProjectReference Include="..\Aga.Controls\Aga.Controls.csproj">
+      <Project>{E73BB233-D88B-44A7-A98F-D71EE158381D}</Project>
+      <Name>Aga.Controls</Name>
+    </ProjectReference>
     <ProjectReference Include="..\VersionOne.VisualStudio.DataLayer\VersionOne.VisualStudio.DataLayer.csproj">
       <Project>{1BD989CB-941F-412A-8D95-52067EEC9F58}</Project>
       <Name>VersionOne.VisualStudio.DataLayer</Name>
@@ -72,6 +91,9 @@
       <Project>{8846BCCB-1012-470B-AD8F-81E6CA80D197}</Project>
       <Name>VersionOne.VisualStudio.VSPackage</Name>
     </ProjectReference>
+  </ItemGroup>
+  <ItemGroup>
+    <WCFMetadata Include="Service References\" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

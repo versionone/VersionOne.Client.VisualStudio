@@ -1,19 +1,16 @@
 using System;
 using System.Windows.Forms;
-
 using Rhino.Mocks;
 using NUnit.Framework;
 using Rhino.Mocks.Interfaces;
-
-using VersionOne.VisualStudio.VSPackage;
+using VersionOne.VisualStudio.DataLayer;
 using VersionOne.VisualStudio.VSPackage.Controllers;
 using VersionOne.VisualStudio.VSPackage.Controls;
-using VersionOne.VisualStudio.VSPackage.DataLayer;
 using VersionOne.VisualStudio.VSPackage.Descriptors;
 using VersionOne.VisualStudio.VSPackage.Events;
 using VersionOne.VisualStudio.VSPackage.Settings;
 
-namespace VersionOne.VSPackage.Tests {
+namespace VersionOne.VisualStudio.Tests {
     [TestFixture]
     public class WorkitemTreeControllerTester {
         private WorkitemTreeController controller;

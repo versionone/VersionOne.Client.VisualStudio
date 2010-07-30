@@ -1,19 +1,15 @@
-using System;
+﻿using System;
 using System.Collections.Generic;
-
 using NUnit.Framework;
-
 using VersionOne.SDK.APIClient;
 using VersionOne.SDK.ObjectModel;
 using VersionOne.SDK.ObjectModel.Filters;
-using VersionOne.VisualStudio.VSPackage.DataLayer;
+using VersionOne.VisualStudio.DataLayer;
+using Entity = VersionOne.VisualStudio.DataLayer.Entity;
+using Project = VersionOne.SDK.ObjectModel.Project;
+using Workitem = VersionOne.VisualStudio.DataLayer.Workitem;
 
-using Entity = VersionOne.VisualStudio.VSPackage.DataLayer.Entity;
-using Project = VersionOne.VisualStudio.VSPackage.DataLayer.Project;
-using Workitem = VersionOne.VisualStudio.VSPackage.DataLayer.Workitem;
-using OmProject = VersionOne.SDK.ObjectModel.Project;
-
-namespace VersionOne.VSPackage.Tests {
+namespace VersionOne.VisualStudio.Tests {
     [TestFixture]
     [Ignore("These tests need instance of VersionOne server and user with Admin permissions.")]
     public class DataLayerTests {
@@ -33,14 +29,14 @@ namespace VersionOne.VSPackage.Tests {
 
         private Member member;
         private Schedule schedule;
-        private OmProject project;
+        private Project project;
         private Iteration iteration;
         private Story story1, story2;
         private Task task1, task2, task3;
 
         #endregion
 
-        private static Story CreateStory(V1Instance instance, string name, OmProject project, Iteration iteration, Member owner) {
+        private static Story CreateStory(V1Instance instance, string name, Project project, Iteration iteration, Member owner) {
             Story story = instance.Create.Story(name, project);
             if(owner != null) {
                 story.Owners.Add(owner);
@@ -66,8 +62,8 @@ namespace VersionOne.VSPackage.Tests {
             member = instance.Create.Member("test user", "test");
             member.Save();
             
-            ICollection<OmProject> projects = instance.Get.Projects(new ProjectFilter());
-            IEnumerator<OmProject> enumerator = projects.GetEnumerator();
+            ICollection<Project> projects = instance.Get.Projects(new ProjectFilter());
+            IEnumerator<Project> enumerator = projects.GetEnumerator();
             enumerator.MoveNext();
             project = instance.Create.Project(TestProjectName, enumerator.Current, DateTime.Now.Date, schedule);
             
@@ -136,8 +132,8 @@ namespace VersionOne.VSPackage.Tests {
             dataLayer.CheckConnection(V1Url, Username, Password, false);
         }
 
-        private Project FindTestProject(Project root, string name) {
-            foreach (Project child in root.Children) {
+        private DataLayer.Project FindTestProject(DataLayer.Project root, string name) {
+            foreach (DataLayer.Project child in root.Children) {
                 if(child.GetProperty("Name").Equals(name) && child.Id.Equals(project.ID.Token)) {
                     return child;
                 }
@@ -148,10 +144,10 @@ namespace VersionOne.VSPackage.Tests {
 
         [Test]
         public void GetProjectsTest() {
-            IList<Project> projects = dataLayer.GetProjectTree();
+            IList<DataLayer.Project> projects = dataLayer.GetProjectTree();
             Assert.IsTrue(projects.Count > 0, "Projects exist");
 
-            Project testProject = FindTestProject(projects[0], TestProjectName);
+            DataLayer.Project testProject = FindTestProject(projects[0], TestProjectName);
             Assert.IsTrue(testProject != null, "Failed to retrieve test project");
 
             Assert.AreEqual(TestProjectName, testProject.GetProperty(Entity.NameProperty));
@@ -160,8 +156,8 @@ namespace VersionOne.VSPackage.Tests {
 
         [Test]
         public void SetCurrentProjectByIdTest() {
-            IList<Project> projects = dataLayer.GetProjectTree();
-            IEnumerator<Project> projectEnumerator = projects.GetEnumerator();
+            IList<DataLayer.Project> projects = dataLayer.GetProjectTree();
+            IEnumerator<DataLayer.Project> projectEnumerator = projects.GetEnumerator();
             Assert.IsTrue(projectEnumerator.MoveNext(), "Projects exist");
             dataLayer.CurrentProjectId = projectEnumerator.Current.Id;
             Assert.AreEqual(projectEnumerator.Current, dataLayer.CurrentProject);
@@ -170,8 +166,8 @@ namespace VersionOne.VSPackage.Tests {
 
         [Test]
         public void GetStoriesTest() {
-            IList<Project> projects = dataLayer.GetProjectTree();
-            Project testProject = FindTestProject(projects[0], TestProjectName);
+            IList<DataLayer.Project> projects = dataLayer.GetProjectTree();
+            DataLayer.Project testProject = FindTestProject(projects[0], TestProjectName);
             dataLayer.CurrentProject = testProject;
             IList<Workitem> stories = dataLayer.GetWorkitems();
             Assert.AreEqual(2, stories.Count);
@@ -187,8 +183,8 @@ namespace VersionOne.VSPackage.Tests {
 
         [Test]
         public void GetStoryListPropertyTest() {
-            IList<Project> projects = dataLayer.GetProjectTree();
-            Project testProject = FindTestProject(projects[0], TestProjectName);
+            IList<DataLayer.Project> projects = dataLayer.GetProjectTree();
+            DataLayer.Project testProject = FindTestProject(projects[0], TestProjectName);
             dataLayer.CurrentProject = testProject;
             IList<Workitem> stories = dataLayer.GetWorkitems();
             Assert.IsTrue(stories.Count > 0);
@@ -198,8 +194,8 @@ namespace VersionOne.VSPackage.Tests {
 
         [Test]
         public void GetEffortTest() {
-            IList<Project> projects = dataLayer.GetProjectTree();
-            Project testProject = FindTestProject(projects[0], TestProjectName);
+            IList<DataLayer.Project> projects = dataLayer.GetProjectTree();
+            DataLayer.Project testProject = FindTestProject(projects[0], TestProjectName);
             dataLayer.CurrentProject = testProject;
             IList<Workitem> stories = dataLayer.GetWorkitems();
             Assert.IsTrue(stories.Count > 0, "Stories exist");
@@ -219,8 +215,8 @@ namespace VersionOne.VSPackage.Tests {
 
         [Test]
         public void SetEffortTest() {
-            IList<Project> projects = dataLayer.GetProjectTree();
-            Project testProject = FindTestProject(projects[0], TestProjectName);
+            IList<DataLayer.Project> projects = dataLayer.GetProjectTree();
+            DataLayer.Project testProject = FindTestProject(projects[0], TestProjectName);
             dataLayer.CurrentProject = testProject;
             IList<Workitem> stories = dataLayer.GetWorkitems();
             Assert.AreEqual(null, stories[0].GetProperty(Entity.EffortProperty), "Story effort");
@@ -234,8 +230,8 @@ namespace VersionOne.VSPackage.Tests {
 
         [Test]
         public void CommitEffortTest() {
-            IList<Project> projects = dataLayer.GetProjectTree();
-            Project testProject = FindTestProject(projects[0], TestProjectName);
+            IList<DataLayer.Project> projects = dataLayer.GetProjectTree();
+            DataLayer.Project testProject = FindTestProject(projects[0], TestProjectName);
             dataLayer.CurrentProject = testProject;
             IList<Workitem> stories = dataLayer.GetWorkitems();
 
@@ -272,8 +268,8 @@ namespace VersionOne.VSPackage.Tests {
 
 		[Test]
 		public void ReadOnlyAssetsForCurrentUserTest() {
-			IList<Project> projects = dataLayer.GetProjectTree();
-            Project testProject = FindTestProject(projects[0], TestProjectName);
+			IList<DataLayer.Project> projects = dataLayer.GetProjectTree();
+            DataLayer.Project testProject = FindTestProject(projects[0], TestProjectName);
             dataLayer.CurrentProject = testProject;
 
 			dataLayer.ShowAllTasks = false;
