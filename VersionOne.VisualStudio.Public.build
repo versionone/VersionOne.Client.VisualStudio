@@ -1,0 +1,253 @@
+<project name='VersionOne.VisualStudio.New' default='compile'>
+	
+	<include buildfile="VersionOne.VisualStudio.Setup.inc" />
+
+	<property name='project.name' value='${project::get-name()}' />
+	<property name='publish.dir' value='builds' unless="${property::exists('publish.dir')}" />
+  <property name='project.prefix' value='VersionOne.VSPackage'/>
+  <property name='installer.project.name' value='${project.prefix}.Installer'/>
+  <property name='solution.filename' value='${project.prefix}.sln'/>
+  <property name='test.project.name' value='${project.prefix}.Tests'/>
+
+	<property name='addin.project.dir' value='VersionOne.VSPackage' />
+	<property name='addin.bin.dir' value='${addin.project.dir}\bin\${build.config}' dynamic='true' />
+	<property name='setup.project.dir' value='Setup' />
+	<property name='setup.bin.dir' value='${setup.project.dir}\bin\${build.config}' dynamic='true' />
+
+	<property name='temp.dir' value='temp' />
+
+  <property name='msbuild.exe.path' value='C:\WINDOWS\Microsoft.NET\Framework\v2.0.50727\MSBuild.exe'/>
+  <property name='devenv.exe.path' value='C:\Program Files (x86)\Microsoft Visual Studio 8\Common7\IDE\devenv.com'/>
+
+	<property name='build.config' value='Debug' />
+	<target name='debug' description='Select Debug build'>
+		<property name='build.config' value='Debug' />
+	</target>
+	<target name='release' description='Select Release build'>
+		<property name='build.config' value='Release' />
+	</target>
+  
+	<property name="doc.output.dir" value="doc"/>
+	
+	<!--==COMPILE==-->
+	<target name='compile' description='Compile all projects'>
+    <!--<msbuild project='${solution.filename}' target='BuildSolution'>
+      <property name='Configuration' value='${build.config}'/>
+    </msbuild>-->
+    <echo message='Building the project...'/>
+    <exec program='${msbuild.exe.path}'>
+      <arg value='${solution.filename}'/>
+      <arg value='/p:Configuration=${build.config}'/>
+    </exec>
+    
+    <echo message='Building the installer...'/>
+    <exec program='${devenv.exe.path}' verbose='true' append='true'>
+      <arg value='${installer.project.name}/${installer.project.name}.vdproj'/>
+      <arg value='/Build'/>
+      <arg value='${build.config}'/>
+      <arg value='/Project'/>
+      <arg value='${installer.project.name}'/>
+    </exec>
+
+    <copy todir='${addin.bin.dir}' overwrite='true'>
+      <fileset basedir='Common'>
+        <include name='VersionOne.SDK.APIClient.dll.config'/>
+      </fileset>
+    </copy>
+  </target>
+
+	<target name='compile.clean'>
+		<delete failonerror='false'>
+			<fileset>
+				<include name='*\obj\${build.config}\**' />
+				<include name='*\obj\${build.config}' />
+				<include name='*\bin\${build.config}\**' />
+				<include name='*\bin\${build.config}' />
+				<include name='*\${build.config}\**' />
+				<include name='*\${build.config}\' />
+			</fileset>
+		</delete>
+	</target>
+
+	<target name='compile.cleanclean'>
+		<delete failonerror='false'>
+			<fileset>
+				<include name='*\obj\**' />
+				<include name='*\obj' />
+				<include name='*\bin\**' />
+				<include name='*\bin' />
+        		<include name='*\${build.config}\**' />
+        		<include name='*\${build.config}' />
+			</fileset>
+		</delete>
+	</target>
+	<!--== GENDOC ==-->
+	<target name='gendoc'>
+    <!--
+    TODO
+		<call target='gendoc.init'/>
+		<call target='gendoc.index'/>
+		<call target='gendoc.content'/>
+    -->
+	</target>
+	
+	<target name='gendoc.init'>
+		<property name='doc.source.dir' value='DocSource'/>
+		<mkdir dir='${doc.output.dir}\Common' />
+		<copy todir='${doc.output.dir}\Common' file='${doc.source.dir}\Common\v1integration.css' />
+	</target>
+	
+	<target name='gendoc.index' description='Generate Documentation' depends='gendoc.init'>
+		<foreach item='File' property='filename'>
+			<in>
+				<items>
+					<include name='${doc.source.dir}\*.xml' />
+				</items>
+			</in>		
+			<do>
+				<property name='filename.noext' value="${path::get-file-name-without-extension(filename)}"/>
+				<exec workingdir='${doc.source.dir}' basedir='Common\docbook\xsltproc\' program='xsltproc.exe' commandline='-o ..\${doc.output.dir}\${filename.noext}.html Common\index.xsl ${filename}' />					
+			</do>
+		</foreach>
+	</target>
+	
+	<target name='gendoc.olink' description='Create target databases for the olink command' depends='gendoc.init'>
+		<property name='collect.xref.targets' value='only'/>
+		<call target='gendoc.content.base'/>
+	</target>
+	
+	<target name='gendoc.content' description='Generate documentation for the content pages' depends='gendoc.init,gendoc.olink'>
+		<property name='collect.xref.targets' value='no'/>	
+		<call target='gendoc.content.base'/>
+	</target>
+	
+	<target name='gendoc.content.base' depends='gendoc.init'>
+		<property name='foldername' value='${doc.source.dir}\VSAddin'/>
+		<property name='content.doc.output.dir' value='${doc.output.dir}\${path::get-file-name(foldername)}'/>
+		<mkdir dir='${content.doc.output.dir}' />
+		<foreach item='File' property='filename'>
+			<in>
+				<items>
+					<include name='${foldername}/*.xml' />
+				</items>
+			</in>
+			<do>
+				<property name='filename.noext' value="${path::get-file-name-without-extension(filename)}"/>
+				<exec workingdir='${foldername}' basedir='Common\docbook\xsltproc\' program='xsltproc.exe' commandline='-o ..\..\${content.doc.output.dir}\${filename.noext}.html --stringparam current.docid ${filename.noext} --stringparam target.database.document ../Common/olinkdb.xml --stringparam collect.xref.targets ${collect.xref.targets} --stringparam targets.filename ../Common/${filename.noext}.db ..\Common\v1integration.xsl ${filename}'  />
+			</do>
+		</foreach>
+		<if test="${collect.xref.targets == 'no'}">
+			<copy todir='${content.doc.output.dir}' overwrite='true'>
+				<fileset basedir='${foldername}'>
+					<include name='*.JPG'/>				
+					<include name='*.GIF'/>				
+				</fileset>
+			</copy>		
+		</if>
+	</target>	
+	
+	<target name='gendoc.clean'>
+		<delete dir='${doc.output.dir}' if='${directory::exists(doc.output.dir)}' failonerror='false' />
+	</target>
+	<!--==PACKAGE==-->	
+	<target name='package' description='Create final package' depends='package.clean'>
+		<call target='package.source' />
+    <call target='package.zip' />
+	</target>
+
+	<target name='package.clean' depends='package.source.clean, package.zip.clean' />
+
+  <target name='package.zip.init'>
+    <property name='package.zip.zipfile' value='${temp.dir}\${project::get-name()}.${build.version}.zip' />
+    <mkdir dir='${temp.dir}' unless='${directory::exists(temp.dir)}'  />
+  </target>
+  
+  <target name='package.zip' depends='package.zip.init' description="Pack installer files">
+    <zip zipfile='${package.zip.zipfile}' >
+      <fileset basedir='${installer.project.name}\${build.config}'>
+        <include name='*.exe' />
+        <include name='*.msi' />
+      </fileset>
+    </zip>
+  </target>
+
+	<target name='package.source.init'>
+		<property name='package.source.zipfile' value='${temp.dir}\${project::get-name()}-Source.${build.version}.zip' />
+    <mkdir dir='${temp.dir}' unless='${directory::exists(temp.dir)}'  />
+	</target>
+
+  <target name='package.zip.clean' depends='package.zip.init'>
+    <delete file='${package.zip.zipfile}' if='${file::exists(package.zip.zipfile)}' failonerror='false' />
+  </target>
+
+	<target name='package.source' depends='package.source.init'>
+		<zip zipfile='${package.source.zipfile}'>
+			<fileset>
+				<include name='**\*.cs' />
+				<include name='**\*.wxs' />
+
+				<include name='**\*.resx' />
+				<include name='**\*.rc' />
+				<include name='**\*.h' />
+				<include name='**\*.ctc' />
+
+				<include name='**\*.bmp' />
+				<include name='**\*.ico' />
+				<include name='**\*.gif' />
+				<include name='**\*.cur' />
+				<include name='**\loading_icon' />
+
+				<include name='**\*.doc' />
+				<include name='**\*.pdf' />
+				<include name='**\*.rtf' />
+				<include name='**\*.txt' />
+
+				<include name='**\*.xml' />
+				<include name='**\*.config' />
+
+				<include name='**\*.csproj' />
+				<include name='**\*.vcproj' />
+				<include name='**\*.sln' />
+
+				<include name='*.Public.build' />
+				<include name='**\*.targets' />
+				<include name='*.inc' />
+				<include name='Common\*.dll' />
+
+				<exclude name='_old\**' />
+				<exclude name='Common\docbook\**' />
+				<exclude name='Common\Tools\*' />
+				<exclude name='**\bin\**' />
+				<exclude name='DocSource\**'/>
+				<exclude name='Documentation\**'/>
+			</fileset>
+		</zip>
+	</target>
+
+	<target name='package.source.clean' depends='package.source.init'>
+		<delete file='${package.source.zipfile}' if='${file::exists(package.source.zipfile)}' failonerror='false' />
+	</target>
+  
+	<target name='publish' depends='package.source.init, package.zip.init' description='Copy final package to Builds folder'>
+		<copy todir='${publish.dir}' flatten='true' overwrite='true'>
+			<fileset>
+				<include name='${package.source.zipfile}' />
+        <include name='${package.zip.zipfile}'/>
+			</fileset>
+		</copy>
+	</target>
+
+	<target name='clean' description='Delete configuration-specific build results' depends='compile.clean package.clean'>
+	</target>
+
+	<target name='cleanclean' description='Delete all build results' depends='compile.cleanclean package.clean'>
+		<delete dir='${temp.dir}' if='${directory::exists(temp.dir)}' failonerror='false' />
+	</target>
+
+  <target name='test'>
+    <nunit2>
+      <formatter type="Xml" />
+      <test assemblyname="${test.project.name}/bin/${build.config}/${test.project.name}.dll" /> 
+    </nunit2>
+  </target>
+</project>
