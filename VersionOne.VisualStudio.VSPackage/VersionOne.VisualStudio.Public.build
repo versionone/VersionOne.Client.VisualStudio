@@ -9,7 +9,7 @@
   <property name='solution.filename' value='${project.prefix}.sln'/>
   <property name='test.project.name' value='${project.prefix}.Tests'/>
 
-	<property name='addin.project.dir' value='VersionOne.VSPackage' />
+	<property name='addin.project.dir' value='VersionOne.VisualStudio.VSPackage' />
 	<property name='addin.bin.dir' value='${addin.project.dir}\bin\${build.config}' dynamic='true' />
 	<property name='setup.project.dir' value='Setup' />
 	<property name='setup.bin.dir' value='${setup.project.dir}\bin\${build.config}' dynamic='true' />
@@ -17,7 +17,7 @@
 	<property name='temp.dir' value='temp' />
 
   <!-- TODO possibly use MSBuild task and not provide the path -->
-  <property name='msbuild.exe.path' value='D:\WINDOWS\Microsoft.NET\Framework\v4.0.30319\MSBuild.exe'/>
+  <property name='msbuild.exe.path' value='C:\WINDOWS\Microsoft.NET\Framework\v4.0.30319\MSBuild.exe'/>
 
 	<property name='build.config' value='Debug' />
 	<target name='debug' description='Select Debug build'>
@@ -155,7 +155,7 @@
   
   <target name='package.zip' depends='package.zip.init' description="Pack installer files">
     <zip zipfile='${package.zip.zipfile}' >
-      <fileset basedir='${installer.project.name}\${build.config}'>
+      <fileset basedir='${addin.project.dir}\bin\${build.config}'>
         <include name='**\*.vsix' />
       </fileset>
     </zip>
@@ -232,11 +232,9 @@
 	</target>
 
   <target name='test'>
-    <!-- TODO restore tests
     <nunit2>
       <formatter type="Xml" />
       <test assemblyname="${test.project.name}/bin/${build.config}/${test.project.name}.dll" /> 
     </nunit2>
-    -->
   </target>
 </project>
