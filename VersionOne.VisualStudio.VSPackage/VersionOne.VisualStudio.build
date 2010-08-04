@@ -1,0 +1,41 @@
+<project name='VersionOne.VisualStudio.VSPackage' default='compile'>
+
+	<include buildfile="VersionOne.VisualStudio.Setup.inc" />
+
+	<target name='setversion' description='Update assembly version numbers in source code'>
+		<attrib normal='true'>
+			<fileset>
+				<include name='**\AssemblyInfo.cs' />
+				<include name='**\AssemblyInfoCommon.cs' />
+			</fileset>
+		</attrib>
+    <!--
+    TODO restore when committing
+		<update-version build='${ver.build}' revision='${ver.revision}' >
+			<fileset>
+				<include name='**\AssemblyInfo.cs' />
+				<include name='**\AssemblyInfoCommon.cs' />
+			</fileset>
+		</update-version>
+    -->
+	</target>
+
+	<target name='cleanscc' description='Remove source control bindings from source code'>
+		<!--
+    TODO
+		<exec program='Common\VersionOne.CleanSCC.exe'>
+			<arg value='.' />
+		</exec>
+		-->
+	</target>
+
+	<target name='copyright' description='Add copyright to top of each source file'>
+    <!--
+    TODO
+		<exec program='Common\Tools\HeaderWriter.exe' />
+    -->
+	</target>
+
+	<include buildfile="VersionOne.VisualStudio.Public.build" />
+
+</project>
