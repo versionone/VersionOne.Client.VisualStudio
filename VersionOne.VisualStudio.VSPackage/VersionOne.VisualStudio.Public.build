@@ -5,7 +5,6 @@
 	<property name='project.name' value='${project::get-name()}' />
 	<property name='publish.dir' value='builds' unless="${property::exists('publish.dir')}" />
   <property name='project.prefix' value='VersionOne.VisualStudio.VSPackage'/>
-  <property name='installer.project.name' value='${project.prefix}.Installer'/>
   <property name='solution.filename' value='${project.prefix}.sln'/>
   <property name='test.project.name' value='${project.prefix}.Tests'/>
 
@@ -198,11 +197,13 @@
 				<include name='*.Public.build' />
 				<include name='**\*.targets' />
 				<include name='*.inc' />
-				<include name='Common\*.dll' />
+				<include name='Common\**\*.dll' />
 
 				<exclude name='_old\**' />
 				<exclude name='Common\docbook\**' />
 				<exclude name='Common\Tools\*' />
+				<exclude name='Common\SigningKey\*.*'/>
+				<exclude name='**\*.snk'/>
 				<exclude name='**\bin\**' />
 				<exclude name='DocSource\**'/>
 				<exclude name='Documentation\**'/>
