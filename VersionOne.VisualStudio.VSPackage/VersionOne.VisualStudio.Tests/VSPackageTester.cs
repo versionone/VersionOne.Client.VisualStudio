@@ -1,28 +1,24 @@
-﻿using System;
-using System.Collections;
-using System.Text;
-using System.Reflection;
-using Microsoft.VsSDK.UnitTestLibrary;
+﻿using Microsoft.VsSDK.UnitTestLibrary;
 using Microsoft.VisualStudio.Shell.Interop;
-using Microsoft.VisualStudio.TestTools.UnitTesting;
 using VersionOne.VisualStudio.VSPackage;
+using NUnit.Framework;
 
 namespace VersionOne.VisualStudio.Tests {
     // TODO port this class to NUnit and remove all MSTest references
-    [TestClass]
+    [TestFixture]
     public class VSPackageTester {
-        [TestMethod]
+        [Test]
         public void CreateInstance() {
             V1Tracker package = new V1Tracker();
         }
 
-        [TestMethod]
+        [Test]
         public void IsIVsPackage() {
             V1Tracker package = new V1Tracker();
             Assert.IsNotNull(package as IVsPackage, "The object does not implement IVsPackage");
         }
 
-        [TestMethod]
+        [Test]
         public void SetSite() {
             // Create the package
             IVsPackage package = new V1Tracker() as IVsPackage;
