@@ -11,6 +11,14 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "HtmlEditor", "HtmlEditor\Ht
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Aga.Controls", "Aga.Controls\Aga.Controls.csproj", "{E73BB233-D88B-44A7-A98F-D71EE158381D}"
 EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Build", "Build", "{C49E0D2E-0D19-414E-A95B-97AD10B19A51}"
+	ProjectSection(SolutionItems) = preProject
+		VersionOne.VisualStudio.build = VersionOne.VisualStudio.build
+		VersionOne.VisualStudio.New-TeamCityLaunch.build = VersionOne.VisualStudio.New-TeamCityLaunch.build
+		VersionOne.VisualStudio.Public.build = VersionOne.VisualStudio.Public.build
+		VersionOne.VisualStudio.Setup.inc = VersionOne.VisualStudio.Setup.inc
+	EndProjectSection
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
