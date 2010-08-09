@@ -29,7 +29,14 @@ namespace VersionOne.VisualStudio.VSPackage {
     [InstalledProductRegistration("#110", "#112", "1.0", IconResourceID = 400)]
     // This attribute is needed to let the shell know that this package exposes some menus.
     [ProvideMenuResource("Menus.ctmenu", 1)]
-    // This attribute registers a tool window exposed by this package.
+    // In order be loaded inside Visual Studio in a machine that has not the VS SDK installed, 
+    // package needs to have a valid load key (it can be requested at 
+    // http://msdn.microsoft.com/vstudio/extend/). This attributes tells the shell that this 
+    // package has a load key embedded in its resources.
+	[ProvideLoadKey("Standard", "1.0", "VersionOne Tracker", "VersionOne", 525)]
+    // Register Options page
+    [ProvideOptionPage(typeof(OptionsPage), "VersionOne", "Settings", 101, 107, true)]
+    // Register Task and project tool windows exposed by this package.
     [ProvideToolWindow(typeof(ProjectsWindow))]
     [ProvideToolWindow(typeof(TaskWindow))]
     [Guid(GuidList.guidVersionOnTrackerPkgString)]
