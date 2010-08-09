@@ -55,6 +55,7 @@
     <Compile Include="EffortTrackingLevel.cs" />
     <Compile Include="Entity.cs" />
     <Compile Include="IDataLayer.cs" />
+    <Compile Include="Logger.cs" />
     <Compile Include="Project.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="PropertyValues.cs" />

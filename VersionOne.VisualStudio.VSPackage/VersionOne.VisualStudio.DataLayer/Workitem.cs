@@ -74,7 +74,7 @@ namespace VersionOne.VisualStudio.DataLayer {
 
                 return false;
             } catch (Exception ex) {
-                ApiDataLayer.Warning("Cannot get property: " + fullName, ex);
+                Logger.Warning("Cannot get property: " + fullName, ex);
                 return true;
             }
         }
@@ -114,7 +114,7 @@ namespace VersionOne.VisualStudio.DataLayer {
             try {
                 dataLayer.CommitAsset(Asset);
             } catch (APIException ex) {
-                throw ApiDataLayer.Warning("Failed to commit changes.", ex);
+                Logger.Error("Failed to commit changes.", ex);
             }
         }
 
@@ -128,7 +128,7 @@ namespace VersionOne.VisualStudio.DataLayer {
                 try {
                     return (bool) GetProperty("CheckQuickClose");
                 } catch (KeyNotFoundException ex) {
-                    ApiDataLayer.Warning("QuickClose not supported.", ex);
+                    Logger.Error("QuickClose not supported.", ex);
                     return false;
                 }
             }
@@ -143,7 +143,7 @@ namespace VersionOne.VisualStudio.DataLayer {
                 dataLayer.ExecuteOperation(Asset, Asset.AssetType.GetOperation("QuickClose"));
                 dataLayer.CleanupWorkitem(this);
             } catch (APIException ex) {
-                throw ApiDataLayer.Warning("Failed to QuickClose.", ex);
+               Logger.Error("Failed to QuickClose.", ex);
             }
         }
 
@@ -152,7 +152,7 @@ namespace VersionOne.VisualStudio.DataLayer {
                 try {
                     return (bool)GetProperty("CheckQuickSignup");
                 } catch (KeyNotFoundException ex) {
-                    ApiDataLayer.Warning("QuickSignup not supported.", ex);
+                    Logger.Error("QuickSignup not supported.", ex);
                     return false;
                 }
             }
@@ -166,7 +166,7 @@ namespace VersionOne.VisualStudio.DataLayer {
                 dataLayer.ExecuteOperation(Asset, Asset.AssetType.GetOperation("QuickSignup"));
                 dataLayer.RefreshAsset(this);
             } catch (APIException ex) {
-                throw ApiDataLayer.Warning("Failed to QuickSignup.", ex);
+               Logger.Error("Failed to QuickSignup.", ex);
             }
         }
 

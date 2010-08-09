@@ -37,7 +37,7 @@ namespace VersionOne.VisualStudio.DataLayer {
                 }
                 dataLayer.RefreshAsset(this);
             } catch (APIException ex) {
-                throw ApiDataLayer.Warning("Failed to commit changes.", ex);
+                Logger.Error("Failed to commit changes.", ex);
             }
         }
 

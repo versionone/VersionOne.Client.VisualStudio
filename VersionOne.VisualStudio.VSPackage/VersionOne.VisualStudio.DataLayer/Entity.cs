@@ -101,7 +101,7 @@ namespace VersionOne.VisualStudio.DataLayer {
 
                 SetPropertyInternal(propertyName, newValue);
             } catch (Exception ex) {
-                ApiDataLayer.Warning("Cannot set property: " + propertyName, ex);
+                Logger.Warning("Cannot set property: " + propertyName, ex);
             }
         }
 
@@ -192,7 +192,7 @@ namespace VersionOne.VisualStudio.DataLayer {
 
                 return false;
             } catch (Exception ex) {
-                ApiDataLayer.Warning("Cannot get property: " + fullName, ex);
+                Logger.Warning("Cannot get property: " + fullName, ex);
                 return true;
             }
         }

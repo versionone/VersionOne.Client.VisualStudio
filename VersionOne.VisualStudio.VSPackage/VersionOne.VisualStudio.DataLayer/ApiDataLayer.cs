@@ -1,8 +1,6 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
-using System.Diagnostics;
-
 using VersionOne.SDK.APIClient;
 using System.Net;
 using Attribute = VersionOne.SDK.APIClient.Attribute;
@@ -121,7 +119,7 @@ namespace VersionOne.VisualStudio.DataLayer {
                 }
 
             } catch (APIException ex) {
-                throw Warning("Failed to commit changes.", ex);
+                Logger.Error("Failed to commit changes.", ex);
             }
         }
 
@@ -202,7 +200,7 @@ namespace VersionOne.VisualStudio.DataLayer {
                     	IAttributeDefinition def = Types[attrInfo.Prefix].GetAttributeDefinition(attrInfo.Attr);
 						query.Selection.Add(def);
                     } catch (MetaException e) {
-                        Warning("Wrong attribute: " + attrInfo, e);
+                        Logger.Warning("Wrong attribute: " + attrInfo, e);
                     }
                 }
             }
@@ -216,7 +214,7 @@ namespace VersionOne.VisualStudio.DataLayer {
 					IAttributeDefinition def = Types[typePrefix].GetAttributeDefinition(field.Name);
     				query.Selection.Add(def);
 				} catch (MetaException e) {
-					Warning("Wrong attribute: " + field.Name, e);
+					Logger.Warning("Wrong attribute: " + field.Name, e);
 				}
 			}
 		}
@@ -280,12 +278,12 @@ namespace VersionOne.VisualStudio.DataLayer {
 				                        });
 
 				} catch (MetaException ex) {
-                    throw Warning("Unable to get workitems.", ex);
+                    Logger.Error("Unable to get workitems.", ex);
 				} catch (WebException ex) {
 					connector.IsConnected = false;
-                    throw Warning("Unable to get workitems.", ex);
+                    Logger.Error("Unable to get workitems.", ex);
 				} catch (Exception ex) {
-					throw Warning("Unable to get workitems.", ex);
+					Logger.Error("Unable to get workitems.", ex);
 				}
 			}
 
@@ -343,9 +341,11 @@ namespace VersionOne.VisualStudio.DataLayer {
                 return roots;
             } catch (WebException ex) {
             	connector.IsConnected = false;
-                throw Warning("Can't get projects list.", ex);
+                Logger.Error("Can't get projects list.", ex);
+                return null;
             } catch (Exception ex) {
-                throw Warning("Can't get projects list.", ex);
+                Logger.Error("Can't get projects list.", ex);
+                return null;
             }
         }
 
@@ -383,12 +383,15 @@ namespace VersionOne.VisualStudio.DataLayer {
                 connector.IsConnected = true;
                 return true;
             } catch (MetaException ex) {
-                throw Warning("Cannot connect to V1 server.", ex);
+                Logger.Error("Cannot connect to V1 server.", ex);
+                return false;
             } catch (WebException ex) {
             	connector.IsConnected = false;
-                throw Warning("Cannot connect to V1 server.", ex);
+                Logger.Error("Cannot connect to V1 server.", ex);
+                return false;
             } catch (Exception ex) {
-                throw Warning("Cannot connect to V1 server.", ex);
+                Logger.Error("Cannot connect to V1 server.", ex);
+                return false;
             }
         }
 
@@ -468,17 +471,6 @@ namespace VersionOne.VisualStudio.DataLayer {
             return res;
         }
 
-
-        internal static DataLayerException Warning(string msg) {
-            Debug.WriteLine(msg);
-            return new DataLayerException(msg);
-        }
-
-        internal static DataLayerException Warning(string msg, Exception cause) {
-            Debug.WriteLine(String.Format("{0}.\n\tException:{1}\n\t Stacktrace:{2}", msg, cause.Message, cause.StackTrace));
-            return new DataLayerException(msg, cause);
-        }
-
         #region Localizer
 
         public string LocalizerResolve(string key) {
@@ -541,7 +533,7 @@ namespace VersionOne.VisualStudio.DataLayer {
 					throw new ValidatorException(message);
 				}
 			} catch (APIException ex) {
-				throw Warning("Cannot validate required fields.", ex);
+				Logger.Error("Cannot validate required fields.", ex);
 			} 
 
             connector.Services.Save(asset);
@@ -631,6 +623,7 @@ namespace VersionOne.VisualStudio.DataLayer {
         /// <summary>
         /// Refreshes data for Asset wrapped by specified Workitem.
         /// </summary>
+        // TODO refactor
         internal void RefreshAsset(Workitem workitem) {
             try {
                 IAttributeDefinition stateDef = workitem.Asset.AssetType.GetAttributeDefinition("AssetState");
@@ -657,12 +650,12 @@ namespace VersionOne.VisualStudio.DataLayer {
                 newAsset.Children.AddRange(workitem.Asset.Children);
             }
             catch (MetaException ex) {
-                throw Warning("Unable to get workitems.", ex);
+                Logger.Error("Unable to get workitems.", ex);
             } catch (WebException ex) {
                 connector.IsConnected = false;
-                throw Warning("Unable to get workitems.", ex);
+                Logger.Error("Unable to get workitems.", ex);
             } catch (Exception ex) {
-                throw Warning("Unable to get workitems.", ex);
+                Logger.Error("Unable to get workitems.", ex);
             }
         }
 

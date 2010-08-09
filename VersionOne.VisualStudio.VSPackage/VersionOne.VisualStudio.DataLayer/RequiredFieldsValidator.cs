@@ -41,7 +41,8 @@ namespace VersionOne.VisualStudio.DataLayer {
             try {
                 result = services.Retrieve(query);
             } catch (Exception ex) {
-                throw ApiDataLayer.Warning("Cannot get meta data for " + assetType, ex);
+                Logger.Error("Cannot get meta data for " + assetType, ex);
+                return null;
             }
 
             foreach (Asset asset in result.Assets) {
@@ -52,8 +53,8 @@ namespace VersionOne.VisualStudio.DataLayer {
 
                         fields.Add(reqFieldData);
                     }
-                } catch (Exception e) {
-                    throw ApiDataLayer.Warning("Cannot get meta data for " + assetType, e);
+                } catch (Exception ex) {
+                    Logger.Error("Cannot get meta data for " + assetType, ex);
                 }
             }
 
@@ -98,7 +99,7 @@ namespace VersionOne.VisualStudio.DataLayer {
                 Attribute attribute = asset.Attributes[fullName];
 
                 if (attribute == null) {
-                    throw ApiDataLayer.Warning("Incorrect attribute: " + fullName);
+                    Logger.Error("Incorrect attribute: " + fullName);
                 }
 
                 if (IsMultiValueAndUnfilled(attribute) || IsSingleValueAndUnfilled(attribute)) {

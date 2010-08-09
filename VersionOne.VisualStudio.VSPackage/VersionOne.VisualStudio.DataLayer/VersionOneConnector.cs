@@ -84,7 +84,7 @@ namespace VersionOne.VisualStudio.DataLayer {
 
         internal void CheckConnection() {
             if(!IsConnected) {
-                throw ApiDataLayer.Warning("Connection is not established");
+                Logger.Error("Connection is not established");
             }
         }
 
@@ -94,7 +94,7 @@ namespace VersionOne.VisualStudio.DataLayer {
                 connectionValidator.Test(ApiVersion);
             }
             catch (Exception ex) {
-                throw ApiDataLayer.Warning("Cannot connect to V1 server.", ex);
+                Logger.Error("Cannot connect to V1 server.", ex);
             }
         }
     }
