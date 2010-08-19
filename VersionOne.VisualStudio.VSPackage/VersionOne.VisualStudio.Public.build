@@ -6,7 +6,7 @@
 	<property name='publish.dir' value='builds' unless="${property::exists('publish.dir')}" />
   <property name='project.prefix' value='VersionOne.VisualStudio.VSPackage'/>
   <property name='solution.filename' value='${project.prefix}.sln'/>
-  <property name='test.project.name' value='${project.prefix}.Tests'/>
+  <property name='test.project.name' value='VersionOne.VisualStudio.Tests'/>
 
 	<property name='addin.project.dir' value='VersionOne.VisualStudio.VSPackage' />
 	<property name='addin.bin.dir' value='${addin.project.dir}\bin\${build.config}' dynamic='true' />
@@ -16,7 +16,7 @@
 	<property name='temp.dir' value='temp' />
 
   <!-- TODO possibly use MSBuild task and not provide the path -->
-  <property name='msbuild.exe.path' value='C:\WINDOWS\Microsoft.NET\Framework\v4.0.30319\MSBuild.exe'/>
+  <property name='msbuild.exe.path' value="${environment::get-variable('SystemRoot')}\Microsoft.NET\Framework\v4.0.30319\MSBuild.exe"/>
 
 	<property name='build.config' value='Debug' />
 	<target name='debug' description='Select Debug build'>
@@ -30,9 +30,12 @@
 	
 	<!--==COMPILE==-->
 	<target name='compile' description='Compile all projects'>
-    <!--<msbuild project='${solution.filename}' target='BuildSolution'>
+    <!--
+    TODO NAnt should be upgraded to 0.91 when stable version is released so we could use this task and .NET 4.0
+    <msbuild project='${solution.filename}' target='BuildSolution'>
       <property name='Configuration' value='${build.config}'/>
-    </msbuild>-->
+    </msbuild>
+    -->
     <echo message='Building the project...'/>
     <exec program='${msbuild.exe.path}'>
       <arg value='${solution.filename}'/>
