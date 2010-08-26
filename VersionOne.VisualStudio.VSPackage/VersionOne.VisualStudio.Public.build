@@ -18,6 +18,9 @@
   <!-- TODO possibly use MSBuild task and not provide the path -->
   <property name='msbuild.exe.path' value="${environment::get-variable('SystemRoot')}\Microsoft.NET\Framework\v4.0.30319\MSBuild.exe"/>
 
+  <property name='nunit.exe' value='./Common/NUnit-2.5.7-net-2.0/nunit-console.exe' />
+  <property name='nunit.output.xml' value='TestResults.xml' />
+
 	<property name='build.config' value='Debug' />
 	<target name='debug' description='Select Debug build'>
 		<property name='build.config' value='Debug' />
@@ -236,9 +239,9 @@
 	</target>
 
   <target name='test'>
-    <nunit2>
-      <formatter type="Xml" />
-      <test assemblyname="${test.project.name}/bin/${build.config}/${test.project.name}.dll" /> 
-    </nunit2>
+    <exec program='${nunit.exe}'>
+      <arg value='${test.project.name}/bin/${build.config}/${test.project.name}.dll' />
+      <arg value='/xml=${nunit.output.xml}' />
+    </exec>
   </target>
 </project>
