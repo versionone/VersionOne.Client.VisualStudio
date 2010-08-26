@@ -5,7 +5,7 @@
 	<if test="${property::exists('build.number')}">
 		<property name='buildnumber' value='${build.number}' />
 		<property name='ss.label' value='Build ${buildnumber}' />
-	<!-- <property name='publish.public' value='\\files\Builds\VersionOne.VisualStudio2010\${buildnumber}' /> -->  
+	  <property name='publish.public' value='\\files\Builds\VersionOne.VisualStudio2010\${buildnumber}' />
         </if>
 
 	<target name='launch-build'>
@@ -13,7 +13,7 @@
 			<properties>
 				<property name='ver.build' value='${buildnumber}' readonly='true' />
 				<property name='ver.revision' value='${revnumber}' readonly='true' />
-				<!--<property name='publish.dir' value='${publish.public}' readonly='true' />-->
+				<property name='publish.dir' value='${publish.public}' readonly='true' />
 			</properties>
 		</nant>
 	</target>
