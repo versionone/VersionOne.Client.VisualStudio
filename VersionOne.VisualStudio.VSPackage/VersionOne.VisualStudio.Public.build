@@ -207,6 +207,8 @@
 				
 				<include name='VersionOne.VisualStudio.VSPackage\V1Tracker.vsct' />
 				<include name='VersionOne.VisualStudio.VSPackage\source.extension.vsixmanifest' />
+
+				<include name='**\*.snk' />
 				
 				<exclude name='_old\**' />
 				<exclude name='Common\docbook\**' />
@@ -215,6 +217,7 @@
 				<exclude name='**\VersionOne.snk'/>
 				<exclude name='**Common\*.snk'/>
 				<exclude name='**\bin\**' />
+				<exclude name='**\obj\**' />
 				<exclude name='DocSource\**'/>
 				<exclude name='Documentation\**'/>
 				<exclude name='_ReSharper*\**'/>
