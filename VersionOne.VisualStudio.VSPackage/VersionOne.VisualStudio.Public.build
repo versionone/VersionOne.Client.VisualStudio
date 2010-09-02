@@ -204,7 +204,10 @@
 				<include name='**\*.targets' />
 				<include name='*.inc' />
 				<include name='Common\**\*.dll' />
-
+				
+				<include name='VersionOne.VisualStudio.VSPackage\V1Tracker.vsct' />
+				<include name='VersionOne.VisualStudio.VSPackage\source.extension.vsixmanifest' />
+				
 				<exclude name='_old\**' />
 				<exclude name='Common\docbook\**' />
 				<exclude name='Common\Tools\*' />
