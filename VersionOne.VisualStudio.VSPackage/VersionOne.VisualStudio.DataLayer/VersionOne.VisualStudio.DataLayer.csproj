@@ -43,7 +43,8 @@
     <Reference Include="Microsoft.CSharp" />
     <Reference Include="System.Data" />
     <Reference Include="System.Xml" />
-    <Reference Include="VersionOne.SDK.APIClient">
+    <Reference Include="VersionOne.SDK.APIClient, Version=8.0.478.0, Culture=neutral, PublicKeyToken=e0f410c10d2e7630, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
       <HintPath>..\Common\VersionOne.SDK.APIClient.dll</HintPath>
     </Reference>
   </ItemGroup>
