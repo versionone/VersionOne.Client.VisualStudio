@@ -72,6 +72,7 @@ namespace VersionOne.VisualStudio.VSPackage {
         }
 
         private static void AddProperties(Configuration cfg) {
+            LoadOrderProperties();
             foreach (ColumnSetting column in cfg.AssetDetail.TaskColumns) {
                 AddProperty(column, Entity.TaskPrefix);
             }
@@ -93,6 +94,15 @@ namespace VersionOne.VisualStudio.VSPackage {
             foreach (ColumnSetting column in cfg.ProjectTree.Columns) {
                 AddProperty(column, Entity.ProjectPrefix);
             }
+        }
+
+        /// <summary>
+        /// We do not support Order property on UI. That's why configuration.xml is not used.
+        /// Order property has special type, it currently can not be set properly.
+        /// </summary>
+        private static void LoadOrderProperties() {
+            ApiDataLayer.Instance.AddProperty(Entity.OrderProperty, Entity.TestPrefix, false);
+            ApiDataLayer.Instance.AddProperty(Entity.OrderProperty, Entity.TaskPrefix, false);
         }
 
         private static void AddProperty(ColumnSetting column, string prefix) {

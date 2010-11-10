@@ -60,6 +60,7 @@ namespace VersionOne.VisualStudio.DataLayer {
             foreach (Asset childAsset in asset.Children) {
                 if (dataLayer.ShowAllTasks || dataLayer.AssetPassesShowMyTasksFilter(childAsset)) {
                     Children.Add(WorkitemFactory.Instance.CreateWorkitem(childAsset, this));
+                    Children.Sort(new WorkitemComparer(dataLayer.TestType.Token, dataLayer.TaskType.Token));
                 }
             }
             Children.TrimExcess();

@@ -25,6 +25,7 @@ namespace VersionOne.VisualStudio.DataLayer {
         public const string OwnersProperty = "Owners";
         public const string ToDoProperty = "ToDo";
         public const string DetailEstimateProperty = "DetailEstimate";
+        public const string OrderProperty = "Order";
 
         #endregion
 

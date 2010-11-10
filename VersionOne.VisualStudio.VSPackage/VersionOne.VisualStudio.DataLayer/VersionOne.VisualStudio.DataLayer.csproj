@@ -69,6 +69,7 @@
     <Compile Include="VersionOneConnector.cs" />
     <Compile Include="VirtualWorkitem.cs" />
     <Compile Include="Workitem.cs" />
+    <Compile Include="WorkitemComparer.cs" />
     <Compile Include="WorkitemFactory.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
