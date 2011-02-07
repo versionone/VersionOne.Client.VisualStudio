@@ -51,6 +51,12 @@ namespace VersionOne.VisualStudio.VSPackage.Controls {
                 settings.ApplicationUrl = url;
                 settings.IntegratedAuth = chkIntegrated.Checked;
 
+                settings.UseProxy = chkUseProxy.Checked;
+                settings.ProxyUrl = txtProxyUrl.Text;
+                settings.ProxyUsername = txtProxyUsername.Text;
+                settings.ProxyPassword = txtProxyPassword.Text;
+                settings.ProxyDomain = txtProxyDomain.Text;
+
                 settings.StoreSettings();
                 IDataLayer dataLayer = ApiDataLayer.Instance;
                 
