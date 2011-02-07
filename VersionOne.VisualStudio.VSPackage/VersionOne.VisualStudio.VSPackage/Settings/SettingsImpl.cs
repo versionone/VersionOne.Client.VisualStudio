@@ -12,6 +12,12 @@ namespace VersionOne.VisualStudio.VSPackage.Settings {
         private string password;
         private string applicationUrl;
 
+        private bool useProxy;
+        private string proxyUrl;
+        private string proxyUsername;
+        private string proxyPassword;
+        private string proxyDomain;
+
         private string selectedScopeToken;
         
         private bool integratedAuth;
@@ -35,15 +41,42 @@ namespace VersionOne.VisualStudio.VSPackage.Settings {
 
         public string ApplicationUrl {
             get {
-                if (applicationUrl == null)
+                if(applicationUrl == null) {
                     return null;
+                }
 
-                if (!applicationUrl.EndsWith("/"))
+                if(!applicationUrl.EndsWith("/")) {
                     return applicationUrl + "//";
+                }
 
                 return applicationUrl;
             }
             set { applicationUrl = value; }
+        }
+
+        public bool UseProxy {
+            get { return useProxy; }
+            set { useProxy = value; }
+        }
+
+        public string ProxyUrl {
+            get { return proxyUrl; }
+            set { proxyUrl = value; }
+        }
+
+        public string ProxyUsername {
+            get { return proxyUsername; }
+            set { proxyUsername = value; }
+        }
+
+        public string ProxyPassword {
+            get { return proxyPassword; }
+            set { proxyPassword = value; }
+        }
+
+        public string ProxyDomain {
+            get { return proxyDomain; }
+            set { proxyDomain = value; }
         }
 
         public string SelectedProjectId {
@@ -62,10 +95,14 @@ namespace VersionOne.VisualStudio.VSPackage.Settings {
 
         private void Save(string file) {
             string dir = Path.GetDirectoryName(file);
-            if (!Directory.Exists(dir))
+
+            if(!Directory.Exists(dir)) {
                 Directory.CreateDirectory(dir);
-            using (FileStream fileStream = File.Create(file))
+            }
+
+            using(FileStream fileStream = File.Create(file)) {
                 Save(fileStream);
+            }
         }
 
         private void Save(Stream stream) {
@@ -75,8 +112,9 @@ namespace VersionOne.VisualStudio.VSPackage.Settings {
 
         public static SettingsImpl Load(string file) {
             try {
-                using (FileStream fileStream = File.OpenRead(file))
+                using(FileStream fileStream = File.OpenRead(file)) {
                     return Load(fileStream);
+                }
             }
             catch (Exception) {
                 return new SettingsImpl();

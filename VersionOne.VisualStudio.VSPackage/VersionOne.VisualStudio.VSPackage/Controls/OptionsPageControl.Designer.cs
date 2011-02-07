@@ -32,6 +32,17 @@ namespace VersionOne.VisualStudio.VSPackage.Controls {
             this.txtPassword = new System.Windows.Forms.TextBox();
             this.chkIntegrated = new System.Windows.Forms.CheckBox();
             this.btnTestConnection = new System.Windows.Forms.Button();
+            this.chkUseProxy = new System.Windows.Forms.CheckBox();
+            this.lblProxyUrl = new System.Windows.Forms.Label();
+            this.txtProxyUrl = new System.Windows.Forms.TextBox();
+            this.lblProxyUsername = new System.Windows.Forms.Label();
+            this.txtProxyUsername = new System.Windows.Forms.TextBox();
+            this.lblProxyPassword = new System.Windows.Forms.Label();
+            this.txtProxyPassword = new System.Windows.Forms.TextBox();
+            this.lblProxyDomain = new System.Windows.Forms.Label();
+            this.txtProxyDomain = new System.Windows.Forms.TextBox();
+            this.grpProxySettings = new System.Windows.Forms.GroupBox();
+            this.grpProxySettings.SuspendLayout();
             this.SuspendLayout();
             // 
             // lblUrl
@@ -39,14 +50,14 @@ namespace VersionOne.VisualStudio.VSPackage.Controls {
             this.lblUrl.AutoSize = true;
             this.lblUrl.Location = new System.Drawing.Point(13, 13);
             this.lblUrl.Name = "lblUrl";
-            this.lblUrl.Size = new System.Drawing.Size(78, 13);
+            this.lblUrl.Size = new System.Drawing.Size(87, 13);
             this.lblUrl.TabIndex = 0;
-            this.lblUrl.Text = "Application Url:";
+            this.lblUrl.Text = "Application URL:";
             // 
             // lblUser
             // 
             this.lblUser.AutoSize = true;
-            this.lblUser.Location = new System.Drawing.Point(13, 92);
+            this.lblUser.Location = new System.Drawing.Point(13, 95);
             this.lblUser.Name = "lblUser";
             this.lblUser.Size = new System.Drawing.Size(58, 13);
             this.lblUser.TabIndex = 4;
@@ -55,7 +66,7 @@ namespace VersionOne.VisualStudio.VSPackage.Controls {
             // lblPassword
             // 
             this.lblPassword.AutoSize = true;
-            this.lblPassword.Location = new System.Drawing.Point(13, 122);
+            this.lblPassword.Location = new System.Drawing.Point(13, 121);
             this.lblPassword.Name = "lblPassword";
             this.lblPassword.Size = new System.Drawing.Size(56, 13);
             this.lblPassword.TabIndex = 6;
@@ -71,11 +82,12 @@ namespace VersionOne.VisualStudio.VSPackage.Controls {
             // lblSampleUrl
             // 
             this.lblSampleUrl.AutoSize = true;
+            this.lblSampleUrl.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Italic, System.Drawing.GraphicsUnit.Point, ((byte)(204)));
             this.lblSampleUrl.Location = new System.Drawing.Point(116, 36);
             this.lblSampleUrl.Name = "lblSampleUrl";
-            this.lblSampleUrl.Size = new System.Drawing.Size(257, 13);
+            this.lblSampleUrl.Size = new System.Drawing.Size(206, 13);
             this.lblSampleUrl.TabIndex = 2;
-            this.lblSampleUrl.Text = "Example Url:  http://myserver/MyV1ApplicationName";
+            this.lblSampleUrl.Text = "For example,  http://myserver/VersionOne";
             // 
             // txtUserName
             // 
@@ -86,7 +98,7 @@ namespace VersionOne.VisualStudio.VSPackage.Controls {
             // 
             // txtPassword
             // 
-            this.txtPassword.Location = new System.Drawing.Point(119, 122);
+            this.txtPassword.Location = new System.Drawing.Point(119, 118);
             this.txtPassword.Name = "txtPassword";
             this.txtPassword.PasswordChar = '*';
             this.txtPassword.Size = new System.Drawing.Size(201, 20);
@@ -104,17 +116,110 @@ namespace VersionOne.VisualStudio.VSPackage.Controls {
             // 
             // btnTestConnection
             // 
-            this.btnTestConnection.Location = new System.Drawing.Point(145, 157);
+            this.btnTestConnection.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
+            this.btnTestConnection.Location = new System.Drawing.Point(216, 329);
             this.btnTestConnection.Name = "btnTestConnection";
-            this.btnTestConnection.Size = new System.Drawing.Size(115, 22);
-            this.btnTestConnection.TabIndex = 8;
+            this.btnTestConnection.Size = new System.Drawing.Size(115, 24);
+            this.btnTestConnection.TabIndex = 9;
             this.btnTestConnection.Text = "&Test Connection";
             this.btnTestConnection.UseVisualStyleBackColor = true;
+            // 
+            // chkUseProxy
+            // 
+            this.chkUseProxy.AutoSize = true;
+            this.chkUseProxy.Location = new System.Drawing.Point(103, 19);
+            this.chkUseProxy.Name = "chkUseProxy";
+            this.chkUseProxy.Size = new System.Drawing.Size(202, 17);
+            this.chkUseProxy.TabIndex = 0;
+            this.chkUseProxy.Text = "Use proxy for VersionOne connection";
+            this.chkUseProxy.UseVisualStyleBackColor = true;
+            // 
+            // lblProxyUrl
+            // 
+            this.lblProxyUrl.AutoSize = true;
+            this.lblProxyUrl.Location = new System.Drawing.Point(6, 50);
+            this.lblProxyUrl.Name = "lblProxyUrl";
+            this.lblProxyUrl.Size = new System.Drawing.Size(93, 13);
+            this.lblProxyUrl.TabIndex = 1;
+            this.lblProxyUrl.Text = "Proxy server URL:";
+            // 
+            // txtProxyUrl
+            // 
+            this.txtProxyUrl.Location = new System.Drawing.Point(103, 47);
+            this.txtProxyUrl.Name = "txtProxyUrl";
+            this.txtProxyUrl.Size = new System.Drawing.Size(201, 20);
+            this.txtProxyUrl.TabIndex = 2;
+            // 
+            // lblProxyUsername
+            // 
+            this.lblProxyUsername.AutoSize = true;
+            this.lblProxyUsername.Location = new System.Drawing.Point(6, 76);
+            this.lblProxyUsername.Name = "lblProxyUsername";
+            this.lblProxyUsername.Size = new System.Drawing.Size(58, 13);
+            this.lblProxyUsername.TabIndex = 3;
+            this.lblProxyUsername.Text = "Username:";
+            // 
+            // txtProxyUsername
+            // 
+            this.txtProxyUsername.Location = new System.Drawing.Point(103, 73);
+            this.txtProxyUsername.Name = "txtProxyUsername";
+            this.txtProxyUsername.Size = new System.Drawing.Size(201, 20);
+            this.txtProxyUsername.TabIndex = 4;
+            // 
+            // lblProxyPassword
+            // 
+            this.lblProxyPassword.AutoSize = true;
+            this.lblProxyPassword.Location = new System.Drawing.Point(8, 102);
+            this.lblProxyPassword.Name = "lblProxyPassword";
+            this.lblProxyPassword.Size = new System.Drawing.Size(56, 13);
+            this.lblProxyPassword.TabIndex = 5;
+            this.lblProxyPassword.Text = "Password:";
+            // 
+            // txtProxyPassword
+            // 
+            this.txtProxyPassword.Location = new System.Drawing.Point(103, 99);
+            this.txtProxyPassword.Name = "txtProxyPassword";
+            this.txtProxyPassword.Size = new System.Drawing.Size(201, 20);
+            this.txtProxyPassword.TabIndex = 6;
+            // 
+            // lblProxyDomain
+            // 
+            this.lblProxyDomain.AutoSize = true;
+            this.lblProxyDomain.Location = new System.Drawing.Point(8, 128);
+            this.lblProxyDomain.Name = "lblProxyDomain";
+            this.lblProxyDomain.Size = new System.Drawing.Size(46, 13);
+            this.lblProxyDomain.TabIndex = 7;
+            this.lblProxyDomain.Text = "Domain:";
+            // 
+            // txtProxyDomain
+            // 
+            this.txtProxyDomain.Location = new System.Drawing.Point(103, 125);
+            this.txtProxyDomain.Name = "txtProxyDomain";
+            this.txtProxyDomain.Size = new System.Drawing.Size(201, 20);
+            this.txtProxyDomain.TabIndex = 8;
+            // 
+            // grpProxySettings
+            // 
+            this.grpProxySettings.Controls.Add(this.chkUseProxy);
+            this.grpProxySettings.Controls.Add(this.lblProxyUrl);
+            this.grpProxySettings.Controls.Add(this.txtProxyUrl);
+            this.grpProxySettings.Controls.Add(this.lblProxyUsername);
+            this.grpProxySettings.Controls.Add(this.txtProxyUsername);
+            this.grpProxySettings.Controls.Add(this.lblProxyPassword);
+            this.grpProxySettings.Controls.Add(this.txtProxyPassword);
+            this.grpProxySettings.Controls.Add(this.lblProxyDomain);
+            this.grpProxySettings.Controls.Add(this.txtProxyDomain);
+            this.grpProxySettings.Location = new System.Drawing.Point(16, 157);
+            this.grpProxySettings.Name = "grpProxySettings";
+            this.grpProxySettings.Size = new System.Drawing.Size(315, 160);
+            this.grpProxySettings.TabIndex = 8;
+            this.grpProxySettings.TabStop = false;
+            this.grpProxySettings.Text = "Proxy settings";
             // 
             // OptionsPageControl
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
-            this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;            
+            this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.Controls.Add(this.lblUrl);
             this.Controls.Add(this.txtUrl);
             this.Controls.Add(this.lblSampleUrl);
@@ -123,9 +228,13 @@ namespace VersionOne.VisualStudio.VSPackage.Controls {
             this.Controls.Add(this.txtUserName);
             this.Controls.Add(this.lblPassword);
             this.Controls.Add(this.txtPassword);
+            this.Controls.Add(this.grpProxySettings);
             this.Controls.Add(this.btnTestConnection);
+            this.MinimumSize = new System.Drawing.Size(345, 363);
             this.Name = "OptionsPageControl";
-            this.Size = new System.Drawing.Size(376, 200);
+            this.Size = new System.Drawing.Size(345, 363);
+            this.grpProxySettings.ResumeLayout(false);
+            this.grpProxySettings.PerformLayout();
             this.ResumeLayout(false);
             this.PerformLayout();
 
@@ -142,5 +251,15 @@ namespace VersionOne.VisualStudio.VSPackage.Controls {
         private System.Windows.Forms.TextBox txtPassword;
         private System.Windows.Forms.CheckBox chkIntegrated;
         private System.Windows.Forms.Button btnTestConnection;
+        private System.Windows.Forms.CheckBox chkUseProxy;
+        private System.Windows.Forms.Label lblProxyUrl;
+        private System.Windows.Forms.TextBox txtProxyUrl;
+        private System.Windows.Forms.Label lblProxyUsername;
+        private System.Windows.Forms.TextBox txtProxyUsername;
+        private System.Windows.Forms.Label lblProxyPassword;
+        private System.Windows.Forms.TextBox txtProxyPassword;
+        private System.Windows.Forms.Label lblProxyDomain;
+        private System.Windows.Forms.TextBox txtProxyDomain;
+        private System.Windows.Forms.GroupBox grpProxySettings;
     }
 }

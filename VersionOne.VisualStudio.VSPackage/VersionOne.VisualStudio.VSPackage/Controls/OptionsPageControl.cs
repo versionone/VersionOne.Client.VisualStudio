@@ -11,11 +11,15 @@ namespace VersionOne.VisualStudio.VSPackage.Controls {
 
         public OptionsPageControl() {
             InitializeComponent();
-            settings = SettingsImpl.Instance;
-            eventDispatcher = EventDispatcher.Instance;
+
+            if(!DesignMode) {
+                settings = SettingsImpl.Instance;
+                eventDispatcher = EventDispatcher.Instance;
+            }
 
             btnTestConnection.Click += btnTestConnection_Click;
             chkIntegrated.CheckedChanged += chkIntegrated_CheckedChanged;
+            chkUseProxy.CheckedChanged += chkUseProxy_CheckedChanged;
         }
 
         public void LoadSettings() {
@@ -23,6 +27,11 @@ namespace VersionOne.VisualStudio.VSPackage.Controls {
             txtPassword.Text = settings.Password;
             txtUrl.Text = settings.ApplicationUrl;
             chkIntegrated.Checked = settings.IntegratedAuth;
+            chkUseProxy.Checked = settings.UseProxy;
+            txtProxyUrl.Text = settings.ProxyUrl;
+            txtProxyUsername.Text = settings.ProxyUsername;
+            txtProxyPassword.Text = settings.ProxyPassword;
+            txtProxyDomain.Text = settings.ProxyDomain;
         }
 
         /// <summary>
@@ -67,6 +76,10 @@ namespace VersionOne.VisualStudio.VSPackage.Controls {
             }
         }
 
+        private void SetProxyRelatedFieldsEnabled(bool enabled) {
+            txtProxyUrl.Enabled = txtProxyUsername.Enabled = txtProxyPassword.Enabled = txtProxyDomain.Enabled = enabled;
+        }
+
         #region Event Handlers
 
         private void btnTestConnection_Click(object sender, EventArgs e) {
@@ -77,6 +90,11 @@ namespace VersionOne.VisualStudio.VSPackage.Controls {
             bool credentialInputEnabled = !chkIntegrated.Checked;
             txtUserName.Enabled = txtPassword.Enabled = credentialInputEnabled;
         }
+
+        private void chkUseProxy_CheckedChanged(object sender, EventArgs e) {
+            SetProxyRelatedFieldsEnabled(chkUseProxy.Checked);
+        }
+
         #endregion
     }
 }
