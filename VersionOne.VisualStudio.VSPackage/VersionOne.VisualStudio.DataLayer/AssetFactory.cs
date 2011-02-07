@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using VersionOne.SDK.APIClient;
+using VersionOne.VisualStudio.DataLayer.Entities;
 
 namespace VersionOne.VisualStudio.DataLayer {
     internal class AssetFactory {

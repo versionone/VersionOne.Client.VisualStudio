@@ -1,3 +1,4 @@
+using VersionOne.VisualStudio.DataLayer.Entities;
 using VersionOne.VisualStudio.VSPackage.Controls;
 using VersionOne.VisualStudio.DataLayer;
 using VersionOne.VisualStudio.VSPackage.Events;

@@ -1,5 +1,6 @@
 using System;
 using VersionOne.SDK.APIClient;
+using VersionOne.VisualStudio.DataLayer.Entities;
 
 namespace VersionOne.VisualStudio.DataLayer {
     public class VirtualWorkitem : Workitem {

@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using VersionOne.VisualStudio.DataLayer.Entities;
 
 namespace VersionOne.VisualStudio.DataLayer {
     public interface IDataLayer {

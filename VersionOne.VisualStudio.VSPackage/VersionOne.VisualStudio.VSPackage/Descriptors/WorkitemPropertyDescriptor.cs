@@ -4,6 +4,7 @@ using System.Diagnostics;
 using System.Drawing.Design;
 using System.Globalization;
 using VersionOne.VisualStudio.DataLayer;
+using VersionOne.VisualStudio.DataLayer.Entities;
 using VersionOne.VisualStudio.VSPackage.Events;
 using VersionOne.VisualStudio.VSPackage.Settings;
 

@@ -5,6 +5,7 @@ using System.Collections.Generic;
 using Aga.Controls.Tree;
 
 using VersionOne.VisualStudio.DataLayer;
+using VersionOne.VisualStudio.DataLayer.Entities;
 using VersionOne.VisualStudio.VSPackage.Descriptors;
 using VersionOne.VisualStudio.VSPackage.Events;
 using VersionOne.VisualStudio.VSPackage.Settings;

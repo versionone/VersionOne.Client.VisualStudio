@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.Drawing;
 using Aga.Controls.Tree.NodeControls;
-
+using VersionOne.VisualStudio.DataLayer.Entities;
 using VersionOne.VisualStudio.VSPackage.Controllers;
 using VersionOne.VisualStudio.VSPackage.Descriptors;
 using Aga.Controls.Tree;

@@ -1,5 +1,5 @@
 using System.Windows.Forms;
-
+using VersionOne.VisualStudio.DataLayer.Entities;
 using VersionOne.VisualStudio.VSPackage.Controllers;
 using VersionOne.VisualStudio.DataLayer;
 using VersionOne.VisualStudio.VSPackage.Descriptors;

@@ -2,6 +2,7 @@ using System;
 using System.ComponentModel;
 using System.Drawing;
 using VersionOne.VisualStudio.DataLayer;
+using VersionOne.VisualStudio.DataLayer.Entities;
 
 namespace VersionOne.VisualStudio.VSPackage.Descriptors {
     public class IconDescriptor : PropertyDescriptor {

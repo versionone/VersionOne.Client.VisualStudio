@@ -3,6 +3,7 @@ using System.Collections;
 using System.Collections.Generic;
 using VersionOne.SDK.APIClient;
 using System.Net;
+using VersionOne.VisualStudio.DataLayer.Entities;
 using Attribute = VersionOne.SDK.APIClient.Attribute;
 
 namespace VersionOne.VisualStudio.DataLayer {

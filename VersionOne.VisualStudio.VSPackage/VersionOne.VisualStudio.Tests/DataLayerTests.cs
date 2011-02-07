@@ -5,9 +5,9 @@ using VersionOne.SDK.APIClient;
 using VersionOne.SDK.ObjectModel;
 using VersionOne.SDK.ObjectModel.Filters;
 using VersionOne.VisualStudio.DataLayer;
-using Entity = VersionOne.VisualStudio.DataLayer.Entity;
-using Project = VersionOne.VisualStudio.DataLayer.Project;
-using Workitem = VersionOne.VisualStudio.DataLayer.Workitem;
+using Entity = VersionOne.VisualStudio.DataLayer.Entities.Entity;
+using Project = VersionOne.VisualStudio.DataLayer.Entities.Project;
+using Workitem = VersionOne.VisualStudio.DataLayer.Entities.Workitem;
 using OmProject = VersionOne.SDK.ObjectModel.Project;
 
 namespace VersionOne.VisualStudio.Tests {

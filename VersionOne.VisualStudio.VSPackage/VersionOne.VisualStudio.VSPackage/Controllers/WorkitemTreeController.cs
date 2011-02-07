@@ -1,7 +1,7 @@
 using System;
 using System.Diagnostics;
 using System.Windows.Forms;
-
+using VersionOne.VisualStudio.DataLayer.Entities;
 using VersionOne.VisualStudio.VSPackage.Controls;
 using VersionOne.VisualStudio.DataLayer;
 using VersionOne.VisualStudio.VSPackage.Descriptors;

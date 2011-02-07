@@ -1,4 +1,4 @@
-namespace VersionOne.VisualStudio.DataLayer {
+namespace VersionOne.VisualStudio.DataLayer.Entities {
     /// <summary>
     /// This class is intended to be used in unit tests, allowing not to involve real ApiDataLayer and ApiClient.
     /// </summary>

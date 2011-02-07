@@ -1,9 +1,8 @@
 using System;
 using System.Collections.Generic;
-
 using VersionOne.SDK.APIClient;
 
-namespace VersionOne.VisualStudio.DataLayer {
+namespace VersionOne.VisualStudio.DataLayer.Entities {
     public class Workitem : Entity {
         private Workitem parent;
 

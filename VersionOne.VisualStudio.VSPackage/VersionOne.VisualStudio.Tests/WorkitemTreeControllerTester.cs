@@ -4,6 +4,7 @@ using Rhino.Mocks;
 using NUnit.Framework;
 using Rhino.Mocks.Interfaces;
 using VersionOne.VisualStudio.DataLayer;
+using VersionOne.VisualStudio.DataLayer.Entities;
 using VersionOne.VisualStudio.VSPackage.Controllers;
 using VersionOne.VisualStudio.VSPackage.Controls;
 using VersionOne.VisualStudio.VSPackage.Descriptors;

@@ -1,7 +1,7 @@
 using System.Collections.Generic;
 using VersionOne.SDK.APIClient;
 
-namespace VersionOne.VisualStudio.DataLayer {
+namespace VersionOne.VisualStudio.DataLayer.Entities {
     public class Project : Entity {
         protected internal Project Parent;
 

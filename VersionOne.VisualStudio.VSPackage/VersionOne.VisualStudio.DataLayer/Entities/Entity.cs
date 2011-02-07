@@ -2,12 +2,10 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Globalization;
-
 using VersionOne.SDK.APIClient;
+using Attribute = VersionOne.SDK.APIClient.Attribute;
 
-using Attribute=VersionOne.SDK.APIClient.Attribute;
-
-namespace VersionOne.VisualStudio.DataLayer {
+namespace VersionOne.VisualStudio.DataLayer.Entities {
     public abstract class Entity {
         #region Constants
 
