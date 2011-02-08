@@ -8,6 +8,7 @@ using Microsoft.VisualStudio.Shell.Interop;
 using Microsoft.VisualStudio.Shell;
 using VersionOne.VisualStudio.DataLayer;
 using VersionOne.VisualStudio.DataLayer.Entities;
+using VersionOne.VisualStudio.DataLayer.Settings;
 using VersionOne.VisualStudio.VSPackage.Events;
 using VersionOne.VisualStudio.VSPackage.Settings;
 
@@ -34,7 +35,7 @@ namespace VersionOne.VisualStudio.VSPackage {
     // package needs to have a valid load key (it can be requested at 
     // http://msdn.microsoft.com/vstudio/extend/). This attributes tells the shell that this 
     // package has a load key embedded in its resources.
-	[ProvideLoadKey("Standard", "1.0", "VersionOne Tracker", "VersionOne", 525)]
+    [ProvideLoadKey("Standard", "1.0", "VersionOne Tracker", "VersionOne", 525)]
     // Register Options page
     [ProvideOptionPage(typeof(OptionsPage), "VersionOne", "Settings", 101, 107, true)]
     // Register Task and project tool windows exposed by this package.
@@ -50,11 +51,11 @@ namespace VersionOne.VisualStudio.VSPackage {
         /// initialization is the Initialize method.
         /// </summary>
         public V1Tracker() {
-            Configuration cfg = Configuration.Instance;
-            ISettings settings = SettingsImpl.Instance;
-            IDataLayer dataLayer = ApiDataLayer.Instance;
-            IEventDispatcher eventDispatcher = EventDispatcher.Instance;
-            
+            var cfg = Configuration.Instance;
+            var settings = SettingsImpl.Instance;
+            var dataLayer = ApiDataLayer.Instance;
+            var eventDispatcher = EventDispatcher.Instance;
+
             try {
                 //Setup DataLayer
                 dataLayer.ApiVersion = cfg.APIVersion;
@@ -62,37 +63,59 @@ namespace VersionOne.VisualStudio.VSPackage {
 
                 dataLayer.CurrentProjectId = settings.SelectedProjectId;
                 dataLayer.ShowAllTasks = !settings.ShowMyTasks;
-                dataLayer.Connect(settings.ApplicationUrl, settings.Username, settings.Password, settings.IntegratedAuth);
+
+                var versionOneSettings = new VersionOneSettings {
+                            Path = settings.ApplicationUrl,
+                            Username = settings.Username,
+                            Password = settings.Password,
+                            Integrated = settings.IntegratedAuth,
+                            ProxySettings = {
+                                                UseProxy = settings.UseProxy,
+                                                Url = settings.ProxyUrl,
+                                                Domain = settings.ProxyDomain,
+                                                Username = settings.ProxyUsername,
+                                                Password = settings.ProxyPassword
+                                            }
+                        };
+
+                dataLayer.Connect(versionOneSettings);
+                
                 eventDispatcher.InvokeModelChanged(this, ModelChangedArgs.SettingsChanged);
-            } catch (DataLayerException ex) {
+            } catch(DataLayerException ex) {
                 Debug.WriteLine("Error while loading V1Package: " + ex.Message);
                 Debug.WriteLine("\t" + ex.StackTrace);
             }
 
-            Trace.WriteLine(string.Format(CultureInfo.CurrentCulture, "Entering constructor for: {0}", this.ToString()));
+            Trace.WriteLine(string.Format(CultureInfo.CurrentCulture, "Entering constructor for: {0}", ToString()));
         }
 
         private static void AddProperties(Configuration cfg) {
             LoadOrderProperties();
-            foreach (ColumnSetting column in cfg.AssetDetail.TaskColumns) {
+
+            foreach(var column in cfg.AssetDetail.TaskColumns) {
                 AddProperty(column, Entity.TaskPrefix);
             }
-            foreach (ColumnSetting column in cfg.AssetDetail.StoryColumns) {
+
+            foreach(var column in cfg.AssetDetail.StoryColumns) {
                 AddProperty(column, Entity.StoryPrefix);
             }
-            foreach (ColumnSetting column in cfg.AssetDetail.DefectColumns) {
+
+            foreach(var column in cfg.AssetDetail.DefectColumns) {
                 AddProperty(column, Entity.DefectPrefix);
             }
-            foreach (ColumnSetting column in cfg.AssetDetail.TestColumns) {
+
+            foreach(var column in cfg.AssetDetail.TestColumns) {
                 AddProperty(column, Entity.TestPrefix);
             }
-            foreach (ColumnSetting column in cfg.GridSettings.Columns) {
+
+            foreach(var column in cfg.GridSettings.Columns) {
                 AddProperty(column, Entity.TaskPrefix);
                 AddProperty(column, Entity.StoryPrefix);
                 AddProperty(column, Entity.DefectPrefix);
                 AddProperty(column, Entity.TestPrefix);
             }
-            foreach (ColumnSetting column in cfg.ProjectTree.Columns) {
+
+            foreach(var column in cfg.ProjectTree.Columns) {
                 AddProperty(column, Entity.ProjectPrefix);
             }
         }
@@ -120,12 +143,12 @@ namespace VersionOne.VisualStudio.VSPackage {
             // is actually the only one.
             // The last flag is set to true so that if the tool window does not exists it will be created.
             var window = FindToolWindow(typeof(TWindow), 0, true);
-            
+
             if((null == window) || (null == window.Frame)) {
                 throw new NotSupportedException(Resources.CanNotCreateWindow);
             }
-            
-            var windowFrame = (IVsWindowFrame) window.Frame;
+
+            var windowFrame = (IVsWindowFrame)window.Frame;
             ErrorHandler.ThrowOnFailure(windowFrame.Show());
         }
 
@@ -139,14 +162,14 @@ namespace VersionOne.VisualStudio.VSPackage {
         /// where you can put all the initilaization code that rely on services provided by VisualStudio.
         /// </summary>
         protected override void Initialize() {
-            Trace.WriteLine(string.Format(CultureInfo.CurrentCulture, "Entering Initialize() of: {0}", this.ToString()));
+            Trace.WriteLine(string.Format(CultureInfo.CurrentCulture, "Entering Initialize() of: {0}", ToString()));
             base.Initialize();
 
             // Add our command handlers for menu (commands must exist in the .vsct file)
             var mcs = GetService(typeof(IMenuCommandService)) as OleMenuCommandService;
             if(null != mcs) {
                 // Create the command for Tasks tool window
-                var projectsCommandId = new CommandID(GuidList.guidVersionOneTrackerCmdSet, (int) PkgCmdIDList.CmdidVersionOneProjects);
+                var projectsCommandId = new CommandID(GuidList.guidVersionOneTrackerCmdSet, (int)PkgCmdIDList.CmdidVersionOneProjects);
                 var menuItem = new MenuCommand(ShowToolWindow<ProjectsWindow>, projectsCommandId);
                 mcs.AddCommand(menuItem);
                 // Create the command for the tool window

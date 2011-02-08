@@ -1,4 +1,4 @@
-﻿namespace VersionOne.VisualStudio.VSPackage.Settings {
+﻿namespace VersionOne.VisualStudio.DataLayer.Settings {
     public class VersionOneSettings {
         public bool Integrated { get; set; }
         public string Path { get; set; }
@@ -6,7 +6,7 @@
         public string Password { get; set; }
         public ProxyConnectionSettings ProxySettings { get; set; }
 
-        VersionOneSettings() {
+        public VersionOneSettings() {
             ProxySettings = new ProxyConnectionSettings();
         }
     }

@@ -12,6 +12,5 @@ namespace VersionOne.VisualStudio.VSPackage.Settings {
         string SelectedProjectId { get; set; }
         bool ShowMyTasks { get; set; }
         void StoreSettings();
-        bool IsDifferent(string url, string userName, string password, bool integrated);
     }
 }

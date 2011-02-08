@@ -7,37 +7,21 @@ namespace VersionOne.VisualStudio.VSPackage.Settings {
     [XmlRoot("Settings")]
     public class SettingsImpl : ISettings {
         private readonly IDataLayer dataLayer = ApiDataLayer.Instance;
-
-        private string username;
-        private string password;
         private string applicationUrl;
-
-        private bool useProxy;
-        private string proxyUrl;
-        private string proxyUsername;
-        private string proxyPassword;
-        private string proxyDomain;
-
         private string selectedScopeToken;
-        
-        private bool integratedAuth;
         private static SettingsImpl settings;
-        private bool showMyTasks;
 
-        public string Username {
-            get { return username; }
-            set { username = value; }
-        }
+        public string Username { get; set; }
+        public string Password { get; set; }
+        public bool IntegratedAuth { get; set; }
 
-        public string Password {
-            get { return password; }
-            set { password = value; }
-        }
+        public bool UseProxy { get; set; }
+        public string ProxyUrl { get; set; }
+        public string ProxyUsername { get; set; }
+        public string ProxyPassword { get; set; }
+        public string ProxyDomain { get; set; }
 
-        public bool IntegratedAuth {
-            get { return integratedAuth; }
-            set { integratedAuth = value; }
-        }
+        public bool ShowMyTasks { get; set; }
 
         public string ApplicationUrl {
             get {
@@ -54,31 +38,6 @@ namespace VersionOne.VisualStudio.VSPackage.Settings {
             set { applicationUrl = value; }
         }
 
-        public bool UseProxy {
-            get { return useProxy; }
-            set { useProxy = value; }
-        }
-
-        public string ProxyUrl {
-            get { return proxyUrl; }
-            set { proxyUrl = value; }
-        }
-
-        public string ProxyUsername {
-            get { return proxyUsername; }
-            set { proxyUsername = value; }
-        }
-
-        public string ProxyPassword {
-            get { return proxyPassword; }
-            set { proxyPassword = value; }
-        }
-
-        public string ProxyDomain {
-            get { return proxyDomain; }
-            set { proxyDomain = value; }
-        }
-
         public string SelectedProjectId {
             get { return selectedScopeToken; }
             set {
@@ -89,12 +48,16 @@ namespace VersionOne.VisualStudio.VSPackage.Settings {
             }
         }
 
+        public void StoreSettings() {
+            Save(SettingsFile);
+        }
+        
         public SettingsImpl() {
             selectedScopeToken = dataLayer.NullProjectToken;
         }
 
         private void Save(string file) {
-            string dir = Path.GetDirectoryName(file);
+            var dir = Path.GetDirectoryName(file);
 
             if(!Directory.Exists(dir)) {
                 Directory.CreateDirectory(dir);
@@ -106,7 +69,7 @@ namespace VersionOne.VisualStudio.VSPackage.Settings {
         }
 
         private void Save(Stream stream) {
-            XmlSerializer xmlSerializer = new XmlSerializer(typeof(SettingsImpl));
+            var xmlSerializer = new XmlSerializer(typeof(SettingsImpl));
             xmlSerializer.Serialize(stream, this);
         }
 
@@ -122,7 +85,7 @@ namespace VersionOne.VisualStudio.VSPackage.Settings {
         }
 
         private static SettingsImpl Load(Stream stream) {
-            XmlSerializer xmlSerializer = new XmlSerializer(typeof(SettingsImpl));
+            var xmlSerializer = new XmlSerializer(typeof(SettingsImpl));
             return (SettingsImpl)xmlSerializer.Deserialize(stream);
         }
 
@@ -138,17 +101,5 @@ namespace VersionOne.VisualStudio.VSPackage.Settings {
             }
         }
 
-        public bool ShowMyTasks {
-            get { return showMyTasks; }
-            set { showMyTasks = value; }
-        }
-
-        public void StoreSettings() {
-            Save(SettingsFile);
-        }
-
-        public bool IsDifferent(string url, string userName, string password, bool integrated) {
-            return url != ApplicationUrl || userName != Username || password != Password || IntegratedAuth != integrated;
-        }
     }
 }

@@ -1,10 +1,11 @@
 using System;
 using System.Windows.Forms;
 using VersionOne.VisualStudio.DataLayer;
+using VersionOne.VisualStudio.DataLayer.Settings;
 using VersionOne.VisualStudio.VSPackage.Events;
 using VersionOne.VisualStudio.VSPackage.Settings;
 
-namespace VersionOne.VisualStudio.VSPackage.Controls {    
+namespace VersionOne.VisualStudio.VSPackage.Controls {
     public partial class OptionsPageControl : UserControl {
         private readonly ISettings settings;
         private readonly IEventDispatcher eventDispatcher;
@@ -39,45 +40,75 @@ namespace VersionOne.VisualStudio.VSPackage.Controls {
         /// </summary>
         /// <returns>bool, indicating whether saved settings were different.</returns>
         public bool SaveSettings() {
-            string url = txtUrl.Text.Trim();
+            settings.Username = txtUserName.Text.Trim();
+            settings.Password = txtPassword.Text.Trim();
+            settings.ApplicationUrl = GetUrl(txtUrl.Text);
+            settings.IntegratedAuth = chkIntegrated.Checked;
+            settings.UseProxy = chkUseProxy.Checked;
+            settings.ProxyUrl = GetUrl(txtProxyUrl.Text);
+            settings.ProxyUsername = txtProxyUsername.Text;
+            settings.ProxyPassword = txtProxyPassword.Text;
+            settings.ProxyDomain = txtProxyDomain.Text;
 
-            if (!url.EndsWith("/")) {
+            settings.StoreSettings();
+
+            try {
+                var versionOneSettings = new VersionOneSettings {
+                            Path = settings.ApplicationUrl,
+                            Username = settings.Username,
+                            Password = settings.Password,
+                            Integrated = settings.IntegratedAuth,
+                            ProxySettings = {
+                                                UseProxy = settings.UseProxy,
+                                                Url = settings.ProxyUrl,
+                                                Domain = settings.ProxyDomain,
+                                                Username = settings.ProxyUsername,
+                                                Password = settings.ProxyPassword
+                                            }
+                        };
+
+                ApiDataLayer.Instance.Connect(versionOneSettings);
+            } catch(DataLayerException ex) {
+                MessageBox.Show(string.Format("Settings are invalid or V1 server inaccessible ({0}).", ex.Message),
+                                "Verification failed",
+                                MessageBoxButtons.OK, MessageBoxIcon.Warning);
+            }
+
+            eventDispatcher.InvokeModelChanged(this, ModelChangedArgs.SettingsChanged);
+
+            return true;
+        }
+
+        private string GetUrl(string text) {
+            var url = text.Trim();
+
+            if(!url.EndsWith("/")) {
                 url += "/";
             }
-            //if (settings.IsDifferent(url, txtUserName.Text.Trim(), txtPassword.Text.Trim(), chkIntegrated.Checked)) {
-                settings.Username = txtUserName.Text.Trim();
-                settings.Password = txtPassword.Text.Trim();
 
-                settings.ApplicationUrl = url;
-                settings.IntegratedAuth = chkIntegrated.Checked;
-
-                settings.UseProxy = chkUseProxy.Checked;
-                settings.ProxyUrl = txtProxyUrl.Text;
-                settings.ProxyUsername = txtProxyUsername.Text;
-                settings.ProxyPassword = txtProxyPassword.Text;
-                settings.ProxyDomain = txtProxyDomain.Text;
-
-                settings.StoreSettings();
-                IDataLayer dataLayer = ApiDataLayer.Instance;
-                
-                try {
-                    dataLayer.Connect(url, settings.Username, settings.Password, settings.IntegratedAuth);
-                } catch (DataLayerException ex) {
-                    MessageBox.Show(string.Format("Settings are invalid or V1 server inaccessible ({0}).", ex.Message),
-                                    "Verification failed",
-                                    MessageBoxButtons.OK, MessageBoxIcon.Warning);
-                }
-                eventDispatcher.InvokeModelChanged(this, ModelChangedArgs.SettingsChanged);
-
-                return true;
-            //}
+            return url;
         }
 
         private void VerifyConnectionSettings() {
             try {
-                ApiDataLayer.Instance.CheckConnection(txtUrl.Text.Trim(), txtUserName.Text.Trim(), txtPassword.Text.Trim(), chkIntegrated.Checked);
+                var versionOneSettings = new VersionOneSettings {
+                            Path = GetUrl(txtUrl.Text),
+                            Username = txtUserName.Text.Trim(),
+                            Password = txtPassword.Text.Trim(),
+                            Integrated = chkIntegrated.Checked,
+                            ProxySettings = {
+                                                UseProxy = chkUseProxy.Checked,
+                                                Url = GetUrl(txtProxyUrl.Text),
+                                                Domain = txtProxyDomain.Text.Trim(),
+                                                Username = txtProxyUsername.Text.Trim(),
+                                                Password = txtProxyPassword.Text.Trim()
+                                            }
+                        };
+
+                ApiDataLayer.Instance.CheckConnection(versionOneSettings);
+
                 MessageBox.Show("Login Successful!", "Test Connection", MessageBoxButtons.OK, MessageBoxIcon.Information);
-            } catch (DataLayerException ex) {
+            } catch(DataLayerException ex) {
                 MessageBox.Show(ex.Message, "Test Connection", MessageBoxButtons.OK, MessageBoxIcon.Warning);
             }
         }
@@ -93,7 +124,7 @@ namespace VersionOne.VisualStudio.VSPackage.Controls {
         }
 
         private void chkIntegrated_CheckedChanged(object sender, EventArgs e) {
-            bool credentialInputEnabled = !chkIntegrated.Checked;
+            var credentialInputEnabled = !chkIntegrated.Checked;
             txtUserName.Enabled = txtPassword.Enabled = credentialInputEnabled;
         }
 

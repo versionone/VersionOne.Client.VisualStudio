@@ -1,5 +1,6 @@
 using System;
 using VersionOne.SDK.APIClient;
+using VersionOne.VisualStudio.DataLayer.Settings;
 
 namespace VersionOne.VisualStudio.DataLayer {
     internal class VersionOneConnector {
@@ -7,79 +8,50 @@ namespace VersionOne.VisualStudio.DataLayer {
         private const string LocalizerUrlSuffix = "loc.v1/";
         private const string DataUrlSuffix = "rest-1.v1/";
         private const string ConfigUrlSuffix = "config.v1/";
-        
-        private string path;
-        private string username;
-        private string password;
-        private bool integrated;
 
-        private IMetaModel metaModel;
-        private IServices services;
-        private ILocalizer localizer;
-        private V1Configuration config;
-
-        private bool isConnected;
-
+        private VersionOneSettings versionOneSettings = new VersionOneSettings();
         private string apiVersion = "8.3";
-
-        public bool Integrated {
-            get { return integrated; }
-        }
-
-        public string Password {
-            get { return password; }
-        }
-
-        public string Username {
-            get { return username; }
-        }
-
-        public string Path {
-            get { return path; }
-        }
-
-        public bool IsConnected {
-            get { return isConnected; }
-            set { isConnected = value; }
-        }
 
         public string ApiVersion {
             get { return apiVersion; }
             set { apiVersion = value; }
         }
 
-        public IMetaModel MetaModel {
-            get { return metaModel; }
+        public IMetaModel MetaModel { get; private set; }
+        public IServices Services { get; private set; }
+        public ILocalizer Localizer { get; private set; }
+        public V1Configuration V1Configuration { get; private set; }
+        public bool IsConnected { get; set; }
+
+
+        public void Connect(VersionOneSettings settings) {
+            var path = settings.Path;
+            var username = settings.Username;
+            var password = settings.Password;
+            var integrated = settings.Integrated;
+            var proxy = GetProxy(settings.ProxySettings);
+
+            var metaConnector = new V1APIConnector(path + MetaUrlSuffix, username, password, integrated, proxy);
+            MetaModel = new MetaModel(metaConnector);
+
+            var localizerConnector = new V1APIConnector(path + LocalizerUrlSuffix, username, password, integrated, proxy);
+            Localizer = new Localizer(localizerConnector);
+
+            var dataConnector = new V1APIConnector(path + DataUrlSuffix, username, password, integrated, proxy);
+            Services = new Services(MetaModel, dataConnector);
+
+            V1Configuration = new V1Configuration(new V1APIConnector(path + ConfigUrlSuffix, null, null, integrated, proxy));
+
+            versionOneSettings = settings;
         }
 
-        public IServices Services {
-            get { return services; }
-        }
+        private ProxyProvider GetProxy(ProxyConnectionSettings settings) {
+            if(settings == null || !settings.UseProxy) {
+                return null;
+            }
 
-        public ILocalizer Localizer {
-            get { return localizer; }
-        }
-
-        public V1Configuration V1Configuration {
-            get { return config; }
-        }
-
-        public void Connect(string path, string username, string password, bool integrated) {
-            this.path = path;
-            this.username = username;
-            this.password = password;
-            this.integrated = integrated;
-
-            V1APIConnector metaConnector = new V1APIConnector(path + MetaUrlSuffix, username, password, integrated);
-            metaModel = new MetaModel(metaConnector);
-
-            V1APIConnector localizerConnector = new V1APIConnector(path + LocalizerUrlSuffix, username, password, integrated);
-            localizer = new Localizer(localizerConnector);
-
-            V1APIConnector dataConnector = new V1APIConnector(path + DataUrlSuffix, username, password, integrated);
-            services = new Services(metaModel, dataConnector);
-
-            config = new V1Configuration(new V1APIConnector(path + ConfigUrlSuffix));
+            var uri = new Uri(settings.Url);
+            return new ProxyProvider(uri, settings.Username, settings.Password, settings.Domain);
         }
 
         internal void CheckConnection() {
@@ -88,14 +60,19 @@ namespace VersionOne.VisualStudio.DataLayer {
             }
         }
 
-        public void CheckConnection(string path, string userName, string password, bool integrated) {
-            V1ConnectionValidator connectionValidator = new V1ConnectionValidator(path, userName, password, integrated);
+        public void CheckConnection(VersionOneSettings settings) {
+            var connectionValidator = new V1ConnectionValidator(settings.Path, settings.Username,
+                                                                settings.Password, settings.Integrated,
+                                                                GetProxy(settings.ProxySettings));
             try {
                 connectionValidator.Test(ApiVersion);
-            }
-            catch (Exception ex) {
+            } catch(Exception ex) {
                 Logger.Error("Cannot connect to V1 server.", ex);
             }
+        }
+
+        public void Reconnect() {
+            Connect(versionOneSettings);
         }
     }
 }

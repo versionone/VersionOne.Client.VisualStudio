@@ -212,9 +212,7 @@
     <Compile Include="Settings\GridSettings.cs" />
     <Compile Include="Settings\ISettings.cs" />
     <Compile Include="Settings\ProjectTreeSettings.cs" />
-    <Compile Include="Settings\ProxyConnectionSettings.cs" />
     <Compile Include="Settings\SettingsImpl.cs" />
-    <Compile Include="Settings\VersionOneSettings.cs" />
     <Compile Include="StoryTreeModel.cs" />
     <Compile Include="TaskWindow.cs" />
     <Compile Include="TreeViewEditors\CustomNodeTextBox.cs">

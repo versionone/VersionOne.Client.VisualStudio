@@ -64,6 +64,8 @@
     <Compile Include="RequiredFieldsValidator.cs" />
     <Compile Include="Entities\TestProject.cs" />
     <Compile Include="Entities\TestWorkitem.cs" />
+    <Compile Include="Settings\ProxyConnectionSettings.cs" />
+    <Compile Include="Settings\VersionOneSettings.cs" />
     <Compile Include="ValidatorException.cs" />
     <Compile Include="ValueId.cs" />
     <Compile Include="VersionOneConnector.cs" />

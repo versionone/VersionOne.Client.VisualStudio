@@ -1,21 +1,19 @@
 using System.Collections.Generic;
 using VersionOne.VisualStudio.DataLayer.Entities;
+using VersionOne.VisualStudio.DataLayer.Settings;
 
 namespace VersionOne.VisualStudio.DataLayer {
     public interface IDataLayer {
         /// <summary>
         /// Validate VersionOne connection
         /// </summary>
-        /// <param name="path">VersionOne server URL</param>
-        /// <param name="userName">User login</param>
-        /// <param name="password">User password</param>
-        /// <param name="integrated">Use Windows integrated authentication</param>
-        void CheckConnection(string path, string userName, string password, bool integrated);
+        /// <param name="settings">VersionOne connection settings: server URL, login, password, etc.</param>
+        void CheckConnection(VersionOneSettings settings);
 
         /// <summary>
         /// Connect to VersionOne server.
         /// </summary>
-        bool Connect(string path, string userName, string password, bool integrated);
+        bool Connect(VersionOneSettings settings);
 
         /// <summary>
         /// Check if V1 connection is established.

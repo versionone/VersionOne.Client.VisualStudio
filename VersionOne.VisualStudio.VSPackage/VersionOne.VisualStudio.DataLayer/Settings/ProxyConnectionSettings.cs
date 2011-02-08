@@ -1,4 +1,4 @@
-﻿namespace VersionOne.VisualStudio.VSPackage.Settings {
+﻿namespace VersionOne.VisualStudio.DataLayer.Settings {
     public class ProxyConnectionSettings {
         public bool UseProxy { get; set; }
         public string Url { get; set; }
