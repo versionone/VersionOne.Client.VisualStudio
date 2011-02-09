@@ -541,7 +541,9 @@ namespace VersionOne.VisualStudio.DataLayer {
         /// Reconnect with settings, used in last Connect() call.
         /// </summary>
         public void Reconnect() {
-            connector.Reconnect();
+            Connect(connector.VersionOneSettings);
+            // TODO figure out why using the next line instead of Connect() call breaks. @see VersionOne.SDK.APIClient.Services.TreeAssetListByAttribute(..) - NullReferenceEx.
+            // connector.Reconnect();
         }
 
         internal double? GetEffort(Asset asset) {

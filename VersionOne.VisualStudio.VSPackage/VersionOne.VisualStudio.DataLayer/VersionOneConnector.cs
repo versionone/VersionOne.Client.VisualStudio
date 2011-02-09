@@ -9,7 +9,6 @@ namespace VersionOne.VisualStudio.DataLayer {
         private const string DataUrlSuffix = "rest-1.v1/";
         private const string ConfigUrlSuffix = "config.v1/";
 
-        private VersionOneSettings versionOneSettings = new VersionOneSettings();
         private string apiVersion = "8.3";
 
         public string ApiVersion {
@@ -23,6 +22,7 @@ namespace VersionOne.VisualStudio.DataLayer {
         public V1Configuration V1Configuration { get; private set; }
         public bool IsConnected { get; set; }
 
+        public VersionOneSettings VersionOneSettings { get; private set; }
 
         public void Connect(VersionOneSettings settings) {
             var path = settings.Path;
@@ -42,7 +42,7 @@ namespace VersionOne.VisualStudio.DataLayer {
 
             V1Configuration = new V1Configuration(new V1APIConnector(path + ConfigUrlSuffix, null, null, integrated, proxy));
 
-            versionOneSettings = settings;
+            VersionOneSettings = settings;
         }
 
         private ProxyProvider GetProxy(ProxyConnectionSettings settings) {
@@ -69,10 +69,6 @@ namespace VersionOne.VisualStudio.DataLayer {
             } catch(Exception ex) {
                 Logger.Error("Cannot connect to V1 server.", ex);
             }
-        }
-
-        public void Reconnect() {
-            Connect(versionOneSettings);
         }
     }
 }
