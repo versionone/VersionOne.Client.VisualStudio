@@ -48,7 +48,7 @@ namespace VersionOne.VisualStudio.VSPackage.Controls {
             // lblUrl
             // 
             this.lblUrl.AutoSize = true;
-            this.lblUrl.Location = new System.Drawing.Point(13, 13);
+            this.lblUrl.Location = new System.Drawing.Point(13, 6);
             this.lblUrl.Name = "lblUrl";
             this.lblUrl.Size = new System.Drawing.Size(87, 13);
             this.lblUrl.TabIndex = 0;
@@ -57,7 +57,7 @@ namespace VersionOne.VisualStudio.VSPackage.Controls {
             // lblUser
             // 
             this.lblUser.AutoSize = true;
-            this.lblUser.Location = new System.Drawing.Point(13, 95);
+            this.lblUser.Location = new System.Drawing.Point(13, 69);
             this.lblUser.Name = "lblUser";
             this.lblUser.Size = new System.Drawing.Size(58, 13);
             this.lblUser.TabIndex = 4;
@@ -66,7 +66,7 @@ namespace VersionOne.VisualStudio.VSPackage.Controls {
             // lblPassword
             // 
             this.lblPassword.AutoSize = true;
-            this.lblPassword.Location = new System.Drawing.Point(13, 121);
+            this.lblPassword.Location = new System.Drawing.Point(13, 93);
             this.lblPassword.Name = "lblPassword";
             this.lblPassword.Size = new System.Drawing.Size(56, 13);
             this.lblPassword.TabIndex = 6;
@@ -74,7 +74,9 @@ namespace VersionOne.VisualStudio.VSPackage.Controls {
             // 
             // txtUrl
             // 
-            this.txtUrl.Location = new System.Drawing.Point(119, 13);
+            this.txtUrl.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left)
+                        | System.Windows.Forms.AnchorStyles.Right)));
+            this.txtUrl.Location = new System.Drawing.Point(119, 6);
             this.txtUrl.Name = "txtUrl";
             this.txtUrl.Size = new System.Drawing.Size(201, 20);
             this.txtUrl.TabIndex = 1;
@@ -82,23 +84,27 @@ namespace VersionOne.VisualStudio.VSPackage.Controls {
             // lblSampleUrl
             // 
             this.lblSampleUrl.AutoSize = true;
-            this.lblSampleUrl.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Italic, System.Drawing.GraphicsUnit.Point, ((byte)(204)));
-            this.lblSampleUrl.Location = new System.Drawing.Point(116, 36);
+            this.lblSampleUrl.Font = new System.Drawing.Font("Microsoft Sans Serif", 6.75F, System.Drawing.FontStyle.Italic, System.Drawing.GraphicsUnit.Point, ((byte)(204)));
+            this.lblSampleUrl.Location = new System.Drawing.Point(116, 28);
             this.lblSampleUrl.Name = "lblSampleUrl";
-            this.lblSampleUrl.Size = new System.Drawing.Size(206, 13);
+            this.lblSampleUrl.Size = new System.Drawing.Size(180, 12);
             this.lblSampleUrl.TabIndex = 2;
             this.lblSampleUrl.Text = "For example,  http://myserver/VersionOne";
             // 
             // txtUserName
             // 
-            this.txtUserName.Location = new System.Drawing.Point(119, 92);
+            this.txtUserName.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left)
+                        | System.Windows.Forms.AnchorStyles.Right)));
+            this.txtUserName.Location = new System.Drawing.Point(119, 66);
             this.txtUserName.Name = "txtUserName";
             this.txtUserName.Size = new System.Drawing.Size(201, 20);
             this.txtUserName.TabIndex = 5;
             // 
             // txtPassword
             // 
-            this.txtPassword.Location = new System.Drawing.Point(119, 118);
+            this.txtPassword.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left)
+                        | System.Windows.Forms.AnchorStyles.Right)));
+            this.txtPassword.Location = new System.Drawing.Point(119, 90);
             this.txtPassword.Name = "txtPassword";
             this.txtPassword.PasswordChar = '*';
             this.txtPassword.Size = new System.Drawing.Size(201, 20);
@@ -107,7 +113,7 @@ namespace VersionOne.VisualStudio.VSPackage.Controls {
             // chkIntegrated
             // 
             this.chkIntegrated.AutoSize = true;
-            this.chkIntegrated.Location = new System.Drawing.Point(119, 61);
+            this.chkIntegrated.Location = new System.Drawing.Point(119, 45);
             this.chkIntegrated.Name = "chkIntegrated";
             this.chkIntegrated.Size = new System.Drawing.Size(192, 17);
             this.chkIntegrated.TabIndex = 3;
@@ -117,7 +123,7 @@ namespace VersionOne.VisualStudio.VSPackage.Controls {
             // btnTestConnection
             // 
             this.btnTestConnection.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
-            this.btnTestConnection.Location = new System.Drawing.Point(216, 329);
+            this.btnTestConnection.Location = new System.Drawing.Point(216, 256);
             this.btnTestConnection.Name = "btnTestConnection";
             this.btnTestConnection.Size = new System.Drawing.Size(115, 24);
             this.btnTestConnection.TabIndex = 9;
@@ -127,7 +133,7 @@ namespace VersionOne.VisualStudio.VSPackage.Controls {
             // chkUseProxy
             // 
             this.chkUseProxy.AutoSize = true;
-            this.chkUseProxy.Location = new System.Drawing.Point(103, 19);
+            this.chkUseProxy.Location = new System.Drawing.Point(118, 116);
             this.chkUseProxy.Name = "chkUseProxy";
             this.chkUseProxy.Size = new System.Drawing.Size(202, 17);
             this.chkUseProxy.TabIndex = 0;
@@ -137,7 +143,7 @@ namespace VersionOne.VisualStudio.VSPackage.Controls {
             // lblProxyUrl
             // 
             this.lblProxyUrl.AutoSize = true;
-            this.lblProxyUrl.Location = new System.Drawing.Point(6, 50);
+            this.lblProxyUrl.Location = new System.Drawing.Point(6, 22);
             this.lblProxyUrl.Name = "lblProxyUrl";
             this.lblProxyUrl.Size = new System.Drawing.Size(93, 13);
             this.lblProxyUrl.TabIndex = 1;
@@ -145,7 +151,9 @@ namespace VersionOne.VisualStudio.VSPackage.Controls {
             // 
             // txtProxyUrl
             // 
-            this.txtProxyUrl.Location = new System.Drawing.Point(103, 47);
+            this.txtProxyUrl.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left)
+                        | System.Windows.Forms.AnchorStyles.Right)));
+            this.txtProxyUrl.Location = new System.Drawing.Point(103, 19);
             this.txtProxyUrl.Name = "txtProxyUrl";
             this.txtProxyUrl.Size = new System.Drawing.Size(201, 20);
             this.txtProxyUrl.TabIndex = 2;
@@ -153,7 +161,7 @@ namespace VersionOne.VisualStudio.VSPackage.Controls {
             // lblProxyUsername
             // 
             this.lblProxyUsername.AutoSize = true;
-            this.lblProxyUsername.Location = new System.Drawing.Point(6, 76);
+            this.lblProxyUsername.Location = new System.Drawing.Point(6, 46);
             this.lblProxyUsername.Name = "lblProxyUsername";
             this.lblProxyUsername.Size = new System.Drawing.Size(58, 13);
             this.lblProxyUsername.TabIndex = 3;
@@ -161,7 +169,9 @@ namespace VersionOne.VisualStudio.VSPackage.Controls {
             // 
             // txtProxyUsername
             // 
-            this.txtProxyUsername.Location = new System.Drawing.Point(103, 73);
+            this.txtProxyUsername.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left)
+                        | System.Windows.Forms.AnchorStyles.Right)));
+            this.txtProxyUsername.Location = new System.Drawing.Point(103, 43);
             this.txtProxyUsername.Name = "txtProxyUsername";
             this.txtProxyUsername.Size = new System.Drawing.Size(201, 20);
             this.txtProxyUsername.TabIndex = 4;
@@ -169,7 +179,7 @@ namespace VersionOne.VisualStudio.VSPackage.Controls {
             // lblProxyPassword
             // 
             this.lblProxyPassword.AutoSize = true;
-            this.lblProxyPassword.Location = new System.Drawing.Point(8, 102);
+            this.lblProxyPassword.Location = new System.Drawing.Point(8, 70);
             this.lblProxyPassword.Name = "lblProxyPassword";
             this.lblProxyPassword.Size = new System.Drawing.Size(56, 13);
             this.lblProxyPassword.TabIndex = 5;
@@ -177,7 +187,9 @@ namespace VersionOne.VisualStudio.VSPackage.Controls {
             // 
             // txtProxyPassword
             // 
-            this.txtProxyPassword.Location = new System.Drawing.Point(103, 99);
+            this.txtProxyPassword.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left)
+                        | System.Windows.Forms.AnchorStyles.Right)));
+            this.txtProxyPassword.Location = new System.Drawing.Point(103, 67);
             this.txtProxyPassword.Name = "txtProxyPassword";
             this.txtProxyPassword.Size = new System.Drawing.Size(201, 20);
             this.txtProxyPassword.TabIndex = 6;
@@ -185,7 +197,7 @@ namespace VersionOne.VisualStudio.VSPackage.Controls {
             // lblProxyDomain
             // 
             this.lblProxyDomain.AutoSize = true;
-            this.lblProxyDomain.Location = new System.Drawing.Point(8, 128);
+            this.lblProxyDomain.Location = new System.Drawing.Point(8, 94);
             this.lblProxyDomain.Name = "lblProxyDomain";
             this.lblProxyDomain.Size = new System.Drawing.Size(46, 13);
             this.lblProxyDomain.TabIndex = 7;
@@ -193,14 +205,17 @@ namespace VersionOne.VisualStudio.VSPackage.Controls {
             // 
             // txtProxyDomain
             // 
-            this.txtProxyDomain.Location = new System.Drawing.Point(103, 125);
+            this.txtProxyDomain.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left)
+                        | System.Windows.Forms.AnchorStyles.Right)));
+            this.txtProxyDomain.Location = new System.Drawing.Point(103, 91);
             this.txtProxyDomain.Name = "txtProxyDomain";
             this.txtProxyDomain.Size = new System.Drawing.Size(201, 20);
             this.txtProxyDomain.TabIndex = 8;
             // 
             // grpProxySettings
             // 
-            this.grpProxySettings.Controls.Add(this.chkUseProxy);
+            this.grpProxySettings.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left)
+                        | System.Windows.Forms.AnchorStyles.Right)));
             this.grpProxySettings.Controls.Add(this.lblProxyUrl);
             this.grpProxySettings.Controls.Add(this.txtProxyUrl);
             this.grpProxySettings.Controls.Add(this.lblProxyUsername);
@@ -209,9 +224,9 @@ namespace VersionOne.VisualStudio.VSPackage.Controls {
             this.grpProxySettings.Controls.Add(this.txtProxyPassword);
             this.grpProxySettings.Controls.Add(this.lblProxyDomain);
             this.grpProxySettings.Controls.Add(this.txtProxyDomain);
-            this.grpProxySettings.Location = new System.Drawing.Point(16, 157);
+            this.grpProxySettings.Location = new System.Drawing.Point(16, 134);
             this.grpProxySettings.Name = "grpProxySettings";
-            this.grpProxySettings.Size = new System.Drawing.Size(315, 160);
+            this.grpProxySettings.Size = new System.Drawing.Size(315, 117);
             this.grpProxySettings.TabIndex = 8;
             this.grpProxySettings.TabStop = false;
             this.grpProxySettings.Text = "Proxy settings";
@@ -228,11 +243,11 @@ namespace VersionOne.VisualStudio.VSPackage.Controls {
             this.Controls.Add(this.txtUserName);
             this.Controls.Add(this.lblPassword);
             this.Controls.Add(this.txtPassword);
+            this.Controls.Add(this.chkUseProxy);
             this.Controls.Add(this.grpProxySettings);
             this.Controls.Add(this.btnTestConnection);
-            this.MinimumSize = new System.Drawing.Size(345, 363);
             this.Name = "OptionsPageControl";
-            this.Size = new System.Drawing.Size(345, 363);
+            this.Size = new System.Drawing.Size(345, 287);
             this.grpProxySettings.ResumeLayout(false);
             this.grpProxySettings.PerformLayout();
             this.ResumeLayout(false);

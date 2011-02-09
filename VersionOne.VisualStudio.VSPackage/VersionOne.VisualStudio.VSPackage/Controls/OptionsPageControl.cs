@@ -13,10 +13,8 @@ namespace VersionOne.VisualStudio.VSPackage.Controls {
         public OptionsPageControl() {
             InitializeComponent();
 
-            if(!DesignMode) {
-                settings = SettingsImpl.Instance;
-                eventDispatcher = EventDispatcher.Instance;
-            }
+            settings = SettingsImpl.Instance;
+            eventDispatcher = EventDispatcher.Instance;
 
             btnTestConnection.Click += btnTestConnection_Click;
             chkIntegrated.CheckedChanged += chkIntegrated_CheckedChanged;

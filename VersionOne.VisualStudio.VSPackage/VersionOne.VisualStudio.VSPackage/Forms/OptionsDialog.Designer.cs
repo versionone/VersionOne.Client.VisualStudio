@@ -32,14 +32,15 @@ namespace VersionOne.VisualStudio.VSPackage.Forms {
             // 
             // optionsPage
             // 
-            this.optionsPage.Location = new System.Drawing.Point(3, 3);
+            this.optionsPage.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
+            this.optionsPage.Location = new System.Drawing.Point(-4, -1);
             this.optionsPage.Name = "optionsPage";
-            this.optionsPage.Size = new System.Drawing.Size(376, 200);
+            this.optionsPage.Size = new System.Drawing.Size(345, 290);
             this.optionsPage.TabIndex = 0;
             // 
             // btnOk
             // 
-            this.btnOk.Location = new System.Drawing.Point(223, 205);
+            this.btnOk.Location = new System.Drawing.Point(161, 295);
             this.btnOk.Name = "btnOk";
             this.btnOk.Size = new System.Drawing.Size(75, 23);
             this.btnOk.TabIndex = 1;
@@ -49,7 +50,7 @@ namespace VersionOne.VisualStudio.VSPackage.Forms {
             // btnCancel
             // 
             this.btnCancel.DialogResult = System.Windows.Forms.DialogResult.Cancel;
-            this.btnCancel.Location = new System.Drawing.Point(304, 205);
+            this.btnCancel.Location = new System.Drawing.Point(253, 295);
             this.btnCancel.Name = "btnCancel";
             this.btnCancel.Size = new System.Drawing.Size(75, 23);
             this.btnCancel.TabIndex = 2;
@@ -62,7 +63,7 @@ namespace VersionOne.VisualStudio.VSPackage.Forms {
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.CancelButton = this.btnCancel;
-            this.ClientSize = new System.Drawing.Size(382, 233);
+            this.ClientSize = new System.Drawing.Size(340, 325);
             this.Controls.Add(this.btnCancel);
             this.Controls.Add(this.btnOk);
             this.Controls.Add(this.optionsPage);
