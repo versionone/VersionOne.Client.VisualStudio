@@ -233,6 +233,7 @@
     <Compile Include="V1Tracker.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="PkgCmdID.cs" />
+    <Compile Include="WaitCursor.cs" />
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="Controls\ErrorMessageControl.resx">
