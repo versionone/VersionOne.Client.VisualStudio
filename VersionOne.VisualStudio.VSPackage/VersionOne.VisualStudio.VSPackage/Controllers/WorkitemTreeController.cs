@@ -4,7 +4,6 @@ using System.Windows.Forms;
 using VersionOne.VisualStudio.DataLayer.Entities;
 using VersionOne.VisualStudio.VSPackage.Controls;
 using VersionOne.VisualStudio.DataLayer;
-using VersionOne.VisualStudio.VSPackage.Descriptors;
 using VersionOne.VisualStudio.VSPackage.Events;
 using VersionOne.VisualStudio.VSPackage.Settings;
 
@@ -34,9 +33,9 @@ namespace VersionOne.VisualStudio.VSPackage.Controllers {
         }
 
         private void eventDispatcher_WorkitemPropertiesUpdated(object sender, WorkitemPropertiesUpdatedArgs e) {
-            if (e.Source == PropertyUpdateSource.WorkitemView) {
+            if(e.Source == PropertyUpdateSource.WorkitemView) {
                 view.RefreshProperties();
-            } else if (e.Source == PropertyUpdateSource.WorkitemPropertyView) {
+            } else if(e.Source == PropertyUpdateSource.WorkitemPropertyView) {
                 model.InvokeStructureChanged();
             }
         }
@@ -49,6 +48,7 @@ namespace VersionOne.VisualStudio.VSPackage.Controllers {
                     view.ReconfigureTreeColumns();
                     view.SetSelection();
                 }
+
                 view.Refresh();
             } catch (DataLayerException) {
 				view.ResetPropertyView();
@@ -59,6 +59,7 @@ namespace VersionOne.VisualStudio.VSPackage.Controllers {
             if(view == null) {
                 throw new ArgumentNullException("view");
             }
+
             this.view = view;
             view.Controller = this;
         }
@@ -69,7 +70,8 @@ namespace VersionOne.VisualStudio.VSPackage.Controllers {
             view.Model = model;
             view.ReconfigureTreeColumns();
             UpdateViewData();
-            bool mayAddSecondaryItems = ShouldEnableAddSecondaryItemCommand();
+            
+            var mayAddSecondaryItems = ShouldEnableAddSecondaryItemCommand();
             view.AddTaskCommandEnabled = mayAddSecondaryItems;
             view.AddTestCommandEnabled = mayAddSecondaryItems;
             view.AddDefectCommandEnabled = true;
@@ -78,7 +80,8 @@ namespace VersionOne.VisualStudio.VSPackage.Controllers {
         #region Item commands from context menu
 
         public void CommitItem() {
-            WorkitemDescriptor descriptor = view.CurrentWorkitemDescriptor;
+            var descriptor = view.CurrentWorkitemDescriptor;
+            
             if(descriptor != null) {
 				try {
 					descriptor.Workitem.CommitChanges();
@@ -91,9 +94,10 @@ namespace VersionOne.VisualStudio.VSPackage.Controllers {
         }
 
         public void RevertItem() {
-            WorkitemDescriptor descriptor = view.CurrentWorkitemDescriptor;
+            var descriptor = view.CurrentWorkitemDescriptor;
+            
             if(descriptor != null) {
-                Workitem item = descriptor.Workitem;
+                var item = descriptor.Workitem;
                 item.RevertChanges();
                 
                 if (item.IsVirtual) {
@@ -106,7 +110,8 @@ namespace VersionOne.VisualStudio.VSPackage.Controllers {
         }
 
         public void SignupItem() {
-            WorkitemDescriptor descriptor = view.CurrentWorkitemDescriptor;
+            var descriptor = view.CurrentWorkitemDescriptor;
+            
             if(descriptor != null) {
                 descriptor.Workitem.Signup();
                 eventDispatcher.InvokeModelChanged(null, ModelChangedArgs.WorkitemChanged);
@@ -114,7 +119,8 @@ namespace VersionOne.VisualStudio.VSPackage.Controllers {
         }
         
         public void QuickCloseItem() {
-            WorkitemDescriptor descriptor = view.CurrentWorkitemDescriptor;
+            var descriptor = view.CurrentWorkitemDescriptor;
+            
             if(descriptor != null) {
                 try {
                     descriptor.Workitem.QuickClose();
@@ -126,9 +132,11 @@ namespace VersionOne.VisualStudio.VSPackage.Controllers {
         }
 
         public void CloseItem() {
-            WorkitemDescriptor descriptor = view.CurrentWorkitemDescriptor;
+            var descriptor = view.CurrentWorkitemDescriptor;
+            
             if (descriptor != null) {
-                DialogResult result = view.ShowCloseWorkitemDialog(descriptor.Workitem);
+                var result = view.ShowCloseWorkitemDialog(descriptor.Workitem);
+                
                 if (result == DialogResult.OK) {
                     eventDispatcher.InvokeModelChanged(null, ModelChangedArgs.WorkitemChanged);
                 }
@@ -138,25 +146,22 @@ namespace VersionOne.VisualStudio.VSPackage.Controllers {
         #endregion
 
         private void UpdateViewTitle() {
-            Project currentProject = dataLayer.CurrentProject;
-            string title = Resources.ToolWindowTitle;
-            if (currentProject == null) {
-                view.Title = title;
-            } else {
-                view.Title = string.Format("{0} - {1}", title, currentProject.GetProperty(Entity.NameProperty));
-            }
+            var currentProject = dataLayer.CurrentProject;            
+            view.Title = currentProject == null ? Resources.ToolWindowTitle : string.Format("{0} - {1}", Resources.ToolWindowTitle, currentProject.GetProperty(Entity.NameProperty));
         }
 
         #region Command handlers
 
         public void HandleRefreshCommand() {
-            try {
-                dataLayer.Reconnect();
-            } catch (DataLayerException ex) {
-                view.ResetPropertyView();
-                Debug.WriteLine("Refresh failed: " + ex.Message);
-            }
-            eventDispatcher.InvokeModelChanged(null, ModelChangedArgs.SettingsChanged);
+            new BackgroundTaskRunner(view.GetWaitCursor()).Run(
+                () => dataLayer.Reconnect(),
+                () => eventDispatcher.InvokeModelChanged(null, ModelChangedArgs.SettingsChanged),
+                ex => {
+                    if(ex is DataLayerException) {
+                        view.ResetPropertyView();
+                        Debug.WriteLine("Refresh failed: " + ex.Message);
+                    }
+                });
         }
 
         // TODO refactor
@@ -178,12 +183,14 @@ namespace VersionOne.VisualStudio.VSPackage.Controllers {
                 Console.WriteLine(ex);
                 view.ShowErrorMessage("Failed to save changes.");
             }
+            
             eventDispatcher.InvokeModelChanged(null, ModelChangedArgs.SettingsChanged);
         }
 
         public void HandleTreeSelectionChanged() {
             view.RefreshProperties();
-            bool mayAddSecondaryItems = ShouldEnableAddSecondaryItemCommand();
+            
+            var mayAddSecondaryItems = ShouldEnableAddSecondaryItemCommand();
             view.AddTaskCommandEnabled = mayAddSecondaryItems;
             view.AddTestCommandEnabled = mayAddSecondaryItems;
         }
@@ -202,8 +209,8 @@ namespace VersionOne.VisualStudio.VSPackage.Controllers {
                 return false;
             }
 
-            Workitem selectedItem = view.CurrentWorkitemDescriptor.Workitem;
-            Workitem parentItem = selectedItem.Parent;
+            var selectedItem = view.CurrentWorkitemDescriptor.Workitem;
+            var parentItem = selectedItem.Parent;
 
             return selectedItem.IsPrimary || (parentItem != null && parentItem.IsPrimary);
         }
@@ -216,7 +223,7 @@ namespace VersionOne.VisualStudio.VSPackage.Controllers {
         }
 
         public void AddDefect() {
-            Workitem defect = dataLayer.CreateWorkitem(Entity.DefectPrefix, null);
+            var defect = dataLayer.CreateWorkitem(Entity.DefectPrefix, null);
             eventDispatcher.InvokeModelChanged(null, ModelChangedArgs.ProjectChanged);
             view.SelectWorkitem(defect);
             view.Refresh();
@@ -228,10 +235,10 @@ namespace VersionOne.VisualStudio.VSPackage.Controllers {
         }
 
         private void AddSecondaryWorkitem(string type) {
-            Workitem selectedItem = view.CurrentWorkitemDescriptor.Workitem;
-            Workitem parent = selectedItem.IsPrimary ? selectedItem : selectedItem.Parent;
+            var selectedItem = view.CurrentWorkitemDescriptor.Workitem;
+            var parent = selectedItem.IsPrimary ? selectedItem : selectedItem.Parent;
 
-            Workitem item = dataLayer.CreateWorkitem(type, parent);
+            var item = dataLayer.CreateWorkitem(type, parent);
 
             eventDispatcher.InvokeModelChanged(null, ModelChangedArgs.WorkitemChanged);
             view.ExpandCurrentNode();

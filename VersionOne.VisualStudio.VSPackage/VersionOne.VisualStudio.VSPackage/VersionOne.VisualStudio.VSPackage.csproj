@@ -128,6 +128,7 @@
       <DependentUpon>ErrorMessageControl.cs</DependentUpon>
     </Compile>
     <Compile Include="Controls\IProjectTreeView.cs" />
+    <Compile Include="Controls\IWaitCursorProvider.cs" />
     <Compile Include="Controls\IWorkitemTreeView.cs" />
     <Compile Include="Controls\OptionsPageControl.cs">
       <SubType>UserControl</SubType>

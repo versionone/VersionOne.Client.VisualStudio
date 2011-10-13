@@ -6,12 +6,11 @@ namespace VersionOne.VisualStudio.VSPackage {
     /// A wrapper that simplifies execution of long running tasks in background thread so that UI would not be frozen.
     /// </summary>
     public partial class BackgroundTaskRunner : Component {
-        public BackgroundTaskRunner() {
+        private readonly WaitCursor waitCursor;
+        
+        public BackgroundTaskRunner(WaitCursor waitCursor) {
+            this.waitCursor = waitCursor;
             InitializeComponent();
-        }
-
-        public BackgroundTaskRunner(IContainer container) : this() {
-            container.Add(this);
         }
 
         // TODO in most complex cases, we may need separate actions for: task itself, completion, error handling, successful completion
@@ -23,8 +22,10 @@ namespace VersionOne.VisualStudio.VSPackage {
                                              }
 
                                              onComplete.Invoke();
+                                             waitCursor.Dispose();
                                          };
 
+            waitCursor.Show();
             worker.RunWorkerAsync();
         }
     }

@@ -10,7 +10,7 @@ using IOleServiceProvider = Microsoft.VisualStudio.OLE.Interop.IServiceProvider;
 using Microsoft.VisualStudio.Shell;
 
 namespace VersionOne.VisualStudio.VSPackage.Controls {
-    public partial class V1UserControl : UserControl {
+    public partial class V1UserControl : UserControl, IWaitCursorProvider {
         protected IOleServiceProvider vsServiceProvider;
         protected ITrackSelection trackSel;
         protected readonly IDataLayer dataLayer;
@@ -32,6 +32,10 @@ namespace VersionOne.VisualStudio.VSPackage.Controls {
             InitializeComponent();
             errorMessage = new ErrorMessageControl();
             dataLayer = ApiDataLayer.Instance;
+        }
+
+        public WaitCursor GetWaitCursor() {
+            return new WaitCursor(this);
         }
 
         public bool CheckSettingsAreValid() {

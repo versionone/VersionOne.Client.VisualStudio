@@ -1,7 +1,7 @@
 using VersionOne.VisualStudio.VSPackage.Controllers;
 
 namespace VersionOne.VisualStudio.VSPackage.Controls {
-    public interface IProjectTreeView {
+    public interface IProjectTreeView : IWaitCursorProvider {
         void RefreshProperties();
         void UpdateData();
 

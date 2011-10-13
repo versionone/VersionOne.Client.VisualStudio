@@ -128,7 +128,7 @@ namespace VersionOne.VisualStudio.VSPackage.Controls {
             tvWorkitems.NodeControls.Clear();
             columnToAttributeMappings.Clear();
 
-			foreach (ColumnSetting column in Configuration.Instance.GridSettings.Columns) {
+			foreach (var column in Configuration.Instance.GridSettings.Columns) {
                 if (column.EffortTracking && !ApiDataLayer.Instance.TrackEffort) {
 					continue;
 				}
@@ -137,14 +137,12 @@ namespace VersionOne.VisualStudio.VSPackage.Controls {
 
                 columnToAttributeMappings.Add(dataPropertyName, column.Attribute);
 
-			    TreeColumn treeColumn = new TreeColumn(dataPropertyName, column.Width);
-				treeColumn.SortOrder = SortOrder.None;
-				treeColumn.TooltipText = dataPropertyName;
-                
-                switch(column.Type) {
+			    var treeColumn = new TreeColumn(dataPropertyName, column.Width) { SortOrder = SortOrder.None, TooltipText = dataPropertyName };
+
+			    switch(column.Type) {
                     case "String":
                     case "Effort":
-                        CustomNodeTextBox textEditor = new CustomNodeTextBox();
+                        var textEditor = new CustomNodeTextBox();
                         ConfigureEditor(textEditor, dataPropertyName);
                         textEditor.IsColumnReadOnly = column.ReadOnly;
                         textEditor.ParentColumn = treeColumn;
@@ -152,7 +150,7 @@ namespace VersionOne.VisualStudio.VSPackage.Controls {
                         tvWorkitems.NodeControls.Add(textEditor);
                         break;
                     case "List":
-                        NodeComboBox listEditor = new NodeComboBox();
+                        var listEditor = new NodeComboBox();
                         ConfigureEditor(listEditor, dataPropertyName);
                         listEditor.EditEnabled = !column.ReadOnly;
                         listEditor.ParentColumn = treeColumn;
@@ -160,9 +158,8 @@ namespace VersionOne.VisualStudio.VSPackage.Controls {
                         tvWorkitems.NodeControls.Add(listEditor);
                         break;
                     case "Multi":
-                        NodeListBox listBoxEditor = new NodeListBox();
-                        listBoxEditor.ParentTree = tvWorkitems;
-                        ConfigureEditor(listBoxEditor, dataPropertyName);
+			            var listBoxEditor = new NodeListBox {ParentTree = tvWorkitems};
+			            ConfigureEditor(listBoxEditor, dataPropertyName);
                         listBoxEditor.EditEnabled = !column.ReadOnly;
                         listBoxEditor.ParentColumn = treeColumn;
                         listBoxEditor.IsEditEnabledValueNeeded += CheckCellEditability;
@@ -179,9 +176,7 @@ namespace VersionOne.VisualStudio.VSPackage.Controls {
 
         private void AddStateIcon() {
             if (tvWorkitems.Columns.Count > 0) {
-                NodeStateIcon nodeIcon = new NodeStateIcon();
-                nodeIcon.DataPropertyName = "Icon";
-                nodeIcon.ParentColumn = tvWorkitems.Columns[0];
+                var nodeIcon = new NodeStateIcon {DataPropertyName = "Icon", ParentColumn = tvWorkitems.Columns[0]};
                 tvWorkitems.NodeControls.Insert(0, nodeIcon);
             }
         }
@@ -221,7 +216,7 @@ namespace VersionOne.VisualStudio.VSPackage.Controls {
 
         private void ContextMenu_Popup(object sender, EventArgs e) {
             tvWorkitems.HideEditor();
-            bool selectedNodeExists = tvWorkitems.SelectedNode != null;
+            var selectedNodeExists = tvWorkitems.SelectedNode != null;
 
             Workitem item = selectedNodeExists ? ((WorkitemDescriptor) tvWorkitems.SelectedNode.Tag).Workitem : null;
             UpdateMenuItemsVisibility(item);
@@ -248,7 +243,7 @@ namespace VersionOne.VisualStudio.VSPackage.Controls {
             controller.HandleFilteringByOwner(btnOnlyMyTasks.Checked);
         }
 
-        public void toolBtnRefresh_Click(object sender, EventArgs e) {
+        private void toolBtnRefresh_Click(object sender, EventArgs e) {
             tvWorkitems.HideEditor();
             controller.HandleRefreshCommand();
         }
@@ -279,28 +274,29 @@ namespace VersionOne.VisualStudio.VSPackage.Controls {
         }
 
         private void CheckCellEditability(object sender, NodeControlValueEventArgs e) {
-            WorkitemDescriptor descriptor = (WorkitemDescriptor)e.Node.Tag;
-            Workitem item = descriptor.Workitem;
+            var descriptor = (WorkitemDescriptor) e.Node.Tag;
+            var item = descriptor.Workitem;
 
-            string columnName = (sender as BaseTextControl).DataPropertyName;
-            string propertyName = columnToAttributeMappings[columnName];
-            bool isReadOnly = item.IsPropertyReadOnly(propertyName);
+            var columnName = (sender as BaseTextControl).DataPropertyName;
+            var propertyName = columnToAttributeMappings[columnName];
+            var isReadOnly = item.IsPropertyReadOnly(propertyName);
+            
             if(sender is CustomNodeTextBox) {
-                CustomNodeTextBox textBox = (CustomNodeTextBox) sender;
+                var textBox = (CustomNodeTextBox) sender;
                 textBox.IsPropertyReadOnly = isReadOnly;
                 textBox.EditorContextMenu = textBox.IsReadOnly ? CreateReadonlyTextBoxContextMenu(textBox) : null;
             }
 
             if(sender is NodeComboBox) {
-                NodeComboBox editor = (NodeComboBox) sender;
-                PropertyValues dataSource = dataLayer.GetListPropertyValues(item.TypePrefix + propertyName);
+                var editor = (NodeComboBox) sender;
+                var dataSource = dataLayer.GetListPropertyValues(item.TypePrefix + propertyName);
                 editor.DropDownItems.Clear();
                 editor.DropDownItems.AddRange(dataSource);
             }
 
-            if (sender is NodeListBox) {
-                NodeListBox editor = (NodeListBox)sender;
-                PropertyValues dataSource = dataLayer.GetListPropertyValues(item.TypePrefix + propertyName);
+            if(sender is NodeListBox) {
+                var editor = (NodeListBox) sender;
+                var dataSource = dataLayer.GetListPropertyValues(item.TypePrefix + propertyName);
                 editor.DropDownItems.Clear();
                 editor.DropDownItems.AddRange(dataSource);
             }
@@ -310,18 +306,19 @@ namespace VersionOne.VisualStudio.VSPackage.Controls {
 
 
         private static ContextMenu CreateReadonlyTextBoxContextMenu(NodeTextBox textBox) {
-            ContextMenu menu = new ContextMenu();
-            MenuItem miCopyValue = new MenuItem("Copy");
+            var menu = new ContextMenu();
+            var miCopyValue = new MenuItem("Copy");
             miCopyValue.Click += delegate { textBox.Copy(); };
             menu.MenuItems.Add(miCopyValue);
             return menu;
         }
 
         public void RefreshProperties() {
-            TreeNodeAdv node = tvWorkitems.SelectedNode;
+            var node = tvWorkitems.SelectedNode;
             WorkitemDescriptor descriptor = null;
+            
             if (node != null) {
-                WorkitemDescriptor oldDescriptor = (WorkitemDescriptor)node.Tag;
+                var oldDescriptor = (WorkitemDescriptor) node.Tag;
                 descriptor = oldDescriptor.GetDetailedDescriptor(
                     Configuration.Instance.AssetDetail.GetColumns(oldDescriptor.Workitem.TypePrefix), 
                     PropertyUpdateSource.WorkitemPropertyView);
@@ -333,18 +330,22 @@ namespace VersionOne.VisualStudio.VSPackage.Controls {
             if (tvWorkitems.SelectedNode != null) {
                 return;
             }
+
             if (currentWorkitemId != null) {
-                Predicate<TreeNodeAdv> matcher = delegate(TreeNodeAdv node) {
-                    WorkitemDescriptor desc = node.Tag as WorkitemDescriptor;
+                Predicate<TreeNodeAdv> matcher = node => {
+                    var desc = node.Tag as WorkitemDescriptor;
                     return desc != null && desc.Workitem.Id == currentWorkitemId;
                 };
-                TreeNodeAdv selectedNode = tvWorkitems.FindNodeByMather(matcher);
+                var selectedNode = tvWorkitems.FindNodeByMather(matcher);
+                
                 if (selectedNode != null) {
                     tvWorkitems.SelectedNode = selectedNode;
                     return;
                 }
             }
-            TreeNodeAdv root = tvWorkitems.Root;
+            
+            var root = tvWorkitems.Root;
+            
             if (root.Children.Count > 0) {
                 tvWorkitems.SelectedNode = root.Children[0];
             } else {
@@ -353,11 +354,12 @@ namespace VersionOne.VisualStudio.VSPackage.Controls {
         }
 
         public void SelectWorkitem(Workitem item) {
-            Predicate<TreeNodeAdv> matcher = delegate(TreeNodeAdv node) {
-                                                 WorkitemDescriptor descriptor = node.Tag as WorkitemDescriptor;
+            Predicate<TreeNodeAdv> matcher = (node) => {
+                                                 var descriptor = node.Tag as WorkitemDescriptor;
                                                  return descriptor != null && item.Equals(descriptor.Workitem);
                                              };
-            TreeNodeAdv foundNode = tvWorkitems.FindNodeByMather(matcher);
+            var foundNode = tvWorkitems.FindNodeByMather(matcher);
+            
             if(foundNode != null) {
                 tvWorkitems.SelectedNode = foundNode;
             }

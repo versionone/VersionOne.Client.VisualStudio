@@ -1,11 +1,10 @@
 using System.Windows.Forms;
 using VersionOne.VisualStudio.DataLayer.Entities;
 using VersionOne.VisualStudio.VSPackage.Controllers;
-using VersionOne.VisualStudio.DataLayer;
 using VersionOne.VisualStudio.VSPackage.Descriptors;
 
 namespace VersionOne.VisualStudio.VSPackage.Controls {
-    public interface IWorkitemTreeView {
+    public interface IWorkitemTreeView : IWaitCursorProvider {
         WorkitemTreeController Controller { get; set; }
         
         string Title { get; set; }
