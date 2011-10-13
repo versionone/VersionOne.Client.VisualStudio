@@ -15,14 +15,14 @@ namespace VersionOne.VisualStudio.VSPackage {
         }
 
         // TODO in most complex cases, we may need separate actions for: task itself, completion, error handling, successful completion
-        public void Run(Action task, Action onComplete, Action onError = null) {
+        public void Run(Action task, Action onComplete, Action<Exception> onError = null) {
             worker.DoWork += (sender, e) => task.Invoke();
             worker.RunWorkerCompleted += (sender, e) => {
-                                             onComplete.Invoke();
-
                                              if (e.Error != null && onError != null) {
-                                                 onError.Invoke();
+                                                 onError.Invoke(e.Error);
                                              }
+
+                                             onComplete.Invoke();
                                          };
 
             worker.RunWorkerAsync();
