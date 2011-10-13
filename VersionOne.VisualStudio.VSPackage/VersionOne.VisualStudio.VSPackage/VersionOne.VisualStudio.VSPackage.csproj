@@ -113,6 +113,12 @@
     </COMReference>
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="BackgroundTaskRunner.cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="BackgroundTaskRunner.Designer.cs">
+      <DependentUpon>BackgroundTaskRunner.cs</DependentUpon>
+    </Compile>
     <Compile Include="Controllers\ProjectTreeController.cs" />
     <Compile Include="Controllers\WorkitemTreeController.cs" />
     <Compile Include="Controls\ErrorMessageControl.cs">
