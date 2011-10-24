@@ -265,9 +265,6 @@
     <EmbeddedResource Include="Controls\V1UserControl.resx">
       <DependentUpon>V1UserControl.cs</DependentUpon>
     </EmbeddedResource>
-    <EmbeddedResource Include="Controls\WaitSpinnerControl.resx">
-      <DependentUpon>WaitSpinnerControl.cs</DependentUpon>
-    </EmbeddedResource>
     <EmbeddedResource Include="Controls\WorkitemTreeControl.resx">
       <DependentUpon>WorkitemTreeControl.cs</DependentUpon>
     </EmbeddedResource>
