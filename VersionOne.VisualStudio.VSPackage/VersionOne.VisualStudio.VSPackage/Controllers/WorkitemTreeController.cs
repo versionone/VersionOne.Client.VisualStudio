@@ -33,10 +33,13 @@ namespace VersionOne.VisualStudio.VSPackage.Controllers {
         }
 
         private void eventDispatcher_WorkitemPropertiesUpdated(object sender, WorkitemPropertiesUpdatedArgs e) {
-            if(e.Source == PropertyUpdateSource.WorkitemView) {
-                view.RefreshProperties();
-            } else if(e.Source == PropertyUpdateSource.WorkitemPropertyView) {
-                model.InvokeStructureChanged();
+            switch (e.Source) {
+                case PropertyUpdateSource.WorkitemView:
+                    view.RefreshProperties();
+                    break;
+                case PropertyUpdateSource.WorkitemPropertyView:
+                    model.InvokeStructureChanged();
+                    break;
             }
         }
 
@@ -134,7 +137,7 @@ namespace VersionOne.VisualStudio.VSPackage.Controllers {
         public void CloseItem() {
             var descriptor = view.CurrentWorkitemDescriptor;
             
-            if (descriptor != null) {
+            if(descriptor != null) {
                 var result = view.ShowCloseWorkitemDialog(descriptor.Workitem);
                 
                 if (result == DialogResult.OK) {

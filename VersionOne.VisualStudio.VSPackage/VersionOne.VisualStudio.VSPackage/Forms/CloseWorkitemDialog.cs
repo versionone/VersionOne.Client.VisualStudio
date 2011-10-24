@@ -22,11 +22,13 @@ namespace VersionOne.VisualStudio.VSPackage.Forms {
 
         private void BindControls() {
             try {
-                object toDo = workitem.GetProperty(Entity.ToDoProperty);
+                var toDo = workitem.GetProperty(Entity.ToDoProperty);
+                
                 if(toDo != null) {
-                    txtToDo.Text = ((double)toDo).ToString("0.00", CultureInfo.CurrentCulture);
+                    txtToDo.Text = ((double) toDo).ToString("0.00", CultureInfo.CurrentCulture);
                 }
-                PropertyValues statuses = dataLayer.GetListPropertyValues(workitem.TypePrefix + Entity.StatusProperty);
+                
+                var statuses = dataLayer.GetListPropertyValues(workitem.TypePrefix + Entity.StatusProperty);
                 cboStatus.Items.AddRange(statuses.ToArray());
                 cboStatus.SelectedItem = workitem.GetProperty(Entity.StatusProperty);
                 Text = "Close " + workitem.TypePrefix;

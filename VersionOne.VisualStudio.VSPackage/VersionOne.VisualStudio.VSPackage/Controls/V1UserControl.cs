@@ -1,18 +1,14 @@
 using System;
 using System.ComponentModel;
-using System.Drawing;
 using System.Windows.Forms;
 using Microsoft.VisualStudio.Shell.Interop;
 using VersionOne.VisualStudio.DataLayer;
 using VersionOne.VisualStudio.VSPackage.Descriptors;
-
-using IOleServiceProvider = Microsoft.VisualStudio.OLE.Interop.IServiceProvider;
 using Microsoft.VisualStudio.Shell;
 
 namespace VersionOne.VisualStudio.VSPackage.Controls {
+    // TODO move IDataLayer reference to controllers
     public partial class V1UserControl : UserControl, IWaitCursorProvider {
-        protected IOleServiceProvider vsServiceProvider;
-        protected ITrackSelection trackSel;
         protected readonly IDataLayer dataLayer;
         protected readonly IParentWindow ParentWindow;
 
@@ -27,40 +23,40 @@ namespace VersionOne.VisualStudio.VSPackage.Controls {
             dataLayer = ApiDataLayer.Instance;
         }
 
-        public V1UserControl(IParentWindow parent) {
+        protected V1UserControl(IParentWindow parent) {
             ParentWindow = parent;
             InitializeComponent();
             errorMessage = new ErrorMessageControl();
             dataLayer = ApiDataLayer.Instance;
         }
 
-        public WaitCursor GetWaitCursor() {
+        public IWaitCursor GetWaitCursor() {
             return new WaitCursor(this);
         }
 
         public bool CheckSettingsAreValid() {
-            if (Controls.Contains(errorMessage)) {
+            if(Controls.Contains(errorMessage)) {
                 Controls.Remove(errorMessage);
             }
 
-            if (!dataLayer.IsConnected) {
+            if(!dataLayer.IsConnected) {
                 DisplayErrors();
                 return false;
             }
 
-            foreach (Control control in Controls) {
+            foreach(Control control in Controls) {
                 control.Show();
             }
 
             return true;
         }
 
-        protected void DisplayErrors() {
-            if (Controls.Contains(errorMessage)) {
+        private void DisplayErrors() {
+            if(Controls.Contains(errorMessage)) {
                 Controls.Remove(errorMessage);
             }
 
-            foreach (Control control in Controls) {
+            foreach(Control control in Controls) {
 				control.Hide();
             }
 
@@ -68,40 +64,31 @@ namespace VersionOne.VisualStudio.VSPackage.Controls {
         	errorMessage.Dock = DockStyle.Fill;
 		}
 
-        protected void HideErrors() {
-            if (Controls.Contains(errorMessage)) {
-                Controls.Remove(errorMessage);
-            }
-
-            foreach (Control control in Controls) {
-                control.Show();
-            }
-        }
-
         protected override object GetService(Type service) {
             object obj = null;
+            
             if (ParentWindow != null) {
                 obj = ParentWindow.GetVsService(service);
             }
-            if (obj == null) {
-                obj = base.GetService(service);
-            }
-            return obj;
+
+            return obj ?? base.GetService(service);
         }
 
-        protected T GetService<T>(Type serviceType) where T : class {
+        private T GetService<T>(Type serviceType) where T : class {
             return GetService(serviceType) as T;
         }
 
         #region Properties window related
-        protected string currentWorkitemId;
+        
+        protected string CurrentWorkitemId;
 
         protected void UpdatePropertyView(WorkitemDescriptor selectedItem) {
             //Try to get PropertiesFrame
-            if (propertiesFrame == null) {
-                IVsUIShell shell = GetService<IVsUIShell>(typeof(SVsUIShell));
-                if (shell != null) {
-                    Guid guidPropertyBrowser = new Guid(ToolWindowGuids.PropertyBrowser);
+            if(propertiesFrame == null) {
+                var shell = GetService<IVsUIShell>(typeof(SVsUIShell));
+                
+                if(shell != null) {
+                    var guidPropertyBrowser = new Guid(ToolWindowGuids.PropertyBrowser);
                     shell.FindToolWindow((uint)__VSFINDTOOLWIN.FTW_fForceCreate, ref guidPropertyBrowser, out propertiesFrame);
                 }
             }
@@ -109,21 +96,25 @@ namespace VersionOne.VisualStudio.VSPackage.Controls {
 			if (propertiesFrame == null) {
                 return;
             }
+            
             int visible;
             propertiesFrame.IsOnScreen(out visible);
-			if (visible == 1) {
+			
+            if (visible == 1) {
                 propertiesFrame.ShowNoActivate(); // Show() in original
             }
 
-            SelectionContainer selectionContainer = new SelectionContainer();
+            var selectionContainer = new SelectionContainer();
+            
             if (selectedItem != null) {
                 selectionContainer.SelectedObjects = new object[] { selectedItem };
-                currentWorkitemId = selectedItem.Entity.Id;
+                CurrentWorkitemId = selectedItem.Entity.Id;
             } else {
-                currentWorkitemId = null;
+                CurrentWorkitemId = null;
             }
 
-            ITrackSelection track = GetService<ITrackSelection>(typeof(STrackSelection));
+            var track = GetService<ITrackSelection>(typeof(STrackSelection));
+            
             if (track != null) {
                 track.OnSelectChange(selectionContainer);
             }
@@ -134,19 +125,5 @@ namespace VersionOne.VisualStudio.VSPackage.Controls {
         }
 
         #endregion
-
-        protected static void CenterControl(Control other, Control parent) {
-            int x = (parent.Location.X + parent.Size.Width / 2) - other.Size.Width / 2;
-            int y = (parent.Location.Y + parent.Size.Height / 2) - other.Size.Height / 2;
-            other.Location = new Point(x, y);
-        }
-
-        // Now it is using this as parent
-        protected void CenterControl(Control other) {
-            int x = (Location.X + Size.Width / 2) - other.Size.Width / 2;
-            int y = (Location.Y + Size.Height / 2) - other.Size.Height / 2;
-            other.Location = new Point(x, y);
-        }
-
     }
 }

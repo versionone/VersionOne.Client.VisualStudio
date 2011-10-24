@@ -63,7 +63,7 @@ namespace VersionOne.VisualStudio.VSPackage.Settings {
                 Directory.CreateDirectory(dir);
             }
 
-            using(FileStream fileStream = File.Create(file)) {
+            using(var fileStream = File.Create(file)) {
                 Save(fileStream);
             }
         }
@@ -75,18 +75,18 @@ namespace VersionOne.VisualStudio.VSPackage.Settings {
 
         public static SettingsImpl Load(string file) {
             try {
-                using(FileStream fileStream = File.OpenRead(file)) {
+                using(var fileStream = File.OpenRead(file)) {
                     return Load(fileStream);
                 }
             }
-            catch (Exception) {
+            catch(Exception) {
                 return new SettingsImpl();
             }
         }
 
         private static SettingsImpl Load(Stream stream) {
             var xmlSerializer = new XmlSerializer(typeof(SettingsImpl));
-            return (SettingsImpl)xmlSerializer.Deserialize(stream);
+            return (SettingsImpl) xmlSerializer.Deserialize(stream);
         }
 
         public static string SettingsFile {
@@ -100,6 +100,5 @@ namespace VersionOne.VisualStudio.VSPackage.Settings {
                 return settings ?? (settings = Load(SettingsFile));
             }
         }
-
     }
 }

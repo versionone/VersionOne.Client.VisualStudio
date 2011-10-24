@@ -8,9 +8,9 @@ using VersionOne.VisualStudio.VSPackage.Descriptors;
 
 namespace VersionOne.VisualStudio.VSPackage.PropertyEditors {
     public class ListPropertyEditor : UITypeEditor {
-        protected readonly PropertyGridListBox listBox = new PropertyGridListBox();
-        protected readonly IDataLayer dataLayer = ApiDataLayer.Instance;
-        protected IWindowsFormsEditorService service;
+        protected readonly PropertyGridListBox ListBox = new PropertyGridListBox();
+        protected readonly IDataLayer DataLayer = ApiDataLayer.Instance;
+        private IWindowsFormsEditorService service;
 
         public override UITypeEditorEditStyle GetEditStyle(ITypeDescriptorContext context) {
             return UITypeEditorEditStyle.DropDown;
@@ -18,18 +18,20 @@ namespace VersionOne.VisualStudio.VSPackage.PropertyEditors {
 
         public override object EditValue(ITypeDescriptorContext context, IServiceProvider provider, object value) {
             service = (IWindowsFormsEditorService)provider.GetService(typeof(IWindowsFormsEditorService));
+            
             if (service != null) {
                 ConfigureListBox();
                 SetSelection((WorkitemPropertyDescriptor)context.PropertyDescriptor, value);
-                service.DropDownControl(listBox);
+                service.DropDownControl(ListBox);
                 return GetSelection();
             }
+            
             return value;
         }
 
         protected virtual void ConfigureListBox() {
-            listBox.SelectionMode = SelectionMode.One;
-            listBox.MouseUp += listBox_MouseUp;
+            ListBox.SelectionMode = SelectionMode.One;
+            ListBox.MouseUp += listBox_MouseUp;
         }
 
         /// <summary>
@@ -38,11 +40,13 @@ namespace VersionOne.VisualStudio.VSPackage.PropertyEditors {
         /// <param name="descriptor">Descriptor of Workitem.</param>
         /// <param name="valueId">Value of the Workitem property.</param>
         protected virtual void SetSelection(WorkitemPropertyDescriptor descriptor, object valueId) {
-            PropertyValues dataSource = dataLayer.GetListPropertyValues(descriptor.Workitem.TypePrefix + descriptor.Attribute);
-            foreach (ValueId item in dataSource) {
-                listBox.Items.Add(item);
+            var dataSource = DataLayer.GetListPropertyValues(descriptor.Workitem.TypePrefix + descriptor.Attribute);
+            
+            foreach (var item in dataSource) {
+                ListBox.Items.Add(item);
             }
-            listBox.SelectedItem = valueId;
+            
+            ListBox.SelectedItem = valueId;
         }
 
         /// <summary>
@@ -50,11 +54,12 @@ namespace VersionOne.VisualStudio.VSPackage.PropertyEditors {
         /// </summary>
         /// <returns>Value to be set to Workitem property.</returns>
         protected virtual object GetSelection() {
-            return listBox.SelectedItem;
+            return ListBox.SelectedItem;
         }
 
         private void listBox_MouseUp(object sender, MouseEventArgs e) {
-            int selectedIndex = listBox.IndexFromPoint(e.X, e.Y);
+            var selectedIndex = ListBox.IndexFromPoint(e.X, e.Y);
+            
             if (selectedIndex != -1) {
                 service.CloseDropDown();
             }

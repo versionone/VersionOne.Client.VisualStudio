@@ -13,15 +13,14 @@ using VersionOne.VisualStudio.VSPackage.Events;
 using VersionOne.VisualStudio.VSPackage.Forms;
 using VersionOne.VisualStudio.VSPackage.Settings;
 using VersionOne.VisualStudio.VSPackage.TreeViewEditors;
+
 using NodeComboBox = VersionOne.VisualStudio.VSPackage.TreeViewEditors.NodeComboBox;
 
 namespace VersionOne.VisualStudio.VSPackage.Controls {
     /// <summary>
     /// Task List control displaying V1 tasks for the currently selected Project.
     /// </summary>
-    public partial class WorkitemTreeControl : V1UserControl, IWorkitemTreeView {
-        private WorkitemTreeController controller;
-        
+    public partial class WorkitemTreeControl : V1UserControl, IWorkitemTreeView {        
         private readonly Dictionary<string, string> columnToAttributeMappings = new Dictionary<string, string>();
         
         private StoryTreeModel storyTreeModel;
@@ -30,10 +29,7 @@ namespace VersionOne.VisualStudio.VSPackage.Controls {
         private bool addDefectEnabled;
         private bool addTestEnabled;
 
-        public WorkitemTreeController Controller {
-            get { return controller; }
-            set { controller = value; }
-        }
+        public WorkitemTreeController Controller { get; set; }
 
         public string Title {
             get { return ParentWindow.Caption; }
@@ -123,6 +119,7 @@ namespace VersionOne.VisualStudio.VSPackage.Controls {
 			if (!dataLayer.IsConnected) {
 				return;
 			}
+
             tvWorkitems.HideEditor();
             tvWorkitems.Columns.Clear();
             tvWorkitems.NodeControls.Clear();
@@ -133,7 +130,7 @@ namespace VersionOne.VisualStudio.VSPackage.Controls {
 					continue;
 				}
 
-			    string dataPropertyName = dataLayer.LocalizerResolve(column.Name);
+			    var dataPropertyName = dataLayer.LocalizerResolve(column.Name);
 
                 columnToAttributeMappings.Add(dataPropertyName, column.Attribute);
 
@@ -168,6 +165,7 @@ namespace VersionOne.VisualStudio.VSPackage.Controls {
                     default:
                         throw new NotSupportedException();
                 }
+
 				tvWorkitems.Columns.Add(treeColumn);
 			}
 
@@ -218,59 +216,59 @@ namespace VersionOne.VisualStudio.VSPackage.Controls {
             tvWorkitems.HideEditor();
             var selectedNodeExists = tvWorkitems.SelectedNode != null;
 
-            Workitem item = selectedNodeExists ? ((WorkitemDescriptor) tvWorkitems.SelectedNode.Tag).Workitem : null;
+            var item = selectedNodeExists ? ((WorkitemDescriptor) tvWorkitems.SelectedNode.Tag).Workitem : null;
             UpdateMenuItemsVisibility(item);
         }
 
         private void AddTask_Click(object sender, EventArgs e) {
-            controller.AddTask();
+            Controller.AddTask();
         }
 
         private void AddDefect_Click(object sender, EventArgs e) {
-            controller.AddDefect();
+            Controller.AddDefect();
         }
 
         private void AddTest_Click(object sender, EventArgs e) {
-            controller.AddTest();
+            Controller.AddTest();
         }
 
         private void tvWorkitems_SelectionChanged(object sender, EventArgs e) {
-            controller.HandleTreeSelectionChanged();
+            Controller.HandleTreeSelectionChanged();
         }
 
         private void btnShowMyTasks_CheckedChanged(object sender, EventArgs e) {
             tvWorkitems.HideEditor();
-            controller.HandleFilteringByOwner(btnOnlyMyTasks.Checked);
+            Controller.HandleFilteringByOwner(btnOnlyMyTasks.Checked);
         }
 
         private void toolBtnRefresh_Click(object sender, EventArgs e) {
             tvWorkitems.HideEditor();
-            controller.HandleRefreshCommand();
+            Controller.HandleRefreshCommand();
         }
 
         private void toolBtnSave_Click(object sender, EventArgs e) {
             tvWorkitems.HideEditor();
-            controller.HandleSaveCommand();
+            Controller.HandleSaveCommand();
         }
 
         private void miRevert_Click(object sender, EventArgs e) {
-            controller.RevertItem();
+            Controller.RevertItem();
         }
 
         private void miSignup_Click(object sender, EventArgs e) {
-            controller.SignupItem();
+            Controller.SignupItem();
         }
 
         private void miSave_Click(object sender, EventArgs e) {
-			controller.CommitItem();
+			Controller.CommitItem();
         }
 
         private void miQuickClose_Click(object sender, EventArgs e) {
-            controller.QuickCloseItem();
+            Controller.QuickCloseItem();
         }
 
         private void miClose_Click(object sender, EventArgs e) {
-            controller.CloseItem();
+            Controller.CloseItem();
         }
 
         private void CheckCellEditability(object sender, NodeControlValueEventArgs e) {
@@ -323,6 +321,7 @@ namespace VersionOne.VisualStudio.VSPackage.Controls {
                     Configuration.Instance.AssetDetail.GetColumns(oldDescriptor.Workitem.TypePrefix), 
                     PropertyUpdateSource.WorkitemPropertyView);
             }
+
             UpdatePropertyView(descriptor);
         }
 
@@ -331,10 +330,10 @@ namespace VersionOne.VisualStudio.VSPackage.Controls {
                 return;
             }
 
-            if (currentWorkitemId != null) {
+            if (CurrentWorkitemId != null) {
                 Predicate<TreeNodeAdv> matcher = node => {
                     var desc = node.Tag as WorkitemDescriptor;
-                    return desc != null && desc.Workitem.Id == currentWorkitemId;
+                    return desc != null && desc.Workitem.Id == CurrentWorkitemId;
                 };
                 var selectedNode = tvWorkitems.FindNodeByMather(matcher);
                 

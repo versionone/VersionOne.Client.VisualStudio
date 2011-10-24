@@ -13,7 +13,7 @@ namespace VersionOne.VisualStudio.DataLayer {
         private readonly VersionOneConnector connector = new VersionOneConnector();
 
         private static IDataLayer dataLayer;
-        private readonly static LinkedList<AttributeInfo> attributesToQuery = new LinkedList<AttributeInfo>();
+        private readonly static LinkedList<AttributeInfo> AttributesToQuery = new LinkedList<AttributeInfo>();
 
         private RequiredFieldsValidator requiredFieldsValidator;
         internal Dictionary<string, IAssetType> Types;
@@ -30,15 +30,13 @@ namespace VersionOne.VisualStudio.DataLayer {
         private AssetList allAssets = new AssetList();
         private readonly Dictionary<Asset, double> efforts = new Dictionary<Asset, double>();
 
-        private static readonly string[] effortTrackingRelatedAttributes = new[] {
+        private readonly IList<string> effortTrackingAttributes = new List<string> {
             "DetailEstimate",
             "ToDo",
             "Done",
             "Effort",
             "Actuals",
         };
-
-        private readonly IList<string> effortTrackingAttributesList = new List<string>(effortTrackingRelatedAttributes);
 
         #endregion
 
@@ -53,11 +51,11 @@ namespace VersionOne.VisualStudio.DataLayer {
             };
 
             foreach(var prefix in prefixes) {
-                attributesToQuery.AddLast(new AttributeInfo("CheckQuickClose", prefix, false));
-                attributesToQuery.AddLast(new AttributeInfo("CheckQuickSignup", prefix, false));
+                AttributesToQuery.AddLast(new AttributeInfo("CheckQuickClose", prefix, false));
+                AttributesToQuery.AddLast(new AttributeInfo("CheckQuickSignup", prefix, false));
             }
 
-            attributesToQuery.AddLast(new AttributeInfo("Schedule.EarliestActiveTimebox", Entity.ProjectPrefix, false));
+            AttributesToQuery.AddLast(new AttributeInfo("Schedule.EarliestActiveTimebox", Entity.ProjectPrefix, false));
         }
 
         public string ApiVersion {
@@ -83,6 +81,7 @@ namespace VersionOne.VisualStudio.DataLayer {
                 if(currentProjectId == null) {
                     currentProjectId = "Scope:0";
                 }
+
                 return GetProjectById(currentProjectId);
             }
             set {
@@ -175,13 +174,13 @@ namespace VersionOne.VisualStudio.DataLayer {
         }
 
         internal bool IsEffortTrackingRelated(string attributeName) {
-            return effortTrackingAttributesList.Contains(attributeName);
+            return effortTrackingAttributes.Contains(attributeName);
         }
 
         #endregion
 
         private void AddSelection(Query query, string typePrefix) {
-            foreach(var attrInfo in attributesToQuery) {
+            foreach(var attrInfo in AttributesToQuery) {
                 if(attrInfo.Prefix == typePrefix) {
                     try {
                         var def = Types[attrInfo.Prefix].GetAttributeDefinition(attrInfo.Attr);
@@ -233,6 +232,7 @@ namespace VersionOne.VisualStudio.DataLayer {
 
         public List<Workitem> GetWorkitems() {
             connector.CheckConnection();
+            
             if(currentProjectId == null) {
                 throw new DataLayerException("Current project is not selected");
             }
@@ -255,9 +255,9 @@ namespace VersionOne.VisualStudio.DataLayer {
                     var assetList = connector.Services.Retrieve(query);
                     allAssets = assetList.Assets;
 
-                    var allowedTypeTokens = new List<string>(new[] {
-                                  StoryType.Token, DefectType.Token, TaskType.Token, TestType.Token,                                                      
-				    });
+                    var allowedTypeTokens = new List<string> {
+                        StoryType.Token, DefectType.Token, TaskType.Token, TestType.Token                                                      
+				    };
 
                     allAssets.RemoveAll(asset => !allowedTypeTokens.Contains(asset.AssetType.Token));
 
@@ -278,6 +278,7 @@ namespace VersionOne.VisualStudio.DataLayer {
                     res.Add(WorkitemFactory.Instance.CreateWorkitem(asset, null));
                 }
             }
+
             return res;
         }
 
@@ -293,18 +294,14 @@ namespace VersionOne.VisualStudio.DataLayer {
 
             var definition = workitemType.GetAttributeDefinition(Entity.OwnersProperty);
             var attribute = asset.GetAttribute(definition);
-
             var owners = attribute.Values;
+            
             if(owners.Cast<Oid>().Any(oid => oid == MemberOid)) {
                 return true;
             }
 
             if(asset.Children != null) {
-                foreach(var child in asset.Children) {
-                    if(AssetPassesShowMyTasksFilter(child)) {
-                        return true;
-                    }
-                }
+                return asset.Children.Any(AssetPassesShowMyTasksFilter);
             }
 
             return false;
@@ -318,12 +315,8 @@ namespace VersionOne.VisualStudio.DataLayer {
                 scopeQuery.Filter = stateTerm;
                 AddSelection(scopeQuery, Entity.ProjectPrefix);
                 var result = connector.Services.Retrieve(scopeQuery);
-                var roots = new List<Project>(result.Assets.Count);
                 
-                foreach(var asset in result.Assets) {
-                    roots.Add(WorkitemFactory.Instance.CreateProject(asset, null));
-                }
-
+                var roots = result.Assets.Select(asset => WorkitemFactory.Instance.CreateProject(asset, null)).ToList();
                 return roots;
             } catch(WebException ex) {
                 connector.IsConnected = false;
@@ -410,9 +403,9 @@ namespace VersionOne.VisualStudio.DataLayer {
         }
 
         private Dictionary<string, PropertyValues> GetListPropertyValues() {
-            var res = new Dictionary<string, PropertyValues>(attributesToQuery.Count);
+            var res = new Dictionary<string, PropertyValues>(AttributesToQuery.Count);
             
-            foreach(var attrInfo in attributesToQuery) {
+            foreach(var attrInfo in AttributesToQuery) {
                 if(!attrInfo.IsList) {
                     continue;
                 }
@@ -518,7 +511,7 @@ namespace VersionOne.VisualStudio.DataLayer {
 
         internal void CommitAsset(Asset asset) {
             try {
-                List<RequiredFieldsDto> requiredData = requiredFieldsValidator.Validate(asset);
+                var requiredData = requiredFieldsValidator.Validate(asset);
 
                 if(requiredData.Count > 0) {
                     string message = requiredFieldsValidator.GetMessageOfUnfilledFieldsList(requiredData, Environment.NewLine, ", ");
@@ -594,7 +587,7 @@ namespace VersionOne.VisualStudio.DataLayer {
         }
 
         public void AddProperty(string attr, string prefix, bool isList) {
-            attributesToQuery.AddLast(new AttributeInfo(attr, prefix, isList));
+            AttributesToQuery.AddLast(new AttributeInfo(attr, prefix, isList));
         }
 
         internal void ExecuteOperation(Asset asset, IOperation operation) {
@@ -656,7 +649,7 @@ namespace VersionOne.VisualStudio.DataLayer {
         }
 
         public Workitem CreateWorkitem(string assetType, Workitem parent) {
-            var assetFactory = new AssetFactory(this, CurrentProject, attributesToQuery);
+            var assetFactory = new AssetFactory(this, CurrentProject, AttributesToQuery);
             var item = WorkitemFactory.Instance.CreateWorkitem(assetFactory, assetType, parent);
 
             if(item.IsPrimary) {
