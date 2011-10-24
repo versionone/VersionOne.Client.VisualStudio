@@ -30,6 +30,11 @@ namespace VersionOne.VisualStudio.VSPackage.Controls {
             dataLayer = ApiDataLayer.Instance;
         }
 
+        /// <summary>
+        /// We cannot just disable the control because spinner won't be animated then.
+        /// </summary>
+        public virtual void SetAccessibleControlsEnabled(bool enabled) { }
+
         public IWaitCursor GetWaitCursor() {
             return new WaitCursor(this);
         }

@@ -154,11 +154,23 @@
     <Compile Include="Controls\V1UserControl.Designer.cs">
       <DependentUpon>V1UserControl.cs</DependentUpon>
     </Compile>
+    <Compile Include="Controls\WaitSpinnerControl.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="Controls\WaitSpinnerControl.Designer.cs">
+      <DependentUpon>WaitSpinnerControl.cs</DependentUpon>
+    </Compile>
     <Compile Include="Controls\WorkitemTreeControl.cs">
       <SubType>UserControl</SubType>
     </Compile>
     <Compile Include="Controls\WorkitemTreeControl.Designer.cs">
       <DependentUpon>WorkitemTreeControl.cs</DependentUpon>
+    </Compile>
+    <Compile Include="SynchronousTaskRunner.cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="SynchronousTaskRunner.Designer.cs">
+      <DependentUpon>SynchronousTaskRunner.cs</DependentUpon>
     </Compile>
     <Compile Include="Descriptors\IconDescriptor.cs" />
     <Compile Include="Descriptors\WorkitemDescriptor.cs" />
@@ -253,6 +265,9 @@
     <EmbeddedResource Include="Controls\V1UserControl.resx">
       <DependentUpon>V1UserControl.cs</DependentUpon>
     </EmbeddedResource>
+    <EmbeddedResource Include="Controls\WaitSpinnerControl.resx">
+      <DependentUpon>WaitSpinnerControl.cs</DependentUpon>
+    </EmbeddedResource>
     <EmbeddedResource Include="Controls\WorkitemTreeControl.resx">
       <DependentUpon>WorkitemTreeControl.cs</DependentUpon>
     </EmbeddedResource>
@@ -287,6 +302,7 @@
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
       <IncludeInVSIX>true</IncludeInVSIX>
     </Content>
+    <None Include="Resources\SpinnerImage.gif" />
     <Resource Include="Resources\AddDefect.gif" />
     <Resource Include="Resources\AddStory.gif" />
     <Resource Include="Resources\AddTask.gif" />

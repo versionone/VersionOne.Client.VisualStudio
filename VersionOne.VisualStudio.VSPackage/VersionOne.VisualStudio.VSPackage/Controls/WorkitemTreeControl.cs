@@ -103,6 +103,11 @@ namespace VersionOne.VisualStudio.VSPackage.Controls {
             Enter += delegate { RefreshProperties(); };
         }
 
+        public override void SetAccessibleControlsEnabled(bool enabled) {
+            tvWorkitems.Enabled = enabled;
+            tsMenu.Enabled = enabled;
+        }
+
         public void ShowErrorMessage(string message) {
             MessageBox.Show(message, "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
         }

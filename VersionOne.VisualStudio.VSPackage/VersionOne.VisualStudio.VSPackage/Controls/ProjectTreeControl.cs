@@ -39,6 +39,11 @@ namespace VersionOne.VisualStudio.VSPackage.Controls {
             Controller.HandleProjectSelected(project);
         }
 
+        public override void SetAccessibleControlsEnabled(bool enabled) {
+            tsMenu.Enabled = enabled;
+            tvProjects.Enabled = enabled;
+        }
+
         public void UpdateData() {
             if(updating) {
                 return;
