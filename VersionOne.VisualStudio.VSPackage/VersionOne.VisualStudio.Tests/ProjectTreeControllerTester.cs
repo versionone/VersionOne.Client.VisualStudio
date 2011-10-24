@@ -1,12 +1,15 @@
-﻿using NUnit.Framework;
+﻿using System.Threading;
+using NUnit.Framework;
 using Rhino.Mocks;
-using Rhino.Mocks.Interfaces;
 using VersionOne.VisualStudio.DataLayer;
 using VersionOne.VisualStudio.DataLayer.Entities;
+using VersionOne.VisualStudio.VSPackage;
 using VersionOne.VisualStudio.VSPackage.Controllers;
 using VersionOne.VisualStudio.VSPackage.Controls;
 using VersionOne.VisualStudio.VSPackage.Events;
 using VersionOne.VisualStudio.VSPackage.Settings;
+
+using Is = Rhino.Mocks.Constraints.Is;
 
 namespace VersionOne.VisualStudio.Tests {
     [TestFixture]
@@ -21,18 +24,17 @@ namespace VersionOne.VisualStudio.Tests {
 
         [SetUp]
         public void SetUp() {
-            viewMock = mockRepository.CreateMock<IProjectTreeView>();
-            dataLayerMock = mockRepository.CreateMock<IDataLayer>();
-            eventDispatcherMock = mockRepository.CreateMock<IEventDispatcher>();
-            settingsMock = mockRepository.CreateMock<ISettings>();
+            viewMock = mockRepository.StrictMock<IProjectTreeView>();
+            dataLayerMock = mockRepository.StrictMock<IDataLayer>();
+            eventDispatcherMock = mockRepository.StrictMock<IEventDispatcher>();
+            settingsMock = mockRepository.StrictMock<ISettings>();
         }
 
         [Test]
-        public void RegisterAndPrepareViewTest() {
-            eventDispatcherMock.ModelChanged += null;
-            LastCall.IgnoreArguments();
+        public void RegisterAndPrepareView() {
+            Expect.Call(() => eventDispatcherMock.ModelChanged += null).IgnoreArguments();
             Expect.Call(viewMock.Controller).PropertyBehavior();
-            viewMock.UpdateData();
+            Expect.Call(viewMock.UpdateData);
 
             mockRepository.ReplayAll();
 
@@ -46,11 +48,10 @@ namespace VersionOne.VisualStudio.Tests {
         }
 
         [Test]
-        public void RefreshTest() {
-            eventDispatcherMock.ModelChanged += null;
-            LastCall.IgnoreArguments();
+        public void Refresh() {
+            Expect.Call(() => eventDispatcherMock.ModelChanged += null).IgnoreArguments();
             Expect.Call(viewMock.Controller).PropertyBehavior();
-            viewMock.UpdateData();
+            Expect.Call(viewMock.UpdateData);
 
             mockRepository.ReplayAll();
 
@@ -62,10 +63,9 @@ namespace VersionOne.VisualStudio.Tests {
         }
 
         [Test]
-        public void ModelChangedNonRelevantChangesTest() {
-            eventDispatcherMock.ModelChanged += null;
-            LastCall.IgnoreArguments();
-            IEventRaiser modelChangedRaiser = LastCall.GetEventRaiser();
+        public void ModelChangedNonRelevantChanges() {
+            Expect.Call(() => eventDispatcherMock.ModelChanged += null).IgnoreArguments();
+            var modelChangedRaiser = LastCall.GetEventRaiser();
             Expect.Call(viewMock.Controller).PropertyBehavior();
 
             mockRepository.ReplayAll();
@@ -80,11 +80,10 @@ namespace VersionOne.VisualStudio.Tests {
 
         [Test]
         public void ModelChangedImportantChangesTest() {
-            eventDispatcherMock.ModelChanged += null;
-            LastCall.IgnoreArguments();
-            IEventRaiser modelChangedRaiser = LastCall.GetEventRaiser();
+            Expect.Call(() => eventDispatcherMock.ModelChanged += null).IgnoreArguments();
+            var modelChangedRaiser = LastCall.GetEventRaiser();
             Expect.Call(viewMock.Controller).PropertyBehavior();
-            viewMock.UpdateData();
+            Expect.Call(viewMock.UpdateData);
 
             mockRepository.ReplayAll();
 
@@ -105,15 +104,13 @@ namespace VersionOne.VisualStudio.Tests {
             Project project = mockRepository.Stub<TestProject>();
             SetupResult.For(project.Id).Return(newProject);
 
-            eventDispatcherMock.ModelChanged += null;
-            LastCall.IgnoreArguments();
+            Expect.Call(() => eventDispatcherMock.ModelChanged += null).IgnoreArguments();
             Expect.Call(viewMock.Controller).PropertyBehavior();
             Expect.Call(settingsMock.SelectedProjectId).PropertyBehavior().Repeat.Twice();
-            settingsMock.StoreSettings();
+            Expect.Call(settingsMock.StoreSettings);
             Expect.Call(dataLayerMock.CurrentProject).PropertyBehavior().IgnoreArguments();
-            viewMock.RefreshProperties();
-            eventDispatcherMock.InvokeModelChanged(controller, ModelChangedArgs.ProjectChanged);
-            LastCall.IgnoreArguments();
+            Expect.Call(viewMock.RefreshProperties);
+            Expect.Call(() => eventDispatcherMock.InvokeModelChanged(null, null)).IgnoreArguments().Constraints(Is.Anything(), Is.Equal(ModelChangedArgs.ProjectChanged));
 
             mockRepository.ReplayAll();
 
@@ -121,6 +118,31 @@ namespace VersionOne.VisualStudio.Tests {
             controller.RegisterView(viewMock);
             controller.HandleProjectSelected(project);
 
+            mockRepository.VerifyAll();
+        }
+
+        [Test]
+        [Ignore("This test is currently designed for synchronous execution and would not wait for background routine to complete")]
+        public void GetProjects() {
+            var waitCursorStub = mockRepository.Stub<IWaitCursor>();
+
+            Expect.Call(() => eventDispatcherMock.ModelChanged += null).IgnoreArguments();
+            Expect.Call(viewMock.Controller).PropertyBehavior();
+            Expect.Call(viewMock.UpdateData);
+            Expect.Call(viewMock.GetWaitCursor()).Return(waitCursorStub);
+            Expect.Call(dataLayerMock.GetProjectTree()).Return(null);
+            Expect.Call(viewMock.Projects).PropertyBehavior();
+            Expect.Call(viewMock.CompleteProjectsRequest);
+
+            mockRepository.ReplayAll();
+            controller = new ProjectTreeController(dataLayerMock, settingsMock, eventDispatcherMock);
+            controller.RegisterView(viewMock);
+            controller.PrepareView();
+            controller.HandleProjectsRequest();
+            
+            // Actually, we're able to cheat and run successfully, but it is not a decent solution
+            // Thread.Sleep(200);
+            
             mockRepository.VerifyAll();
         }
     }

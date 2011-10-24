@@ -6,9 +6,9 @@ namespace VersionOne.VisualStudio.VSPackage {
     /// A wrapper that simplifies execution of long running tasks in background thread so that UI would not be frozen.
     /// </summary>
     public partial class BackgroundTaskRunner : Component {
-        private readonly WaitCursor waitCursor;
+        private readonly IWaitCursor waitCursor;
         
-        public BackgroundTaskRunner(WaitCursor waitCursor) {
+        public BackgroundTaskRunner(IWaitCursor waitCursor) {
             this.waitCursor = waitCursor;
             InitializeComponent();
         }

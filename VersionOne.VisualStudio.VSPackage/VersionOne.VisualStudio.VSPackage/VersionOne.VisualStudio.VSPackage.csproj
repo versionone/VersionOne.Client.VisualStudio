@@ -194,6 +194,7 @@
     </Compile>
     <Compile Include="IParentWindow.cs" />
     <Compile Include="Guids.cs" />
+    <Compile Include="IWaitCursor.cs" />
     <Compile Include="OptionsPage.cs">
       <SubType>Component</SubType>
     </Compile>

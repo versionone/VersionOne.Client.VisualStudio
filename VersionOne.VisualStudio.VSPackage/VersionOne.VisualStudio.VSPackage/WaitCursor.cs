@@ -2,7 +2,7 @@
 using System.Windows.Forms;
 
 namespace VersionOne.VisualStudio.VSPackage {
-    public class WaitCursor : IDisposable {
+    public class WaitCursor : IWaitCursor {
         private readonly Control control;
 
         public WaitCursor(Control control) {
