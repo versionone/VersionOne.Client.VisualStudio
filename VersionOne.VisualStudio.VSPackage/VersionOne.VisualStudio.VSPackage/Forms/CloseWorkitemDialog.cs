@@ -39,6 +39,7 @@ namespace VersionOne.VisualStudio.VSPackage.Forms {
             }
         }
 
+        // TODO move operation execution to View?
         private void btnOK_Click(object sender, EventArgs e) {
             try {
                 workitem.SetProperty(Entity.StatusProperty, cboStatus.SelectedItem);

@@ -1,5 +1,4 @@
-﻿using System.Threading;
-using NUnit.Framework;
+﻿using NUnit.Framework;
 using Rhino.Mocks;
 using VersionOne.VisualStudio.DataLayer;
 using VersionOne.VisualStudio.DataLayer.Entities;
