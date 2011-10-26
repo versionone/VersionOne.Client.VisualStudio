@@ -2,9 +2,9 @@ using System;
 using System.Windows.Forms;
 using Rhino.Mocks;
 using NUnit.Framework;
-using Rhino.Mocks.Interfaces;
 using VersionOne.VisualStudio.DataLayer;
 using VersionOne.VisualStudio.DataLayer.Entities;
+using VersionOne.VisualStudio.VSPackage;
 using VersionOne.VisualStudio.VSPackage.Controllers;
 using VersionOne.VisualStudio.VSPackage.Controls;
 using VersionOne.VisualStudio.VSPackage.Descriptors;
@@ -13,13 +13,13 @@ using VersionOne.VisualStudio.VSPackage.Settings;
 
 namespace VersionOne.VisualStudio.Tests {
     [TestFixture]
-    // TODO upgrade to .NET 4.0, fix ignored stuff
     public class WorkitemTreeControllerTester {
         private WorkitemTreeController controller;
         private IDataLayer dataLayerMock;
         private ISettings settingsMock;
         private IEventDispatcher eventDispatcherMock;
         private IWorkitemTreeView viewMock;
+        private IWaitCursor waitCursorStub;
 
         private readonly MockRepository mockRepository = new MockRepository();
 
@@ -28,7 +28,8 @@ namespace VersionOne.VisualStudio.Tests {
             dataLayerMock = mockRepository.StrictMock<IDataLayer>();
             settingsMock = mockRepository.StrictMock<ISettings>();
             viewMock = mockRepository.StrictMock<IWorkitemTreeView>();
-            eventDispatcherMock = mockRepository.StrictMock<IEventDispatcher>();
+            waitCursorStub = mockRepository.Stub<IWaitCursor>();
+            eventDispatcherMock = mockRepository.Stub<IEventDispatcher>();
         }
 
         private void ExpectRegisterAndPrepareView() {
@@ -50,7 +51,7 @@ namespace VersionOne.VisualStudio.Tests {
         }
 
         [Test]
-        public void RegisterAndPrepareViewTest() {
+        public void RegisterAndPrepareView() {
             ExpectRegisterAndPrepareView();
 
             mockRepository.ReplayAll();
@@ -64,15 +65,15 @@ namespace VersionOne.VisualStudio.Tests {
         }
 
         [Test]
-        [Ignore("TODO fix")]
-        public void HandleRefreshTest() {
+        public void HandleRefresh() {
             ExpectRegisterAndPrepareView();
-            dataLayerMock.Reconnect();
-            eventDispatcherMock.InvokeModelChanged(null, ModelChangedArgs.SettingsChanged);
+            Expect.Call(viewMock.GetWaitCursor()).Return(waitCursorStub);
+            Expect.Call(dataLayerMock.Reconnect);
+            Expect.Call(() => eventDispatcherMock.InvokeModelChanged(null, ModelChangedArgs.SettingsChanged));
 
             mockRepository.ReplayAll();
 
-            controller = new WorkitemTreeController(dataLayerMock, settingsMock, eventDispatcherMock);
+            controller = new TestWorkitemTreeController(dataLayerMock, settingsMock, eventDispatcherMock);
             controller.Register(viewMock);
             controller.PrepareView();
             controller.HandleRefreshCommand();
@@ -81,17 +82,16 @@ namespace VersionOne.VisualStudio.Tests {
         }
 
         [Test]
-        [Ignore("TODO fix")]
-        public void HandleRefreshWithExceptionTest() {
+        public void HandleRefreshWithException() {
             ExpectRegisterAndPrepareView();
-            dataLayerMock.Reconnect();
-            LastCall.Throw(new DataLayerException(null));
-            viewMock.ResetPropertyView();
-            eventDispatcherMock.InvokeModelChanged(null, ModelChangedArgs.SettingsChanged);
+            Expect.Call(viewMock.GetWaitCursor()).Return(waitCursorStub);
+            Expect.Call(dataLayerMock.Reconnect).Throw(new DataLayerException(null));
+            Expect.Call(viewMock.ResetPropertyView);
+            Expect.Call(() => eventDispatcherMock.InvokeModelChanged(null, ModelChangedArgs.SettingsChanged));
 
             mockRepository.ReplayAll();
 
-            controller = new WorkitemTreeController(dataLayerMock, settingsMock, eventDispatcherMock);
+            controller = new TestWorkitemTreeController(dataLayerMock, settingsMock, eventDispatcherMock);
             controller.Register(viewMock);
             controller.PrepareView();
             controller.HandleRefreshCommand();
@@ -100,14 +100,14 @@ namespace VersionOne.VisualStudio.Tests {
         }
 
         [Test]
-        public void CommitItemTest() {
+        public void CommitItem() {
             var workitemMock = mockRepository.PartialMock<TestWorkitem>(Guid.NewGuid().ToString(), true);
             var descriptor = new WorkitemDescriptor(workitemMock, new ColumnSetting[0], PropertyUpdateSource.WorkitemView, true);
 
             ExpectRegisterAndPrepareView();
             Expect.Call(viewMock.CurrentWorkitemDescriptor).Return(descriptor);
-            workitemMock.CommitChanges();
-            eventDispatcherMock.InvokeModelChanged(null, ModelChangedArgs.WorkitemChanged);
+            Expect.Call(workitemMock.CommitChanges);
+            Expect.Call(() => eventDispatcherMock.InvokeModelChanged(null, ModelChangedArgs.WorkitemChanged));
 
             mockRepository.ReplayAll();
 
@@ -120,15 +120,15 @@ namespace VersionOne.VisualStudio.Tests {
         }
 
         [Test]
-        public void RevertNonVirtualItemTest() {
+        public void RevertNonVirtualItem() {
             var workitemMock = mockRepository.PartialMock<TestWorkitem>(Guid.NewGuid().ToString(), false);
             var descriptor = new WorkitemDescriptor(workitemMock, new ColumnSetting[0], PropertyUpdateSource.WorkitemView, true);
 
             ExpectRegisterAndPrepareView();
             Expect.Call(viewMock.CurrentWorkitemDescriptor).Return(descriptor);
-            workitemMock.RevertChanges();
-            viewMock.RefreshProperties();
-            viewMock.Refresh();
+            Expect.Call(workitemMock.RevertChanges);
+            Expect.Call(viewMock.RefreshProperties);
+            Expect.Call(viewMock.Refresh);
 
             mockRepository.ReplayAll();
 
@@ -141,18 +141,19 @@ namespace VersionOne.VisualStudio.Tests {
         }
 
         [Test]
-        public void SignupItemTest() {
+        public void SignupItem() {
             var workitemMock = mockRepository.PartialMock<TestWorkitem>(Guid.NewGuid().ToString(), false);
             var descriptor = new WorkitemDescriptor(workitemMock, new ColumnSetting[0], PropertyUpdateSource.WorkitemView, true);
 
             ExpectRegisterAndPrepareView();
             Expect.Call(viewMock.CurrentWorkitemDescriptor).Return(descriptor);
-            workitemMock.Signup();
-            eventDispatcherMock.InvokeModelChanged(null, ModelChangedArgs.WorkitemChanged);
+            Expect.Call(viewMock.GetWaitCursor()).Return(waitCursorStub);
+            Expect.Call(workitemMock.Signup);
+            Expect.Call(() => eventDispatcherMock.InvokeModelChanged(null, ModelChangedArgs.WorkitemChanged));
 
             mockRepository.ReplayAll();
 
-            controller = new WorkitemTreeController(dataLayerMock, settingsMock, eventDispatcherMock);
+            controller = new TestWorkitemTreeController(dataLayerMock, settingsMock, eventDispatcherMock);
             controller.Register(viewMock);
             controller.PrepareView();
             controller.SignupItem();
@@ -161,18 +162,19 @@ namespace VersionOne.VisualStudio.Tests {
         }
 
         [Test]
-        public void QuickCloseItemTest() {
+        public void QuickCloseItem() {
             var workitemMock = mockRepository.PartialMock<TestWorkitem>(Guid.NewGuid().ToString(), false);
             var descriptor = new WorkitemDescriptor(workitemMock, new ColumnSetting[0], PropertyUpdateSource.WorkitemView, true);
 
             ExpectRegisterAndPrepareView();
             Expect.Call(viewMock.CurrentWorkitemDescriptor).Return(descriptor);
-            workitemMock.QuickClose();
-            eventDispatcherMock.InvokeModelChanged(null, ModelChangedArgs.WorkitemChanged);
+            Expect.Call(viewMock.GetWaitCursor()).Return(waitCursorStub);
+            Expect.Call(workitemMock.QuickClose);
+            Expect.Call(() => eventDispatcherMock.InvokeModelChanged(null, ModelChangedArgs.WorkitemChanged));
 
             mockRepository.ReplayAll();
 
-            controller = new WorkitemTreeController(dataLayerMock, settingsMock, eventDispatcherMock);
+            controller = new TestWorkitemTreeController(dataLayerMock, settingsMock, eventDispatcherMock);
             controller.Register(viewMock);
             controller.PrepareView();
             controller.QuickCloseItem();
@@ -181,7 +183,7 @@ namespace VersionOne.VisualStudio.Tests {
         }
 
         [Test]
-        public void CloseItemTest() {
+        public void CloseItem() {
             var workitemMock = mockRepository.PartialMock<TestWorkitem>(Guid.NewGuid().ToString(), true);
             var descriptor = new WorkitemDescriptor(workitemMock, new ColumnSetting[0], PropertyUpdateSource.WorkitemView, true);
 
@@ -189,7 +191,7 @@ namespace VersionOne.VisualStudio.Tests {
             Expect.Call(viewMock.CurrentWorkitemDescriptor).Return(descriptor);
             // TODO refactor view to be able not to reference System.Windows.Forms here and in controller
             Expect.Call(viewMock.ShowCloseWorkitemDialog(workitemMock)).Return(DialogResult.OK);
-            eventDispatcherMock.InvokeModelChanged(null, ModelChangedArgs.WorkitemChanged);
+            Expect.Call(() => eventDispatcherMock.InvokeModelChanged(null, ModelChangedArgs.WorkitemChanged));
 
             mockRepository.ReplayAll();
 
@@ -202,20 +204,19 @@ namespace VersionOne.VisualStudio.Tests {
         }
 
         [Test]
-        public void ModelChangedEventTest() {
+        public void ModelChangedEvent() {
             Expect.Call(() => eventDispatcherMock.ModelChanged += null).IgnoreArguments();
-            IEventRaiser raiser = LastCall.GetEventRaiser();
-            eventDispatcherMock.WorkitemPropertiesUpdated += null;
-            LastCall.IgnoreArguments();
+            var raiser = LastCall.GetEventRaiser();
+            Expect.Call(() => eventDispatcherMock.WorkitemPropertiesUpdated += null).IgnoreArguments();
             Expect.Call(viewMock.Controller).PropertyBehavior();
             Expect.Call(dataLayerMock.CurrentProject).Return(null);
             Expect.Call(viewMock.Title).IgnoreArguments().PropertyBehavior();
             Expect.Call(viewMock.Model).IgnoreArguments().PropertyBehavior();
-            viewMock.ReconfigureTreeColumns();
+            Expect.Call(viewMock.ReconfigureTreeColumns);
             Expect.Call(viewMock.CheckSettingsAreValid()).Return(true);
-            viewMock.ReconfigureTreeColumns();
-            viewMock.SetSelection();
-            viewMock.Refresh();
+            Expect.Call(viewMock.ReconfigureTreeColumns);
+            Expect.Call(viewMock.SetSelection);
+            Expect.Call(viewMock.Refresh);
             Expect.Call(viewMock.CurrentWorkitemDescriptor).Return(null);
             Expect.Call(viewMock.AddTaskCommandEnabled).IgnoreArguments().PropertyBehavior();
             Expect.Call(viewMock.AddTestCommandEnabled).IgnoreArguments().PropertyBehavior();
@@ -223,8 +224,8 @@ namespace VersionOne.VisualStudio.Tests {
 
             Expect.Call(dataLayerMock.CurrentProject).Return(null);
             Expect.Call(viewMock.CheckSettingsAreValid()).Return(false);
-            viewMock.ResetPropertyView();
-            viewMock.Refresh();
+            Expect.Call(viewMock.ResetPropertyView);
+            Expect.Call(viewMock.Refresh);
             Expect.Call(viewMock.CurrentWorkitemDescriptor).Return(null);
 
             mockRepository.ReplayAll();
@@ -238,15 +239,15 @@ namespace VersionOne.VisualStudio.Tests {
         }
 
         [Test]
-        public void AddDefectTest() {
+        public void AddDefect() {
             var workitemMock = mockRepository.PartialMock<TestWorkitem>(Guid.NewGuid().ToString(), true);
 
             ExpectRegisterAndPrepareView();
             Expect.Call(dataLayerMock.CreateWorkitem(Entity.DefectPrefix, null)).Return(workitemMock);
-            eventDispatcherMock.InvokeModelChanged(null, ModelChangedArgs.ProjectChanged);
-            viewMock.SelectWorkitem(workitemMock);
-            viewMock.Refresh();
-            viewMock.RefreshProperties();
+            Expect.Call(() => eventDispatcherMock.InvokeModelChanged(null, ModelChangedArgs.ProjectChanged));
+            Expect.Call(() => viewMock.SelectWorkitem(workitemMock));
+            Expect.Call(viewMock.Refresh);
+            Expect.Call(viewMock.RefreshProperties);
 
             mockRepository.ReplayAll();
             controller = new WorkitemTreeController(dataLayerMock, settingsMock, eventDispatcherMock);
@@ -257,7 +258,7 @@ namespace VersionOne.VisualStudio.Tests {
         }
 
         [Test]
-        public void AddTaskTest() {
+        public void AddTask() {
             var parentWorkitemMock = mockRepository.PartialMock<TestWorkitem>(Guid.NewGuid().ToString(), true);
             var workitemMock = mockRepository.PartialMock<TestWorkitem>(Guid.NewGuid().ToString(), false);
             var descriptor = new WorkitemDescriptor(parentWorkitemMock, new ColumnSetting[0], PropertyUpdateSource.WorkitemView, true);
@@ -265,11 +266,11 @@ namespace VersionOne.VisualStudio.Tests {
             ExpectRegisterAndPrepareView();
             Expect.Call(viewMock.CurrentWorkitemDescriptor).Return(descriptor);
             Expect.Call(dataLayerMock.CreateWorkitem(Entity.TaskPrefix, parentWorkitemMock)).Return(workitemMock);
-            eventDispatcherMock.InvokeModelChanged(null, ModelChangedArgs.WorkitemChanged);
-            viewMock.ExpandCurrentNode();
-            viewMock.SelectWorkitem(workitemMock);
-            viewMock.Refresh();
-            viewMock.RefreshProperties();
+            Expect.Call(() => eventDispatcherMock.InvokeModelChanged(null, ModelChangedArgs.WorkitemChanged));
+            Expect.Call(viewMock.ExpandCurrentNode);
+            Expect.Call(() => viewMock.SelectWorkitem(workitemMock));
+            Expect.Call(viewMock.Refresh);
+            Expect.Call(viewMock.RefreshProperties);
 
             mockRepository.ReplayAll();
             controller = new WorkitemTreeController(dataLayerMock, settingsMock, eventDispatcherMock);
@@ -280,14 +281,14 @@ namespace VersionOne.VisualStudio.Tests {
         }
 
         [Test]
-        public void HandleFilteringByOwnerTest() {
+        public void HandleFilteringByOwner() {
             const bool onlyMyTasks = true;
 
             ExpectRegisterAndPrepareView();
             Expect.Call(settingsMock.ShowMyTasks).PropertyBehavior();
-            settingsMock.StoreSettings();
+            Expect.Call(settingsMock.StoreSettings);
             Expect.Call(dataLayerMock.ShowAllTasks).PropertyBehavior();
-            eventDispatcherMock.InvokeModelChanged(null, ModelChangedArgs.WorkitemChanged);
+            Expect.Call(() => eventDispatcherMock.InvokeModelChanged(null, ModelChangedArgs.WorkitemChanged));
 
             mockRepository.ReplayAll();
             controller = new WorkitemTreeController(dataLayerMock, settingsMock, eventDispatcherMock);
@@ -295,6 +296,17 @@ namespace VersionOne.VisualStudio.Tests {
             controller.PrepareView();
             controller.HandleFilteringByOwner(onlyMyTasks);
             mockRepository.VerifyAll();
+        }
+
+        /// <summary>
+        /// Use it instead of original controller anytime you need to test async methods.
+        /// </summary>
+        private class TestWorkitemTreeController : WorkitemTreeController {
+            internal TestWorkitemTreeController(IDataLayer dataLayer, ISettings settings, IEventDispatcher eventDispatcher) : base(dataLayer, settings, eventDispatcher) { }
+
+            protected override ITaskRunner GetTaskRunner(IWaitCursor waitCursor) {
+                return new SynchronousTaskRunner(waitCursor);
+            }
         }
     }
 }

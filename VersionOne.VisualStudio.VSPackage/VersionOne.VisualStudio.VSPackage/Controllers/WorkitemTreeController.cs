@@ -113,25 +113,30 @@ namespace VersionOne.VisualStudio.VSPackage.Controllers {
             var descriptor = view.CurrentWorkitemDescriptor;
             
             if(descriptor != null) {
-                descriptor.Workitem.Signup();
-                EventDispatcher.InvokeModelChanged(null, ModelChangedArgs.WorkitemChanged);
+                RunTaskAsync(view.GetWaitCursor(),
+                    () => descriptor.Workitem.Signup(),
+                    () => EventDispatcher.InvokeModelChanged(null, ModelChangedArgs.WorkitemChanged));
             }
         }
         
         public void QuickCloseItem() {
             var descriptor = view.CurrentWorkitemDescriptor;
-            
+
             if(descriptor != null) {
-                try {
-                    descriptor.Workitem.QuickClose();
-                } catch (ValidatorException ex) {
-                    view.ShowErrorMessage("Workitem cannot be closed because some required fields are empty:" + ex.Message);
-                }
-                
-                EventDispatcher.InvokeModelChanged(null, ModelChangedArgs.WorkitemChanged);
+                RunTaskAsync(view.GetWaitCursor(),
+                             () => descriptor.Workitem.QuickClose(),
+                             () => EventDispatcher.InvokeModelChanged(null, ModelChangedArgs.WorkitemChanged),
+                             ex => {
+                                 if(ex is ValidatorException) {
+                                     view.ShowErrorMessage(
+                                         "Workitem cannot be closed because some required fields are empty:" +
+                                         ex.Message);
+                                 }
+                             });
             }
         }
 
+        // TODO refactor to async
         public void CloseItem() {
             var descriptor = view.CurrentWorkitemDescriptor;
             
@@ -168,23 +173,19 @@ namespace VersionOne.VisualStudio.VSPackage.Controllers {
         // TODO refactor
         public void HandleSaveCommand() {
             try {
-                try {
-                    DataLayer.CommitChanges();
-                    DataLayer.Reconnect();
-                } catch(ValidatorException ex) {
-                    view.ShowValidationInformationDialog(ex.Message);
-                }
-            } catch (DataLayerException ex) {
+                DataLayer.CommitChanges();
+                DataLayer.Reconnect();
+            } catch(ValidatorException ex) {
+                view.ShowValidationInformationDialog(ex.Message);
+            } catch(DataLayerException ex) {
                 view.ResetPropertyView();
-                Console.WriteLine(ex);
-				view.ShowErrorMessage("Failed to save changes.");
-            } catch (NullReferenceException ex) {
+                view.ShowErrorMessage("Failed to save changes.");
+            } catch(NullReferenceException ex) {
                 //Workaround
                 view.ResetPropertyView();
-                Console.WriteLine(ex);
                 view.ShowErrorMessage("Failed to save changes.");
             }
-            
+
             EventDispatcher.InvokeModelChanged(null, ModelChangedArgs.SettingsChanged);
         }
 
@@ -249,6 +250,7 @@ namespace VersionOne.VisualStudio.VSPackage.Controllers {
 
         #endregion
 
+        // TODO implement async request
         public ICollection<Workitem> GetWorkitems() {
             try {
                 return DataLayer.GetWorkitems();
