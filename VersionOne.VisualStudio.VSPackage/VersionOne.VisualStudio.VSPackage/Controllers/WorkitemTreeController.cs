@@ -170,23 +170,30 @@ namespace VersionOne.VisualStudio.VSPackage.Controllers {
                 });
         }
 
-        // TODO refactor
+        // TODO refactor; NullReferenceException is marked a workaround - investigate on it
         public void HandleSaveCommand() {
-            try {
-                DataLayer.CommitChanges();
-                DataLayer.Reconnect();
-            } catch(ValidatorException ex) {
-                view.ShowValidationInformationDialog(ex.Message);
-            } catch(DataLayerException ex) {
-                view.ResetPropertyView();
-                view.ShowErrorMessage("Failed to save changes.");
-            } catch(NullReferenceException ex) {
-                //Workaround
-                view.ResetPropertyView();
-                view.ShowErrorMessage("Failed to save changes.");
-            }
+            RunTaskAsync(view.GetWaitCursor(),
+                         () => {
+                             DataLayer.CommitChanges();
+                             DataLayer.Reconnect();
+                         },
+                         () => EventDispatcher.InvokeModelChanged(null, ModelChangedArgs.SettingsChanged),
+                         ex => {
+                             if(ex.GetType() == typeof(ValidatorException)) {
+                                 view.ShowValidationInformationDialog(ex.Message);
+                             }
 
-            EventDispatcher.InvokeModelChanged(null, ModelChangedArgs.SettingsChanged);
+                             if(ex.GetType() == typeof(DataLayerException)) {
+                                 view.ResetPropertyView();
+                                 view.ShowErrorMessage("Failed to save changes.");
+                             }
+
+                             if(ex.GetType() == typeof(NullReferenceException)) {
+                                 //Workaround
+                                 view.ResetPropertyView();
+                                 view.ShowErrorMessage("Failed to save changes.");
+                             }
+                         });
         }
 
         public void HandleTreeSelectionChanged() {

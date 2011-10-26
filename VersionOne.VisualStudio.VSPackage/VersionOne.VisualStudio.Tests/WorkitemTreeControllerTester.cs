@@ -298,6 +298,79 @@ namespace VersionOne.VisualStudio.Tests {
             mockRepository.VerifyAll();
         }
 
+        [Test]
+        public void HandleSaveCommand() {
+            ExpectRegisterAndPrepareView();
+            Expect.Call(viewMock.GetWaitCursor()).Return(waitCursorStub);
+            Expect.Call(dataLayerMock.CommitChanges);
+            Expect.Call(dataLayerMock.Reconnect);
+            Expect.Call(() => eventDispatcherMock.InvokeModelChanged(null, ModelChangedArgs.SettingsChanged));
+
+            mockRepository.ReplayAll();
+            controller = new TestWorkitemTreeController(dataLayerMock, settingsMock, eventDispatcherMock);
+            controller.Register(viewMock);
+            controller.PrepareView();
+            controller.HandleSaveCommand();
+
+            mockRepository.VerifyAll();
+        }
+
+        [Test]
+        public void HandleSaveCommandValidationException() {
+            ExpectRegisterAndPrepareView();
+            Expect.Call(viewMock.GetWaitCursor()).Return(waitCursorStub);
+            Expect.Call(dataLayerMock.CommitChanges).Throw(new ValidatorException(null));
+            Expect.Call(dataLayerMock.Reconnect).Repeat.Never();
+            Expect.Call(() => viewMock.ShowValidationInformationDialog(null)).IgnoreArguments();
+            Expect.Call(() => eventDispatcherMock.InvokeModelChanged(null, ModelChangedArgs.SettingsChanged));
+
+            mockRepository.ReplayAll();
+            controller = new TestWorkitemTreeController(dataLayerMock, settingsMock, eventDispatcherMock);
+            controller.Register(viewMock);
+            controller.PrepareView();
+            controller.HandleSaveCommand();
+
+            mockRepository.VerifyAll();
+        }
+
+        [Test]
+        public void HandleSaveCommandGenericDataLayerException() {
+            ExpectRegisterAndPrepareView();
+            Expect.Call(viewMock.GetWaitCursor()).Return(waitCursorStub);
+            Expect.Call(dataLayerMock.CommitChanges).Throw(new DataLayerException(null));
+            Expect.Call(dataLayerMock.Reconnect).Repeat.Never();
+            Expect.Call(() => viewMock.ShowErrorMessage(null)).IgnoreArguments();
+            Expect.Call(viewMock.ResetPropertyView);
+            Expect.Call(() => eventDispatcherMock.InvokeModelChanged(null, ModelChangedArgs.SettingsChanged));
+
+            mockRepository.ReplayAll();
+            controller = new TestWorkitemTreeController(dataLayerMock, settingsMock, eventDispatcherMock);
+            controller.Register(viewMock);
+            controller.PrepareView();
+            controller.HandleSaveCommand();
+
+            mockRepository.VerifyAll();
+        }
+
+        [Test]
+        public void HandleSaveCommandNullReferenceException() {
+            ExpectRegisterAndPrepareView();
+            Expect.Call(viewMock.GetWaitCursor()).Return(waitCursorStub);
+            Expect.Call(dataLayerMock.CommitChanges);
+            Expect.Call(dataLayerMock.Reconnect).Throw(new NullReferenceException());
+            Expect.Call(() => viewMock.ShowErrorMessage(null)).IgnoreArguments();
+            Expect.Call(viewMock.ResetPropertyView);
+            Expect.Call(() => eventDispatcherMock.InvokeModelChanged(null, ModelChangedArgs.SettingsChanged));
+
+            mockRepository.ReplayAll();
+            controller = new TestWorkitemTreeController(dataLayerMock, settingsMock, eventDispatcherMock);
+            controller.Register(viewMock);
+            controller.PrepareView();
+            controller.HandleSaveCommand();
+
+            mockRepository.VerifyAll();
+        }
+
         /// <summary>
         /// Use it instead of original controller anytime you need to test async methods.
         /// </summary>
