@@ -1,6 +1,4 @@
-using System.Collections.Generic;
 using System.Diagnostics;
-using System.Threading;
 using VersionOne.VisualStudio.DataLayer.Entities;
 using VersionOne.VisualStudio.VSPackage.Controls;
 using VersionOne.VisualStudio.DataLayer;
@@ -8,18 +6,10 @@ using VersionOne.VisualStudio.VSPackage.Events;
 using VersionOne.VisualStudio.VSPackage.Settings;
 
 namespace VersionOne.VisualStudio.VSPackage.Controllers {
-    public class ProjectTreeController {
-        private readonly ISettings settings;
-        private readonly IDataLayer dataLayer;
-        private readonly IEventDispatcher eventDispatcher;
-
+    public class ProjectTreeController : BaseController {
         public IProjectTreeView View { get; private set; }
 
-        public ProjectTreeController(IDataLayer dataLayer, ISettings settings, IEventDispatcher eventDispatcher) {
-            this.dataLayer = dataLayer;
-            this.settings = settings;
-            this.eventDispatcher = eventDispatcher;
-            
+        public ProjectTreeController(IDataLayer dataLayer, ISettings settings, IEventDispatcher eventDispatcher) : base(dataLayer, settings, eventDispatcher) {
             eventDispatcher.ModelChanged += eventDispatcher_ModelChanged;
         }
 
@@ -37,12 +27,12 @@ namespace VersionOne.VisualStudio.VSPackage.Controllers {
         }
 
         public void HandleProjectSelected(Project project) {
-            if(settings.SelectedProjectId != project.Id) {
-                settings.SelectedProjectId = project.Id;
-                settings.StoreSettings();
-                dataLayer.CurrentProject = project;
+            if(Settings.SelectedProjectId != project.Id) {
+                Settings.SelectedProjectId = project.Id;
+                Settings.StoreSettings();
+                DataLayer.CurrentProject = project;
                 View.RefreshProperties();
-                eventDispatcher.InvokeModelChanged(this, ModelChangedArgs.ProjectChanged);
+                EventDispatcher.InvokeModelChanged(this, ModelChangedArgs.ProjectChanged);
             }
         }
 
@@ -55,8 +45,8 @@ namespace VersionOne.VisualStudio.VSPackage.Controllers {
         }
 
         public void HandleProjectsRequest() {
-            new BackgroundTaskRunner(View.GetWaitCursor()).Run(
-                () => View.Projects = dataLayer.GetProjectTree(),
+            RunTaskAsync(View.GetWaitCursor(),
+                () => View.Projects = DataLayer.GetProjectTree(),
                 () => View.CompleteProjectsRequest(),
                 ex => {
                     if (ex is DataLayerException) {

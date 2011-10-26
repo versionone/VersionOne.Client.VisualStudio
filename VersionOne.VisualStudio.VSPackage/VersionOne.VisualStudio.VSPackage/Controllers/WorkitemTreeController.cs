@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using System.Diagnostics;
 using System.Windows.Forms;
 using VersionOne.VisualStudio.DataLayer.Entities;
@@ -8,17 +9,13 @@ using VersionOne.VisualStudio.VSPackage.Events;
 using VersionOne.VisualStudio.VSPackage.Settings;
 
 namespace VersionOne.VisualStudio.VSPackage.Controllers {
-    public class WorkitemTreeController {
+    public class WorkitemTreeController : BaseController {
         private IWorkitemTreeView view;
-        private readonly IDataLayer dataLayer;
-        private readonly ISettings settings;
-        private readonly IEventDispatcher eventDispatcher;
         private StoryTreeModel model;
 
-        public WorkitemTreeController(IDataLayer dataLayer, ISettings settings, IEventDispatcher eventDispatcher) {
-            this.dataLayer = dataLayer;
-            this.settings = settings;
-            this.eventDispatcher = eventDispatcher;
+        public bool CanRetrieveData { get { return DataLayer.IsConnected; } }
+
+        public WorkitemTreeController(IDataLayer dataLayer, ISettings settings, IEventDispatcher eventDispatcher) : base(dataLayer, settings, eventDispatcher) {
             eventDispatcher.ModelChanged += eventDispatcher_ModelChanged;
             eventDispatcher.WorkitemPropertiesUpdated += eventDispatcher_WorkitemPropertiesUpdated;
         }
@@ -27,7 +24,7 @@ namespace VersionOne.VisualStudio.VSPackage.Controllers {
             UpdateViewTitle();
             view.Model = model;
             UpdateViewData();
-            bool mayAddSecondaryItems = ShouldEnableAddSecondaryItemCommand();
+            var mayAddSecondaryItems = ShouldEnableAddSecondaryItemCommand();
             view.AddTaskCommandEnabled = mayAddSecondaryItems;
             view.AddTestCommandEnabled = mayAddSecondaryItems;
         }
@@ -69,7 +66,7 @@ namespace VersionOne.VisualStudio.VSPackage.Controllers {
 
         public void PrepareView() {
             UpdateViewTitle();
-            model = new StoryTreeModel(dataLayer);
+            model = new StoryTreeModel(this);
             view.Model = model;
             view.ReconfigureTreeColumns();
             UpdateViewData();
@@ -92,7 +89,7 @@ namespace VersionOne.VisualStudio.VSPackage.Controllers {
 					view.ShowErrorMessage("Workitem cannot be saved because the following required fields are empty:" + ex.Message);
 				}
                 
-                eventDispatcher.InvokeModelChanged(null, ModelChangedArgs.WorkitemChanged);
+                EventDispatcher.InvokeModelChanged(null, ModelChangedArgs.WorkitemChanged);
             }
         }
 
@@ -104,7 +101,7 @@ namespace VersionOne.VisualStudio.VSPackage.Controllers {
                 item.RevertChanges();
                 
                 if (item.IsVirtual) {
-                    eventDispatcher.InvokeModelChanged(null, ModelChangedArgs.WorkitemChanged);
+                    EventDispatcher.InvokeModelChanged(null, ModelChangedArgs.WorkitemChanged);
                 }
                 
                 view.RefreshProperties();
@@ -117,7 +114,7 @@ namespace VersionOne.VisualStudio.VSPackage.Controllers {
             
             if(descriptor != null) {
                 descriptor.Workitem.Signup();
-                eventDispatcher.InvokeModelChanged(null, ModelChangedArgs.WorkitemChanged);
+                EventDispatcher.InvokeModelChanged(null, ModelChangedArgs.WorkitemChanged);
             }
         }
         
@@ -130,7 +127,8 @@ namespace VersionOne.VisualStudio.VSPackage.Controllers {
                 } catch (ValidatorException ex) {
                     view.ShowErrorMessage("Workitem cannot be closed because some required fields are empty:" + ex.Message);
                 }
-                eventDispatcher.InvokeModelChanged(null, ModelChangedArgs.WorkitemChanged);
+                
+                EventDispatcher.InvokeModelChanged(null, ModelChangedArgs.WorkitemChanged);
             }
         }
 
@@ -141,7 +139,7 @@ namespace VersionOne.VisualStudio.VSPackage.Controllers {
                 var result = view.ShowCloseWorkitemDialog(descriptor.Workitem);
                 
                 if (result == DialogResult.OK) {
-                    eventDispatcher.InvokeModelChanged(null, ModelChangedArgs.WorkitemChanged);
+                    EventDispatcher.InvokeModelChanged(null, ModelChangedArgs.WorkitemChanged);
                 }
             }
         }
@@ -149,16 +147,16 @@ namespace VersionOne.VisualStudio.VSPackage.Controllers {
         #endregion
 
         private void UpdateViewTitle() {
-            var currentProject = dataLayer.CurrentProject;            
+            var currentProject = DataLayer.CurrentProject;            
             view.Title = currentProject == null ? Resources.ToolWindowTitle : string.Format("{0} - {1}", Resources.ToolWindowTitle, currentProject.GetProperty(Entity.NameProperty));
         }
 
         #region Command handlers
 
         public void HandleRefreshCommand() {
-            new BackgroundTaskRunner(view.GetWaitCursor()).Run(
-                () => dataLayer.Reconnect(),
-                () => eventDispatcher.InvokeModelChanged(null, ModelChangedArgs.SettingsChanged),
+            RunTaskAsync(view.GetWaitCursor(),
+                () => DataLayer.Reconnect(),
+                () => EventDispatcher.InvokeModelChanged(null, ModelChangedArgs.SettingsChanged),
                 ex => {
                     if(ex is DataLayerException) {
                         view.ResetPropertyView();
@@ -171,8 +169,8 @@ namespace VersionOne.VisualStudio.VSPackage.Controllers {
         public void HandleSaveCommand() {
             try {
                 try {
-                    dataLayer.CommitChanges();
-                    dataLayer.Reconnect();
+                    DataLayer.CommitChanges();
+                    DataLayer.Reconnect();
                 } catch(ValidatorException ex) {
                     view.ShowValidationInformationDialog(ex.Message);
                 }
@@ -187,7 +185,7 @@ namespace VersionOne.VisualStudio.VSPackage.Controllers {
                 view.ShowErrorMessage("Failed to save changes.");
             }
             
-            eventDispatcher.InvokeModelChanged(null, ModelChangedArgs.SettingsChanged);
+            EventDispatcher.InvokeModelChanged(null, ModelChangedArgs.SettingsChanged);
         }
 
         public void HandleTreeSelectionChanged() {
@@ -199,10 +197,10 @@ namespace VersionOne.VisualStudio.VSPackage.Controllers {
         }
 
         public void HandleFilteringByOwner(bool onlyMyTasks) {
-            settings.ShowMyTasks = onlyMyTasks;
-            settings.StoreSettings();
-            dataLayer.ShowAllTasks = !onlyMyTasks;
-            eventDispatcher.InvokeModelChanged(null, ModelChangedArgs.WorkitemChanged);
+            Settings.ShowMyTasks = onlyMyTasks;
+            Settings.StoreSettings();
+            DataLayer.ShowAllTasks = !onlyMyTasks;
+            EventDispatcher.InvokeModelChanged(null, ModelChangedArgs.WorkitemChanged);
         }
 
         #endregion
@@ -222,12 +220,11 @@ namespace VersionOne.VisualStudio.VSPackage.Controllers {
 
         public void AddTask() {
             AddSecondaryWorkitem(Entity.TaskPrefix);
-
         }
 
         public void AddDefect() {
-            var defect = dataLayer.CreateWorkitem(Entity.DefectPrefix, null);
-            eventDispatcher.InvokeModelChanged(null, ModelChangedArgs.ProjectChanged);
+            var defect = DataLayer.CreateWorkitem(Entity.DefectPrefix, null);
+            EventDispatcher.InvokeModelChanged(null, ModelChangedArgs.ProjectChanged);
             view.SelectWorkitem(defect);
             view.Refresh();
             view.RefreshProperties();
@@ -241,9 +238,9 @@ namespace VersionOne.VisualStudio.VSPackage.Controllers {
             var selectedItem = view.CurrentWorkitemDescriptor.Workitem;
             var parent = selectedItem.IsPrimary ? selectedItem : selectedItem.Parent;
 
-            var item = dataLayer.CreateWorkitem(type, parent);
+            var item = DataLayer.CreateWorkitem(type, parent);
 
-            eventDispatcher.InvokeModelChanged(null, ModelChangedArgs.WorkitemChanged);
+            EventDispatcher.InvokeModelChanged(null, ModelChangedArgs.WorkitemChanged);
             view.ExpandCurrentNode();
             view.SelectWorkitem(item);
             view.Refresh();
@@ -251,5 +248,14 @@ namespace VersionOne.VisualStudio.VSPackage.Controllers {
         }
 
         #endregion
+
+        public ICollection<Workitem> GetWorkitems() {
+            try {
+                return DataLayer.GetWorkitems();
+            } catch(DataLayerException) {
+                // TODO show message?
+                return null;
+            }
+        }
     }
 }

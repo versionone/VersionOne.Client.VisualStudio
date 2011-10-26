@@ -119,6 +119,7 @@
     <Compile Include="BackgroundTaskRunner.Designer.cs">
       <DependentUpon>BackgroundTaskRunner.cs</DependentUpon>
     </Compile>
+    <Compile Include="Controllers\BaseController.cs" />
     <Compile Include="Controllers\ProjectTreeController.cs" />
     <Compile Include="Controllers\WorkitemTreeController.cs" />
     <Compile Include="Controls\ErrorMessageControl.cs">
@@ -166,6 +167,7 @@
     <Compile Include="Controls\WorkitemTreeControl.Designer.cs">
       <DependentUpon>WorkitemTreeControl.cs</DependentUpon>
     </Compile>
+    <Compile Include="ITaskRunner.cs" />
     <Compile Include="SynchronousTaskRunner.cs">
       <SubType>Component</SubType>
     </Compile>

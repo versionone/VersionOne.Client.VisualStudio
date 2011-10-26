@@ -122,7 +122,6 @@ namespace VersionOne.VisualStudio.Tests {
         }
 
         [Test]
-        [Ignore("This test is currently designed for synchronous execution and would not wait for background routine to complete")]
         public void GetProjects() {
             var waitCursorStub = mockRepository.Stub<IWaitCursor>();
 
@@ -135,15 +134,21 @@ namespace VersionOne.VisualStudio.Tests {
             Expect.Call(viewMock.CompleteProjectsRequest);
 
             mockRepository.ReplayAll();
-            controller = new ProjectTreeController(dataLayerMock, settingsMock, eventDispatcherMock);
+            
+            controller = new TestProjectTreeController(dataLayerMock, settingsMock, eventDispatcherMock);
             controller.RegisterView(viewMock);
             controller.PrepareView();
             controller.HandleProjectsRequest();
-            
-            // Actually, we're able to cheat and run successfully, but it is not a decent solution
-            // Thread.Sleep(200);
-            
+
             mockRepository.VerifyAll();
+        }
+
+        private class TestProjectTreeController : ProjectTreeController {
+            internal TestProjectTreeController(IDataLayer dataLayer, ISettings settings, IEventDispatcher eventDispatcher) : base(dataLayer, settings, eventDispatcher) { }
+
+            protected override ITaskRunner GetTaskRunner(IWaitCursor waitCursor) {
+                return new SynchronousTaskRunner(waitCursor);
+            }
         }
     }
 }
