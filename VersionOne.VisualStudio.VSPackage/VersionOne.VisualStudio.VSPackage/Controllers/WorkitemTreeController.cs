@@ -83,13 +83,14 @@ namespace VersionOne.VisualStudio.VSPackage.Controllers {
             var descriptor = view.CurrentWorkitemDescriptor;
             
             if(descriptor != null) {
-				try {
-					descriptor.Workitem.CommitChanges();
-				} catch (ValidatorException ex) {
-					view.ShowErrorMessage("Workitem cannot be saved because the following required fields are empty:" + ex.Message);
-				}
-                
-                EventDispatcher.InvokeModelChanged(null, ModelChangedArgs.WorkitemChanged);
+                RunTaskAsync(view.GetWaitCursor(),
+                             () => descriptor.Workitem.CommitChanges(),
+                             () => EventDispatcher.InvokeModelChanged(null, ModelChangedArgs.WorkitemChanged),
+                             ex => {
+                                 if(ex is ValidatorException) {
+                                     view.ShowErrorMessage("Workitem cannot be saved because the following required fields are empty:" + ex.Message);
+                                 }
+                             });
             }
         }
 
@@ -129,7 +130,7 @@ namespace VersionOne.VisualStudio.VSPackage.Controllers {
                              ex => {
                                  if(ex is ValidatorException) {
                                      view.ShowErrorMessage(
-                                         "Workitem cannot be closed because some required fields are empty:" +
+                                         "Workitem cannot be closed because some required fields are empty: " +
                                          ex.Message);
                                  }
                              });

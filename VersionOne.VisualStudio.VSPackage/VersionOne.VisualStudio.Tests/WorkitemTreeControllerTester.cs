@@ -106,7 +106,30 @@ namespace VersionOne.VisualStudio.Tests {
 
             ExpectRegisterAndPrepareView();
             Expect.Call(viewMock.CurrentWorkitemDescriptor).Return(descriptor);
+            Expect.Call(viewMock.GetWaitCursor()).Return(waitCursorStub);
             Expect.Call(workitemMock.CommitChanges);
+            Expect.Call(() => eventDispatcherMock.InvokeModelChanged(null, ModelChangedArgs.WorkitemChanged));
+
+            mockRepository.ReplayAll();
+
+            controller = new WorkitemTreeController(dataLayerMock, settingsMock, eventDispatcherMock);
+            controller.Register(viewMock);
+            controller.PrepareView();
+            controller.CommitItem();
+
+            mockRepository.VerifyAll();
+        }
+
+        [Test]
+        public void CommitItemValidationFailure() {
+            var workitemMock = mockRepository.PartialMock<TestWorkitem>(Guid.NewGuid().ToString(), true);
+            var descriptor = new WorkitemDescriptor(workitemMock, new ColumnSetting[0], PropertyUpdateSource.WorkitemView, true);
+
+            ExpectRegisterAndPrepareView();
+            Expect.Call(viewMock.CurrentWorkitemDescriptor).Return(descriptor);
+            Expect.Call(viewMock.GetWaitCursor()).Return(waitCursorStub);
+            Expect.Call(workitemMock.CommitChanges).Throw(new ValidatorException(null));
+            Expect.Call(() => viewMock.ShowErrorMessage(null)).IgnoreArguments();
             Expect.Call(() => eventDispatcherMock.InvokeModelChanged(null, ModelChangedArgs.WorkitemChanged));
 
             mockRepository.ReplayAll();
