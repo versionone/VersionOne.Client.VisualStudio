@@ -112,7 +112,7 @@ namespace VersionOne.VisualStudio.Tests {
 
             mockRepository.ReplayAll();
 
-            controller = new WorkitemTreeController(dataLayerMock, settingsMock, eventDispatcherMock);
+            controller = new TestWorkitemTreeController(dataLayerMock, settingsMock, eventDispatcherMock);
             controller.Register(viewMock);
             controller.PrepareView();
             controller.CommitItem();
@@ -134,7 +134,7 @@ namespace VersionOne.VisualStudio.Tests {
 
             mockRepository.ReplayAll();
 
-            controller = new WorkitemTreeController(dataLayerMock, settingsMock, eventDispatcherMock);
+            controller = new TestWorkitemTreeController(dataLayerMock, settingsMock, eventDispatcherMock);
             controller.Register(viewMock);
             controller.PrepareView();
             controller.CommitItem();
