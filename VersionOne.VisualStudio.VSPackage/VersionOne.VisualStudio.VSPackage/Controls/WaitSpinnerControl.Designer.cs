@@ -33,20 +33,23 @@
             // lblWait
             // 
             this.lblWait.AutoSize = true;
-            this.lblWait.Location = new System.Drawing.Point(54, 13);
+            this.lblWait.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(204)));
+            this.lblWait.Location = new System.Drawing.Point(39, 13);
             this.lblWait.Name = "lblWait";
-            this.lblWait.Size = new System.Drawing.Size(174, 13);
+            this.lblWait.Size = new System.Drawing.Size(211, 13);
             this.lblWait.TabIndex = 0;
             this.lblWait.Text = "Please wait, operation in progress...";
+            this.lblWait.BackColor = System.Drawing.SystemColors.Window;
+            this.lblWait.ForeColor = System.Drawing.SystemColors.ControlText;
             // 
             // pbSpinner
             // 
+            this.pbSpinner.Image = global::VersionOne.VisualStudio.VSPackage.Resources.SpinnerImage;
             this.pbSpinner.Location = new System.Drawing.Point(3, 3);
             this.pbSpinner.Name = "pbSpinner";
             this.pbSpinner.Size = new System.Drawing.Size(32, 32);
             this.pbSpinner.TabIndex = 1;
             this.pbSpinner.TabStop = false;
-            this.pbSpinner.Image = Resources.SpinnerImage;
             // 
             // pnlSpinner
             // 
@@ -56,8 +59,9 @@
             this.pnlSpinner.Dock = System.Windows.Forms.DockStyle.Fill;
             this.pnlSpinner.Location = new System.Drawing.Point(0, 0);
             this.pnlSpinner.Name = "pnlSpinner";
-            this.pnlSpinner.Size = new System.Drawing.Size(246, 40);
+            this.pnlSpinner.Size = new System.Drawing.Size(254, 40);
             this.pnlSpinner.TabIndex = 2;
+            this.pnlSpinner.BackColor = System.Drawing.SystemColors.Window;
             // 
             // WaitSpinnerControl
             // 
@@ -65,7 +69,7 @@
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.Controls.Add(this.pnlSpinner);
             this.Name = "WaitSpinnerControl";
-            this.Size = new System.Drawing.Size(246, 40);
+            this.Size = new System.Drawing.Size(254, 40);
             ((System.ComponentModel.ISupportInitialize)(this.pbSpinner)).EndInit();
             this.pnlSpinner.ResumeLayout(false);
             this.pnlSpinner.PerformLayout();
