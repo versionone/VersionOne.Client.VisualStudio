@@ -75,6 +75,8 @@ namespace VersionOne.VisualStudio.VSPackage.Controls {
             }
         }
 
+        private readonly IWaitCursor waitCursor;
+
         public WorkitemTreeControl(TaskWindow parent) : base(parent) {
             InitializeComponent();
 
@@ -101,6 +103,29 @@ namespace VersionOne.VisualStudio.VSPackage.Controls {
             VisibleChanged += (sender, e) => RefreshProperties();
             CursorChanged += (sender, e) => RefreshProperties();
             Enter += (sender, e) => RefreshProperties();
+
+            waitCursor = GetWaitCursor();
+
+            tvWorkitems.AsyncExpanding = true;
+            tvWorkitems.LoadOnDemand = true;
+            tvWorkitems.Expanding += tvWorkitems_Expanding;
+            tvWorkitems.Expanded += tvWorkitems_Expanded;
+        }
+
+        private void tvWorkitems_Expanded(object sender, TreeViewAdvEventArgs e) {
+            if(!IsHandleCreated) {
+                return;
+            }
+
+            Invoke(new Action(() => waitCursor.Hide()));
+        }
+
+        private void tvWorkitems_Expanding(object sender, TreeViewAdvEventArgs e) {
+            if(!IsHandleCreated) {
+                return;
+            }
+
+            Invoke(new Action(() => waitCursor.Show()));
         }
 
         public override void SetAccessibleControlsEnabled(bool enabled) {
@@ -110,10 +135,6 @@ namespace VersionOne.VisualStudio.VSPackage.Controls {
 
         public void ShowErrorMessage(string message) {
             MessageBox.Show(message, "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
-        }
-
-        public DialogResult ShowCloseWorkitemDialog(Workitem item) {
-            return new CloseWorkitemDialog(item).ShowDialog(this);
         }
 
         public void ShowValidationInformationDialog(string message) {

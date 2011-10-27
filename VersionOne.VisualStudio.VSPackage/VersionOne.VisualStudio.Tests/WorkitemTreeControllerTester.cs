@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using Rhino.Mocks;
 using NUnit.Framework;
 using VersionOne.VisualStudio.DataLayer;
@@ -430,6 +431,39 @@ namespace VersionOne.VisualStudio.Tests {
             controller.Register(viewMock);
             controller.PrepareView();
             controller.HandleSaveCommand();
+
+            mockRepository.VerifyAll();
+        }
+
+        [Test]
+        public void GetWorkitems() {
+            var workitems = new List<Workitem>();
+
+            ExpectRegisterAndPrepareView();
+            Expect.Call(dataLayerMock.GetWorkitems()).Return(workitems);
+
+            mockRepository.ReplayAll();
+            controller = new TestWorkitemTreeController(dataLayerMock, settingsMock, eventDispatcherMock);
+            controller.Register(viewMock);
+            controller.PrepareView();
+            var returnedWorkitems = controller.GetWorkitems();
+            Assert.AreEqual(workitems, returnedWorkitems);
+
+            mockRepository.VerifyAll();
+        }
+
+        [Test]
+        public void GetWorkitemsFailure() {
+            ExpectRegisterAndPrepareView();
+            Expect.Call(dataLayerMock.GetWorkitems()).Throw(new DataLayerException(null));
+            Expect.Call(() => viewMock.ShowErrorMessage(null)).IgnoreArguments();
+
+            mockRepository.ReplayAll();
+            controller = new TestWorkitemTreeController(dataLayerMock, settingsMock, eventDispatcherMock);
+            controller.Register(viewMock);
+            controller.PrepareView();
+            var returnedWorkitems = controller.GetWorkitems();
+            Assert.IsNull(returnedWorkitems);
 
             mockRepository.VerifyAll();
         }

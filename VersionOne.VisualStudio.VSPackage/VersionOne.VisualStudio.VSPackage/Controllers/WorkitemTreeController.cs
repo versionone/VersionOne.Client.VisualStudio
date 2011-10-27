@@ -258,12 +258,13 @@ namespace VersionOne.VisualStudio.VSPackage.Controllers {
 
         #endregion
 
-        // TODO implement async request
         public ICollection<Workitem> GetWorkitems() {
             try {
-                return DataLayer.GetWorkitems();
+                lock(this) {
+                    return DataLayer.GetWorkitems();
+                }
             } catch(DataLayerException) {
-                // TODO show message?
+                view.ShowErrorMessage("Unable to download workitems.");
                 return null;
             }
         }
