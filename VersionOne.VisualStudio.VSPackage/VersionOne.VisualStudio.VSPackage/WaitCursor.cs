@@ -13,6 +13,10 @@ namespace VersionOne.VisualStudio.VSPackage {
         }
 
         public void Show() {
+            if(control == null || !control.IsHandleCreated) {
+                return;
+            }
+
             control.Cursor = Cursors.WaitCursor;
 
             control.Controls.Add(spinnerControl);
