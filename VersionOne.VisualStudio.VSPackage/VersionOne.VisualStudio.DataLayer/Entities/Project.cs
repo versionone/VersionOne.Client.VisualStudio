@@ -1,9 +1,10 @@
+using System.Linq;
 using System.Collections.Generic;
 using VersionOne.SDK.APIClient;
 
 namespace VersionOne.VisualStudio.DataLayer.Entities {
     public class Project : Entity {
-        protected internal Project Parent;
+        private Project Parent;
 
         public override string TypePrefix {
             get { return ProjectPrefix; }
@@ -21,10 +22,7 @@ namespace VersionOne.VisualStudio.DataLayer.Entities {
                 return;
             }
 
-            foreach (Asset childAsset in asset.Children) {
-                Children.Add(WorkitemFactory.Instance.CreateProject(childAsset, this));
-            }
-            Children.TrimExcess();
+            Children.AddRange(asset.Children.Select(item => WorkitemFactory.CreateProject(item, this)));
         }
 
         public override bool IsPropertyReadOnly(string propertyName) {

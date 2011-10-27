@@ -1,9 +1,8 @@
 using System;
-using System.Collections;
 using System.Collections.Generic;
 using System.Globalization;
+using System.Linq;
 using VersionOne.SDK.APIClient;
-using Attribute = VersionOne.SDK.APIClient.Attribute;
 
 namespace VersionOne.VisualStudio.DataLayer.Entities {
     public abstract class Entity {
@@ -22,13 +21,12 @@ namespace VersionOne.VisualStudio.DataLayer.Entities {
         public const string ScheduleNameProperty = "Schedule.Name";
         public const string OwnersProperty = "Owners";
         public const string ToDoProperty = "ToDo";
-        public const string DetailEstimateProperty = "DetailEstimate";
         public const string OrderProperty = "Order";
 
         #endregion
 
-        protected ApiDataLayer dataLayer = ApiDataLayer.Instance as ApiDataLayer;
-        protected internal Asset Asset;
+        protected readonly ApiDataLayer DataLayer = ApiDataLayer.Instance as ApiDataLayer;
+        protected internal readonly Asset Asset;
 
         public abstract string TypePrefix { get; }
 
@@ -37,7 +35,7 @@ namespace VersionOne.VisualStudio.DataLayer.Entities {
         }
 
         private PropertyValues GetPropertyValues(string propertyName) {
-            return dataLayer.GetListPropertyValues(TypePrefix + propertyName);
+            return DataLayer.GetListPropertyValues(TypePrefix + propertyName);
         }
 
         protected Entity(Asset asset) {
@@ -52,19 +50,19 @@ namespace VersionOne.VisualStudio.DataLayer.Entities {
         /// <exception cref="KeyNotFoundException">If no property found.</exception>
         public virtual object GetProperty(string propertyName) {
             if (propertyName == EffortProperty) {
-                return dataLayer.GetEffort(Asset);
+                return DataLayer.GetEffort(Asset);
             }
 
-            Attribute attribute = Asset.Attributes[TypePrefix + '.' + propertyName];
-
-            PropertyValues allValues = GetPropertyValues(propertyName);
+            var attribute = Asset.Attributes[TypePrefix + '.' + propertyName];
+            var allValues = GetPropertyValues(propertyName);
 
             if (attribute.Definition.IsMultiValue) {
-                IEnumerable currentValues = attribute.Values;
+                var currentValues = attribute.Values;
                 return allValues == null ? currentValues : allValues.Subset(attribute.Values);
             }
 
-            object value = attribute.Value;
+            var value = attribute.Value;
+            
             if (value is Oid) {
                 return allValues == null ? value : allValues.Find((Oid)value);
             }
@@ -76,10 +74,10 @@ namespace VersionOne.VisualStudio.DataLayer.Entities {
         /// Sets property value.
         /// </summary>
         /// <param name="propertyName">Short name of the property to set. Eg. "Name"</param>
-        /// <param name="newValue">String, Double, null, ValueId, PropertyValues accepted.</returns>
+        /// <param name="newValue">String, Double, null, ValueId, PropertyValues accepted.</param>
         public virtual void SetProperty(string propertyName, object newValue) {
             try {
-                IAttributeDefinition attrDef = Asset.AssetType.GetAttributeDefinition(propertyName);
+                var attrDef = Asset.AssetType.GetAttributeDefinition(propertyName);
 
                 // NOTE EffortProperty is in fact of type Relation, but should be handled as Numeric
                 if (attrDef.AttributeType == AttributeType.Numeric || propertyName == EffortProperty) {
@@ -105,19 +103,19 @@ namespace VersionOne.VisualStudio.DataLayer.Entities {
         }
 
         private void SetNumericProperty(string propertyName, object newValue) {
-            double doubleValue = Convert.ToDouble(newValue, CultureInfo.CurrentCulture);
+            var doubleValue = Convert.ToDouble(newValue, CultureInfo.CurrentCulture);
 
             if (propertyName == EffortProperty) {
-                dataLayer.AddEffort(Asset, doubleValue);
+                DataLayer.AddEffort(Asset, doubleValue);
             } else if (newValue != null || doubleValue >= 0) {
                 SetPropertyInternal(propertyName, doubleValue);
             }
         }
 
         private void SetPropertyInternal(string propertyName, object newValue) {
-            Attribute attribute = Asset.Attributes[TypePrefix + '.' + propertyName];
+            var attribute = Asset.Attributes[TypePrefix + '.' + propertyName];
+            var oldValue = attribute.Value;
 
-            object oldValue = attribute.Value;
             if (oldValue == newValue || (oldValue != null && oldValue.Equals(newValue))) {
                 return;
             }
@@ -126,21 +124,18 @@ namespace VersionOne.VisualStudio.DataLayer.Entities {
         }
 
         private void SetMultiValueProperty(string propertyName, object newValue) {
-            IAttributeDefinition attrDef = Asset.AssetType.GetAttributeDefinition(propertyName);
-            Attribute attribute = Asset.Attributes[TypePrefix + '.' + propertyName];
+            var attrDef = Asset.AssetType.GetAttributeDefinition(propertyName);
+            var attribute = Asset.Attributes[TypePrefix + '.' + propertyName];
 
-            IList oldValues = attribute.ValuesList;
-            PropertyValues newValues = (PropertyValues)newValue;
+            var oldValues = attribute.ValuesList;
+            var newValues = (PropertyValues)newValue;
 
-            foreach (Oid oldValue in oldValues) {
-                if (!newValues.ContainsOid(oldValue)) {
-                    Asset.RemoveAttributeValue(attrDef, oldValue);
-                }
+            foreach(var oldValue in oldValues.Cast<Oid>().Where(oldValue => !newValues.ContainsOid(oldValue))) {
+                Asset.RemoveAttributeValue(attrDef, oldValue);
             }
-            foreach (ValueId value in newValues) {
-                if (!oldValues.Contains(value.Oid)) {
-                    Asset.AddAttributeValue(attrDef, value.Oid);
-                }
+
+            foreach(var value in newValues.Where(value => !oldValues.Contains(value.Oid))) {
+                Asset.AddAttributeValue(attrDef, value.Oid);
             }
         }
 
@@ -151,11 +146,9 @@ namespace VersionOne.VisualStudio.DataLayer.Entities {
                 return false;
             }
 
-            Entity other = (Entity) obj;
-            if (other.Asset.Oid != Asset.Oid) {
-                return false;
-            }
-            return true;
+            var other = (Entity) obj;
+            
+            return other.Asset.Oid == Asset.Oid;
         }
 
         public override int GetHashCode() {
@@ -166,9 +159,11 @@ namespace VersionOne.VisualStudio.DataLayer.Entities {
             if (ReferenceEquals(t1, t2)) {
                 return true;
             }
+
             if (ReferenceEquals(t1, null) || ReferenceEquals(t2, null)) {
                 return false;
             }
+            
             return t1.Equals(t2);
         }
 
@@ -183,13 +178,10 @@ namespace VersionOne.VisualStudio.DataLayer.Entities {
         #endregion
 
         public bool IsPropertyDefinitionReadOnly(string propertyName) {
-            string fullName = TypePrefix + '.' + propertyName;
+            var fullName = TypePrefix + '.' + propertyName;
+            
             try {
-                if (propertyName != EffortProperty && Asset.Attributes[fullName].Definition.IsReadOnly) {
-                    return true;
-                }
-
-                return false;
+                return propertyName != EffortProperty && Asset.Attributes[fullName].Definition.IsReadOnly;
             } catch (Exception ex) {
                 Logger.Warning("Cannot get property: " + fullName, ex);
                 return true;

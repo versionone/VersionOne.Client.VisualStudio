@@ -2,8 +2,9 @@
 using System.Diagnostics;
 using System.IO;
 
-// TODO refactor
+// TODO really it should be NLog or log4net wrapper
 namespace VersionOne.VisualStudio.DataLayer {
+    [Obsolete]
     public class Logger {
         private const string LogFileName = "log.txt";
 

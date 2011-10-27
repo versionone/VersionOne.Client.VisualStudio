@@ -21,7 +21,7 @@ namespace VersionOne.VisualStudio.VSPackage {
                                              }
 
                                              onComplete.Invoke();
-                                             waitCursor.Dispose();
+                                             waitCursor.Hide();
                                          };
 
             waitCursor.Show();

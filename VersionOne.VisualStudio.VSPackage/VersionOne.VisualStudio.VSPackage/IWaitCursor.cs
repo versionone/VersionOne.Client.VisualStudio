@@ -1,7 +1,6 @@
-using System;
-
 namespace VersionOne.VisualStudio.VSPackage {
-    public interface IWaitCursor : IDisposable {
-        IDisposable Show();
+    public interface IWaitCursor {
+        void Show();
+        void Hide();
     }
 }

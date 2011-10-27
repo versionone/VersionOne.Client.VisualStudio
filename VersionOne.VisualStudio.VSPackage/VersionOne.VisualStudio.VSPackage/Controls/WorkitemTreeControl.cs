@@ -77,7 +77,7 @@ namespace VersionOne.VisualStudio.VSPackage.Controls {
 
         public WorkitemTreeControl(TaskWindow parent) : base(parent) {
             InitializeComponent();
-            
+
             btnOnlyMyTasks.Checked = SettingsImpl.Instance.ShowMyTasks;
 
             tvWorkitems.SelectionChanged += tvWorkitems_SelectionChanged;
@@ -98,9 +98,9 @@ namespace VersionOne.VisualStudio.VSPackage.Controls {
             btnAddDefect.Click += AddDefect_Click;
             btnAddTest.Click += AddTest_Click;
 
-            VisibleChanged += delegate { RefreshProperties(); };
-            CursorChanged += delegate { RefreshProperties(); };
-            Enter += delegate { RefreshProperties(); };
+            VisibleChanged += (sender, e) => RefreshProperties();
+            CursorChanged += (sender, e) => RefreshProperties();
+            Enter += (sender, e) => RefreshProperties();
         }
 
         public override void SetAccessibleControlsEnabled(bool enabled) {
@@ -273,7 +273,14 @@ namespace VersionOne.VisualStudio.VSPackage.Controls {
         }
 
         private void miClose_Click(object sender, EventArgs e) {
-            Controller.CloseItem();
+            if(CurrentWorkitemDescriptor != null) {
+                var workitem = CurrentWorkitemDescriptor.Workitem;
+                var result = new CloseWorkitemDialog(workitem).ShowDialog(this);
+                
+                if(result == DialogResult.OK) {
+                    Controller.CloseItem(workitem);
+                }
+            }
         }
 
         private void CheckCellEditability(object sender, NodeControlValueEventArgs e) {
@@ -311,7 +318,7 @@ namespace VersionOne.VisualStudio.VSPackage.Controls {
         private static ContextMenu CreateReadonlyTextBoxContextMenu(NodeTextBox textBox) {
             var menu = new ContextMenu();
             var miCopyValue = new MenuItem("Copy");
-            miCopyValue.Click += delegate { textBox.Copy(); };
+            miCopyValue.Click += (sender, e) => textBox.Copy();
             menu.MenuItems.Add(miCopyValue);
             return menu;
         }
@@ -336,12 +343,10 @@ namespace VersionOne.VisualStudio.VSPackage.Controls {
             }
 
             if (CurrentWorkitemId != null) {
-                Predicate<TreeNodeAdv> matcher = node => {
-                    var desc = node.Tag as WorkitemDescriptor;
-                    return desc != null && desc.Workitem.Id == CurrentWorkitemId;
-                };
-                var selectedNode = tvWorkitems.FindNodeByMather(matcher);
-                
+                var selectedNode = tvWorkitems.FindNodeByMather(node => {
+                                                                    var desc = node.Tag as WorkitemDescriptor;
+                                                                    return desc != null && desc.Workitem.Id == CurrentWorkitemId;
+                                                                });
                 if (selectedNode != null) {
                     tvWorkitems.SelectedNode = selectedNode;
                     return;
@@ -358,12 +363,10 @@ namespace VersionOne.VisualStudio.VSPackage.Controls {
         }
 
         public void SelectWorkitem(Workitem item) {
-            Predicate<TreeNodeAdv> matcher = (node) => {
-                                                 var descriptor = node.Tag as WorkitemDescriptor;
-                                                 return descriptor != null && item.Equals(descriptor.Workitem);
-                                             };
-            var foundNode = tvWorkitems.FindNodeByMather(matcher);
-            
+            var foundNode = tvWorkitems.FindNodeByMather(node => {
+                                                             var descriptor = node.Tag as WorkitemDescriptor;
+                                                             return descriptor != null && item.Equals(descriptor.Workitem);
+                                                         });
             if(foundNode != null) {
                 tvWorkitems.SelectedNode = foundNode;
             }

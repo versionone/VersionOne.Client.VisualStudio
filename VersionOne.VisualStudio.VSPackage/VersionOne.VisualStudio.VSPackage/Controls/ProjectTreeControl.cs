@@ -25,9 +25,9 @@ namespace VersionOne.VisualStudio.VSPackage.Controls {
             tvProjects.AfterSelect += tvProjects_AfterSelect;
             btnRefresh.Click += btnRefresh_Click;
             
-            VisibleChanged += delegate { RefreshProperties(); };
-            CursorChanged += delegate { RefreshProperties(); };
-            Enter += delegate { RefreshProperties(); };
+            VisibleChanged += (sender, e) => RefreshProperties();
+            CursorChanged += (sender, e) => RefreshProperties();
+            Enter += (sender, e) => RefreshProperties();
         }
 
         private void btnRefresh_Click(object sender, EventArgs e) {

@@ -34,30 +34,29 @@ namespace VersionOne.VisualStudio.VSPackage.TreeViewEditors {
         }
 
         protected override Size CalculateEditorSize(EditorContext context) {
-            if (Parent.UseColumns) {
-                return context.Bounds.Size;
-            }
-            return new Size(EditorWidth, context.Bounds.Height);
+            return Parent.UseColumns ? context.Bounds.Size : new Size(EditorWidth, context.Bounds.Height);
         }
 
         protected override Control CreateEditor(TreeNodeAdv node) {
-            ComboBox comboBox = new ComboBox();
+            var comboBox = new ComboBox();
 
             if (DropDownItems != null) {
                 comboBox.Items.AddRange(DropDownItems.ToArray());
             }
 
-            object value = GetValue(node);
-            ValueId property = (ValueId)value;
+            var value = GetValue(node);
+            var property = (ValueId) value;
 
-            int index = 0;
+            var index = 0;
             // TODO
+            
             if(property != null) {
-                foreach (object item in comboBox.Items) {
+                foreach (var item in comboBox.Items) {
                     if(item.Equals(value)) {
                         comboBox.SelectedIndex = index;
                         break;
                     }
+
                     index++;
                 }
             }
@@ -77,8 +76,8 @@ namespace VersionOne.VisualStudio.VSPackage.TreeViewEditors {
         }
 
         protected override void DoApplyChanges(TreeNodeAdv node, Control editor) {
-            ComboBox cboEditor = (ComboBox) editor;
-            ValueId item = (ValueId) cboEditor.SelectedItem;
+            var cboEditor = (ComboBox) editor;
+            var item = (ValueId) cboEditor.SelectedItem;
             SetValue(node, item);
         }
 

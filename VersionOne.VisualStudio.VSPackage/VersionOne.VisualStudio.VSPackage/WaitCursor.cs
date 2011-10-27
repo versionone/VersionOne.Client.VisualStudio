@@ -9,22 +9,21 @@ namespace VersionOne.VisualStudio.VSPackage {
 
         public WaitCursor(V1UserControl control) {
             this.control = control;
-            this.spinnerControl = new WaitSpinnerControl();
+            spinnerControl = new WaitSpinnerControl();
         }
 
-        public IDisposable Show() {
+        public void Show() {
             control.Cursor = Cursors.WaitCursor;
-            
+
             control.Controls.Add(spinnerControl);
-            spinnerControl.Left = Math.Max(0, (control.Width - spinnerControl.Width) / 2);
-            spinnerControl.Top = (control.Height - spinnerControl.Height) / 2;
+            spinnerControl.Left = Math.Max(0, (control.Width - spinnerControl.Width)/2);
+            spinnerControl.Top = (control.Height - spinnerControl.Height)/2;
             spinnerControl.BringToFront();
 
             control.SetAccessibleControlsEnabled(false);
-            return this;
         }
 
-        public void Dispose() {
+        public void Hide() {
             control.Controls.Remove(spinnerControl);
             control.Cursor = Cursors.Default;
             control.SetAccessibleControlsEnabled(true);

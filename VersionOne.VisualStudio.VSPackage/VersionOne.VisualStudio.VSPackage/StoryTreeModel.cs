@@ -22,7 +22,7 @@ namespace VersionOne.VisualStudio.VSPackage {
                 return null;
             }
 
-            if (treePath.IsEmpty()) {
+            if(treePath.IsEmpty()) {
                 var workitems = controller.GetWorkitems();
                 return workitems != null ? WrapWorkitems(workitems) : new WorkitemDescriptor[0];
             }

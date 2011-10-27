@@ -227,7 +227,7 @@ namespace VersionOne.VisualStudio.DataLayer {
                 throw new DataLayerException("Unable to get projects", ex);
             }
 
-            return result.TotalAvaliable == 1 ? WorkitemFactory.Instance.CreateProject(result.Assets[0], null) : null;
+            return result.TotalAvaliable == 1 ? WorkitemFactory.CreateProject(result.Assets[0], null) : null;
         }
 
         public List<Workitem> GetWorkitems() {
@@ -275,7 +275,7 @@ namespace VersionOne.VisualStudio.DataLayer {
             
             foreach(var asset in allAssets) {
                 if(ShowAllTasks || AssetPassesShowMyTasksFilter(asset)) {
-                    res.Add(WorkitemFactory.Instance.CreateWorkitem(asset, null));
+                    res.Add(WorkitemFactory.CreateWorkitem(asset, null));
                 }
             }
 
@@ -316,7 +316,7 @@ namespace VersionOne.VisualStudio.DataLayer {
                 AddSelection(scopeQuery, Entity.ProjectPrefix);
                 var result = connector.Services.Retrieve(scopeQuery);
                 
-                var roots = result.Assets.Select(asset => WorkitemFactory.Instance.CreateProject(asset, null)).ToList();
+                var roots = result.Assets.Select(asset => WorkitemFactory.CreateProject(asset, null)).ToList();
                 return roots;
             } catch(WebException ex) {
                 connector.IsConnected = false;
@@ -514,7 +514,7 @@ namespace VersionOne.VisualStudio.DataLayer {
                 var requiredData = requiredFieldsValidator.Validate(asset);
 
                 if(requiredData.Count > 0) {
-                    string message = requiredFieldsValidator.GetMessageOfUnfilledFieldsList(requiredData, Environment.NewLine, ", ");
+                    var message = requiredFieldsValidator.GetMessageOfUnfilledFieldsList(requiredData, Environment.NewLine, ", ");
                     throw new ValidatorException(message);
                 }
             } catch(APIException ex) {
@@ -573,7 +573,7 @@ namespace VersionOne.VisualStudio.DataLayer {
                     continue;
                 }
 
-                Asset effort = connector.Services.New(effortType, pair.Key.Oid);
+                var effort = connector.Services.New(effortType, pair.Key.Oid);
                 effort.SetAttributeValue(effortType.GetAttributeDefinition("Value"), pair.Value);
                 effort.SetAttributeValue(effortType.GetAttributeDefinition("Date"), DateTime.Now);
                 connector.Services.Save(effort);
@@ -650,7 +650,7 @@ namespace VersionOne.VisualStudio.DataLayer {
 
         public Workitem CreateWorkitem(string assetType, Workitem parent) {
             var assetFactory = new AssetFactory(this, CurrentProject, AttributesToQuery);
-            var item = WorkitemFactory.Instance.CreateWorkitem(assetFactory, assetType, parent);
+            var item = WorkitemFactory.CreateWorkitem(assetFactory, assetType, parent);
 
             if(item.IsPrimary) {
                 allAssets.Add(item.Asset);

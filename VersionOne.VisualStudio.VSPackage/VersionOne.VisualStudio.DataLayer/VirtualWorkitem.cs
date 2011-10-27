@@ -32,18 +32,20 @@ namespace VersionOne.VisualStudio.DataLayer {
 
         public override void CommitChanges() {
             try {
-                dataLayer.CommitAsset(Asset);
-                foreach (Workitem child in Children) {
+                DataLayer.CommitAsset(Asset);
+                
+                foreach (var child in Children) {
                     child.SetProperty("Parent", Asset.Oid);
                 }
-                dataLayer.RefreshAsset(this);
+
+                DataLayer.RefreshAsset(this);
             } catch (APIException ex) {
                 Logger.Error("Failed to commit changes.", ex);
             }
         }
 
         public override void RevertChanges() {
-            dataLayer.CleanupWorkitem(this);
+            DataLayer.CleanupWorkitem(this);
         }
 
         public override bool Equals(object obj) {
@@ -51,7 +53,7 @@ namespace VersionOne.VisualStudio.DataLayer {
                 return false;
             }
 
-            VirtualWorkitem another = (VirtualWorkitem) obj;
+            var another = (VirtualWorkitem) obj;
             return Asset.Equals(another.Asset);
         }
 

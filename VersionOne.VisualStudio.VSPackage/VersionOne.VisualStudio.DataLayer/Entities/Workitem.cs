@@ -4,23 +4,18 @@ using VersionOne.SDK.APIClient;
 
 namespace VersionOne.VisualStudio.DataLayer.Entities {
     public class Workitem : Entity {
-        private Workitem parent;
+        public Workitem Parent { get; private set; }
 
-        public Workitem Parent {
-            get { return parent; }
-            protected internal set { parent = value; }
-        }
-
-        // TODO move exception off the property
+        // TODO move exception off the property, convert to switch using const strings
         public override string TypePrefix {
             get {
-                if (Asset.AssetType.Token == dataLayer.TaskType.Token) {
+                if (Asset.AssetType.Token == DataLayer.TaskType.Token) {
                     return TaskPrefix;
-                } else if (Asset.AssetType.Token == dataLayer.StoryType.Token) {
+                } else if (Asset.AssetType.Token == DataLayer.StoryType.Token) {
                     return StoryPrefix;
-                } else if (Asset.AssetType.Token == dataLayer.TestType.Token) {
+                } else if (Asset.AssetType.Token == DataLayer.TestType.Token) {
                     return TestPrefix;
-                } else if (Asset.AssetType.Token == dataLayer.DefectType.Token) {
+                } else if (Asset.AssetType.Token == DataLayer.DefectType.Token) {
                     return DefectPrefix;
                 } else {
                     throw new ArgumentException("Illegal asset.");
@@ -34,7 +29,7 @@ namespace VersionOne.VisualStudio.DataLayer.Entities {
         public readonly List<Workitem> Children = new List<Workitem>();
 
         public bool HasChanges {
-            get { return Asset.HasChanged || dataLayer.GetEffort(Asset) != 0; }
+            get { return Asset.HasChanged || DataLayer.GetEffort(Asset) != 0; }
         }
 
         public virtual bool IsPrimary {
@@ -57,22 +52,19 @@ namespace VersionOne.VisualStudio.DataLayer.Entities {
                 return;
             }
             foreach (Asset childAsset in asset.Children) {
-                if (dataLayer.ShowAllTasks || dataLayer.AssetPassesShowMyTasksFilter(childAsset)) {
-                    Children.Add(WorkitemFactory.Instance.CreateWorkitem(childAsset, this));
-                    Children.Sort(new WorkitemComparer(dataLayer.TestType.Token, dataLayer.TaskType.Token));
+                if (DataLayer.ShowAllTasks || DataLayer.AssetPassesShowMyTasksFilter(childAsset)) {
+                    Children.Add(WorkitemFactory.CreateWorkitem(childAsset, this));
+                    Children.Sort(new WorkitemComparer(DataLayer.TestType.Token, DataLayer.TaskType.Token));
                 }
             }
             Children.TrimExcess();
         }
 
         public override bool IsPropertyReadOnly(string propertyName) {
-            string fullName = TypePrefix + '.' + propertyName;
+            var fullName = TypePrefix + '.' + propertyName;
+            
             try {
-                if (dataLayer.IsEffortTrackingRelated(propertyName)) {
-                    return AreEffortTrackingPropertiesReadOnly();
-                }
-
-                return false;
+                return DataLayer.IsEffortTrackingRelated(propertyName) && AreEffortTrackingPropertiesReadOnly();
             } catch (Exception ex) {
                 Logger.Warning("Cannot get property: " + fullName, ex);
                 return true;
@@ -80,8 +72,8 @@ namespace VersionOne.VisualStudio.DataLayer.Entities {
         }
 
         private bool AreEffortTrackingPropertiesReadOnly() {
-            EffortTrackingLevel storyLevel = dataLayer.StoryTrackingLevel;
-            EffortTrackingLevel defectLevel = dataLayer.DefectTrackingLevel;
+            var storyLevel = DataLayer.StoryTrackingLevel;
+            var defectLevel = DataLayer.DefectTrackingLevel;
 
             switch (TypePrefix) {
                 case StoryPrefix:
@@ -91,12 +83,16 @@ namespace VersionOne.VisualStudio.DataLayer.Entities {
                 case TaskPrefix:
                 case TestPrefix:
                     EffortTrackingLevel parentLevel;
-                    if (Parent.TypePrefix == StoryPrefix) {
-                        parentLevel = storyLevel;
-                    } else if (Parent.TypePrefix == DefectPrefix) {
-                        parentLevel = defectLevel;
-                    } else {
-                        throw new InvalidOperationException("Unexpected parent asset type.");
+                    
+                switch(Parent.TypePrefix) {
+                        case StoryPrefix:
+                            parentLevel = storyLevel;
+                            break;
+                        case DefectPrefix:
+                            parentLevel = defectLevel;
+                            break;
+                        default:
+                            throw new InvalidOperationException("Unexpected parent asset type.");
                     }
                     return parentLevel != EffortTrackingLevel.SecondaryWorkitem && parentLevel != EffortTrackingLevel.Both;
                 default:
@@ -104,23 +100,17 @@ namespace VersionOne.VisualStudio.DataLayer.Entities {
             }
         }
 
-
-        public bool PropertyChanged(string propertyName) {
-            IAttributeDefinition attrDef = Asset.AssetType.GetAttributeDefinition(propertyName);
-            return Asset.GetAttribute(attrDef).HasChanged;
-        }
-
         public virtual void CommitChanges() {
             try {
-                dataLayer.CommitAsset(Asset);
+                DataLayer.CommitAsset(Asset);
             } catch (APIException ex) {
                 Logger.Error("Failed to commit changes.", ex);
             }
         }
 
         public bool IsMine() {
-            PropertyValues owners = (PropertyValues)GetProperty(OwnersProperty);
-            return owners.ContainsOid(dataLayer.MemberOid);
+            var owners = (PropertyValues)GetProperty(OwnersProperty);
+            return owners.ContainsOid(DataLayer.MemberOid);
         }
 
         public virtual bool CanQuickClose {
@@ -139,9 +129,10 @@ namespace VersionOne.VisualStudio.DataLayer.Entities {
         /// </summary>
         public virtual void QuickClose() {
             CommitChanges();
+
             try {
-                dataLayer.ExecuteOperation(Asset, Asset.AssetType.GetOperation("QuickClose"));
-                dataLayer.CleanupWorkitem(this);
+                DataLayer.ExecuteOperation(Asset, Asset.AssetType.GetOperation("QuickClose"));
+                DataLayer.CleanupWorkitem(this);
             } catch (APIException ex) {
                Logger.Error("Failed to QuickClose.", ex);
             }
@@ -163,8 +154,8 @@ namespace VersionOne.VisualStudio.DataLayer.Entities {
         /// </summary>
         public virtual void Signup() {
             try {
-                dataLayer.ExecuteOperation(Asset, Asset.AssetType.GetOperation("QuickSignup"));
-                dataLayer.RefreshAsset(this);
+                DataLayer.ExecuteOperation(Asset, Asset.AssetType.GetOperation("QuickSignup"));
+                DataLayer.RefreshAsset(this);
             } catch (APIException ex) {
                Logger.Error("Failed to QuickSignup.", ex);
             }
@@ -174,12 +165,12 @@ namespace VersionOne.VisualStudio.DataLayer.Entities {
         /// Performs Inactivate operation.
         /// </summary>
         public virtual void Close() {
-            dataLayer.ExecuteOperation(Asset, Asset.AssetType.GetOperation("Inactivate"));
-            dataLayer.CleanupWorkitem(this);
+            DataLayer.ExecuteOperation(Asset, Asset.AssetType.GetOperation("Inactivate"));
+            DataLayer.CleanupWorkitem(this);
         }
 
         public virtual void RevertChanges() {
-            dataLayer.RevertAsset(Asset);
+            DataLayer.RevertAsset(Asset);
         }
     }
 }

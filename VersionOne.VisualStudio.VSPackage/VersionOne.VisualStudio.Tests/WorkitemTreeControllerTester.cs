@@ -1,5 +1,4 @@
 using System;
-using System.Windows.Forms;
 using Rhino.Mocks;
 using NUnit.Framework;
 using VersionOne.VisualStudio.DataLayer;
@@ -208,20 +207,61 @@ namespace VersionOne.VisualStudio.Tests {
         [Test]
         public void CloseItem() {
             var workitemMock = mockRepository.PartialMock<TestWorkitem>(Guid.NewGuid().ToString(), true);
-            var descriptor = new WorkitemDescriptor(workitemMock, new ColumnSetting[0], PropertyUpdateSource.WorkitemView, true);
 
             ExpectRegisterAndPrepareView();
-            Expect.Call(viewMock.CurrentWorkitemDescriptor).Return(descriptor);
-            // TODO refactor view to be able not to reference System.Windows.Forms here and in controller
-            Expect.Call(viewMock.ShowCloseWorkitemDialog(workitemMock)).Return(DialogResult.OK);
+            Expect.Call(viewMock.GetWaitCursor()).Return(waitCursorStub);
+            Expect.Call(workitemMock.CommitChanges);
+            Expect.Call(workitemMock.Close);
             Expect.Call(() => eventDispatcherMock.InvokeModelChanged(null, ModelChangedArgs.WorkitemChanged));
 
             mockRepository.ReplayAll();
 
-            controller = new WorkitemTreeController(dataLayerMock, settingsMock, eventDispatcherMock);
+            controller = new TestWorkitemTreeController(dataLayerMock, settingsMock, eventDispatcherMock);
             controller.Register(viewMock);
             controller.PrepareView();
-            controller.CloseItem();
+            controller.CloseItem(workitemMock);
+
+            mockRepository.VerifyAll();
+        }
+
+        [Test]
+        public void CloseItemValidationFailure() {
+            var workitemMock = mockRepository.PartialMock<TestWorkitem>(Guid.NewGuid().ToString(), true);
+
+            ExpectRegisterAndPrepareView();
+            Expect.Call(viewMock.GetWaitCursor()).Return(waitCursorStub);
+            Expect.Call(workitemMock.CommitChanges).Throw(new ValidatorException(null));
+            Expect.Call(workitemMock.Close).Repeat.Never();
+            Expect.Call(() => viewMock.ShowValidationInformationDialog(null)).IgnoreArguments();
+            Expect.Call(() => eventDispatcherMock.InvokeModelChanged(null, ModelChangedArgs.WorkitemChanged));
+
+            mockRepository.ReplayAll();
+
+            controller = new TestWorkitemTreeController(dataLayerMock, settingsMock, eventDispatcherMock);
+            controller.Register(viewMock);
+            controller.PrepareView();
+            controller.CloseItem(workitemMock);
+
+            mockRepository.VerifyAll();
+        }
+
+        [Test]
+        public void CloseItemWithGenericDataLayerException() {
+            var workitemMock = mockRepository.PartialMock<TestWorkitem>(Guid.NewGuid().ToString(), true);
+
+            ExpectRegisterAndPrepareView();
+            Expect.Call(viewMock.GetWaitCursor()).Return(waitCursorStub);
+            Expect.Call(workitemMock.CommitChanges);
+            Expect.Call(workitemMock.Close).Throw(new DataLayerException(null));
+            Expect.Call(() => viewMock.ShowErrorMessage(null)).IgnoreArguments();
+            Expect.Call(() => eventDispatcherMock.InvokeModelChanged(null, ModelChangedArgs.WorkitemChanged));
+
+            mockRepository.ReplayAll();
+
+            controller = new TestWorkitemTreeController(dataLayerMock, settingsMock, eventDispatcherMock);
+            controller.Register(viewMock);
+            controller.PrepareView();
+            controller.CloseItem(workitemMock);
 
             mockRepository.VerifyAll();
         }

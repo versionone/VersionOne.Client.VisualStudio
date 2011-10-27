@@ -20,7 +20,6 @@ namespace VersionOne.VisualStudio.VSPackage.Controls {
         bool CheckSettingsAreValid();
         void SelectWorkitem(Workitem item);
 
-        DialogResult ShowCloseWorkitemDialog(Workitem workitem);
         void ShowValidationInformationDialog(string validationResult);
 
         bool AddTaskCommandEnabled { get; set; }

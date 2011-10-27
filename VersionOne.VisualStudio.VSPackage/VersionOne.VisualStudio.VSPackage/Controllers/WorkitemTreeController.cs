@@ -1,7 +1,6 @@
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
-using System.Windows.Forms;
 using VersionOne.VisualStudio.DataLayer.Entities;
 using VersionOne.VisualStudio.VSPackage.Controls;
 using VersionOne.VisualStudio.DataLayer;
@@ -129,25 +128,26 @@ namespace VersionOne.VisualStudio.VSPackage.Controllers {
                              () => EventDispatcher.InvokeModelChanged(null, ModelChangedArgs.WorkitemChanged),
                              ex => {
                                  if(ex is ValidatorException) {
-                                     view.ShowErrorMessage(
-                                         "Workitem cannot be closed because some required fields are empty: " +
-                                         ex.Message);
+                                     view.ShowErrorMessage("Workitem cannot be closed because some required fields are empty: " + ex.Message);
                                  }
                              });
             }
         }
 
-        // TODO refactor to async
-        public void CloseItem() {
-            var descriptor = view.CurrentWorkitemDescriptor;
-            
-            if(descriptor != null) {
-                var result = view.ShowCloseWorkitemDialog(descriptor.Workitem);
-                
-                if (result == DialogResult.OK) {
-                    EventDispatcher.InvokeModelChanged(null, ModelChangedArgs.WorkitemChanged);
-                }
-            }
+        public void CloseItem(Workitem workitem) {
+            RunTaskAsync(view.GetWaitCursor(),
+                         () => {
+                             workitem.CommitChanges();
+                             workitem.Close();
+                         },
+                         () => EventDispatcher.InvokeModelChanged(null, ModelChangedArgs.WorkitemChanged),
+                         ex => {
+                             if(ex.GetType() == typeof(ValidatorException)) {
+                                 view.ShowValidationInformationDialog(ex.Message);
+                             } else if(ex.GetType() == typeof(DataLayerException)) {
+                                 view.ShowErrorMessage("Server communication error. Failed to close workitem. " + Environment.NewLine + ex.Message);
+                             }
+                         });
         }
 
         #endregion
