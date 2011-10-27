@@ -1,4 +1,3 @@
-using System;
 using System.ComponentModel;
 using System.Windows.Forms;
 using VersionOne.VisualStudio.VSPackage.Forms;
@@ -21,21 +20,8 @@ namespace VersionOne.VisualStudio.VSPackage.Controls {
         }
 
         private void linkLabelOptions_LinkClicked(object sender, LinkLabelLinkClickedEventArgs e) {
-            OptionsDialog optionsDialog = new OptionsDialog();
+            var optionsDialog = new OptionsDialog();
             optionsDialog.ShowDialog(this);
         }
-
-        #region IErrorControl Members
-
-        public void AddException(Exception ex) {
-            if (ex != null)
-                txtError.Text += ex.Message;
-        }
-
-        public void Clear() {
-            txtError.Text = string.Empty;
-        }
-
-        #endregion
     }
 }

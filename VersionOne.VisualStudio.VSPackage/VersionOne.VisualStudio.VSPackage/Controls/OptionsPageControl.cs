@@ -33,11 +33,7 @@ namespace VersionOne.VisualStudio.VSPackage.Controls {
             txtProxyDomain.Text = settings.ProxyDomain;
         }
 
-        /// <summary>
-        /// Save settings.
-        /// </summary>
-        /// <returns>bool, indicating whether saved settings were different.</returns>
-        public bool SaveSettings() {
+        public void SaveSettings() {
             settings.Username = txtUserName.Text.Trim();
             settings.Password = txtPassword.Text.Trim();
             settings.ApplicationUrl = GetUrl(txtUrl.Text);
@@ -67,17 +63,15 @@ namespace VersionOne.VisualStudio.VSPackage.Controls {
 
                 ApiDataLayer.Instance.Connect(versionOneSettings);
             } catch(DataLayerException ex) {
-                MessageBox.Show(string.Format("Settings are invalid or V1 server inaccessible ({0}).", ex.Message),
-                                "Verification failed",
-                                MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                MessageBox.Show(string.Format("Settings are invalid or V1 server inaccessible ({0}).", ex.Message), "Verification failed", MessageBoxButtons.OK, MessageBoxIcon.Warning);
             }
 
             eventDispatcher.InvokeModelChanged(this, ModelChangedArgs.SettingsChanged);
 
-            return true;
+            return;
         }
 
-        private string GetUrl(string text) {
+        private static string GetUrl(string text) {
             var url = text.Trim();
 
             if(!url.EndsWith("/")) {

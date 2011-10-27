@@ -49,8 +49,7 @@ namespace VersionOne.VisualStudio.VSPackage {
         }
 
         /// <summary>
-        /// This property returns the handle to the user control that should
-        /// be hosted in the Tool Window.
+        /// This property returns the handle to the user control that should be hosted in the Tool Window.
         /// </summary>
         override public IWin32Window Window {
             get {

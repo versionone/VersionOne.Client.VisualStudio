@@ -1,5 +1,4 @@
 using System;
-
 using onlyconnect;
 using System.Windows.Forms;
 
@@ -52,7 +51,7 @@ namespace VersionOne.VisualStudio.VSPackage.Controls {
 
         #region Event handlers
 
-        //loading <-> interactive -> complete
+        // NOTE state lifecycle is loading <-> interactive -> complete
         private void ctlHtmlEditor_ReadyStateChanged(object sender, ReadyStateChangedEventArgs e) {
             readyState = e.ReadyState;
             if (readyState == ReadyStateComplete && textToLoad != null) {

@@ -3,8 +3,6 @@ using System.Windows.Forms;
 
 namespace VersionOne.VisualStudio.VSPackage.Forms {
     public partial class OptionsDialog : Form {
-        public event EventHandler SettingsChanged;
-        
         public OptionsDialog() {
             InitializeComponent();
             optionsPage.LoadSettings();
@@ -13,12 +11,7 @@ namespace VersionOne.VisualStudio.VSPackage.Forms {
         }
 
         private void btnOk_Click(object sender, EventArgs e) {
-            bool settingsModified = optionsPage.SaveSettings();
-            
-            if(settingsModified && SettingsChanged != null) {
-                SettingsChanged(this, EventArgs.Empty);
-            } 
-            
+            optionsPage.SaveSettings();
             Close();
         }
     }
