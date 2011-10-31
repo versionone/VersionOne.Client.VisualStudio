@@ -139,31 +139,23 @@ namespace VersionOne.VisualStudio.Tests {
         public void TearDown() {
             var assetsToCleanup = new BaseAsset[]
                                   {task1, task2, task3, story1, story2, iteration, project, schedule, member};
-            
-            foreach(BaseAsset asset in assetsToCleanup) {
-                if(asset != null && asset.CanDelete) {
-                    asset.Delete();
-                }
+
+            foreach(var asset in assetsToCleanup.Where(asset => asset != null && asset.CanDelete)) {
+                asset.Delete();
             }
         }
 
         [Test]
-        public void ConnectionTest() {
+        public void CheckConnection() {
             dataLayer.CheckConnection(GetSettings());
         }
 
         private Project FindTestProject(Project root, string name) {
-            foreach(var child in root.Children) {
-                if(child.GetProperty("Name").Equals(name) && child.Id.Equals(project.ID.Token)) {
-                    return child;
-                }
-            }
-
-            return null;
+            return root.Children.FirstOrDefault(child => child.GetProperty("Name").Equals(name) && child.Id.Equals(project.ID.Token));
         }
 
         [Test]
-        public void GetProjectsTest() {
+        public void GetProjects() {
             var projects = dataLayer.GetProjectTree();
             Assert.IsTrue(projects.Count > 0, "Projects exist");
 
@@ -175,7 +167,7 @@ namespace VersionOne.VisualStudio.Tests {
         }
 
         [Test]
-        public void SetCurrentProjectByIdTest() {
+        public void SetCurrentProjectById() {
             var projects = dataLayer.GetProjectTree();
             var projectEnumerator = projects.GetEnumerator();
             Assert.IsTrue(projectEnumerator.MoveNext(), "Projects exist");
@@ -186,7 +178,7 @@ namespace VersionOne.VisualStudio.Tests {
         }
 
         [Test]
-        public void GetStoriesTest() {
+        public void GetStories() {
             var projects = dataLayer.GetProjectTree();
             var testProject = FindTestProject(projects[0], TestProjectName);
             dataLayer.CurrentProject = testProject;
@@ -204,7 +196,7 @@ namespace VersionOne.VisualStudio.Tests {
         }
 
         [Test]
-        public void GetStoryListPropertyTest() {
+        public void GetStoryListProperty() {
             var projects = dataLayer.GetProjectTree();
             var testProject = FindTestProject(projects[0], TestProjectName);
             dataLayer.CurrentProject = testProject;
@@ -217,7 +209,7 @@ namespace VersionOne.VisualStudio.Tests {
         }
 
         [Test]
-        public void GetEffortTest() {
+        public void GetEffort() {
             var projects = dataLayer.GetProjectTree();
             var testProject = FindTestProject(projects[0], TestProjectName);
             dataLayer.CurrentProject = testProject;
@@ -241,7 +233,7 @@ namespace VersionOne.VisualStudio.Tests {
         }
 
         [Test]
-        public void SetEffortTest() {
+        public void SetEffort() {
             var projects = dataLayer.GetProjectTree();
             var testProject = FindTestProject(projects[0], TestProjectName);
             dataLayer.CurrentProject = testProject;
@@ -260,7 +252,7 @@ namespace VersionOne.VisualStudio.Tests {
         }
 
         [Test]
-        public void CommitEffortTest() {
+        public void CommitEffort() {
             var projects = dataLayer.GetProjectTree();
             var testProject = FindTestProject(projects[0], TestProjectName);
             dataLayer.CurrentProject = testProject;
@@ -293,18 +285,16 @@ namespace VersionOne.VisualStudio.Tests {
             stories = dataLayer.GetWorkitems();
 
             if(dataLayer.StoryTrackingLevel != EffortTrackingLevel.SecondaryWorkitem) {
-                Assert.AreEqual(storyDone + 5.25, (double) stories[1].GetProperty(Entity.DoneProperty),
-                                FloatingPointComparisonDelta);
+                Assert.AreEqual(storyDone + 5.25, (double) stories[1].GetProperty(Entity.DoneProperty), FloatingPointComparisonDelta);
             }
 
             if(dataLayer.StoryTrackingLevel != EffortTrackingLevel.PrimaryWorkitem) {
-                Assert.AreEqual(taskDone + 1.75, (double) stories[1].Children[0].GetProperty(Entity.DoneProperty),
-                                FloatingPointComparisonDelta);
+                Assert.AreEqual(taskDone + 1.75, (double) stories[1].Children[0].GetProperty(Entity.DoneProperty), FloatingPointComparisonDelta);
             }
         }
 
         [Test]
-        public void ReadOnlyAssetsForCurrentUserTest() {
+        public void ReadOnlyAssetsForCurrentUser() {
             var projects = dataLayer.GetProjectTree();
             var testProject = FindTestProject(projects[0], TestProjectName);
             dataLayer.CurrentProject = testProject;
@@ -335,7 +325,7 @@ namespace VersionOne.VisualStudio.Tests {
         }
 
         [Test]
-        public void ChildrenSortingTest() {
+        public void ChildrenSorting() {
             var projects = dataLayer.GetProjectTree();
             var testProject = FindTestProject(projects[0], TestProjectName);
             var omProject = GetOmProject(TestProjectName, testProject.Id);
@@ -355,17 +345,7 @@ namespace VersionOne.VisualStudio.Tests {
             dataLayer.Reconnect();
 
             var primaryWorkitems = dataLayer.GetWorkitems();
-            Workitem foundStory = null;
-
-            foreach(var workitem in primaryWorkitems) {
-                if(!workitem.GetProperty(Entity.NameProperty).Equals(story.Name) ||
-                   !workitem.GetProperty("Number").Equals(story.DisplayID)) {
-                    continue;
-                }
-
-                foundStory = workitem;
-                break;
-            }
+            var foundStory = primaryWorkitems.FirstOrDefault(workitem => workitem.GetProperty(Entity.NameProperty).Equals(story.Name) && workitem.GetProperty("Number").Equals(story.DisplayID));
 
             Assert.IsNotNull(foundStory);
 
@@ -376,14 +356,7 @@ namespace VersionOne.VisualStudio.Tests {
 
         private Workitem GetWorkitemByName(string name) {
             var workitems = dataLayer.GetWorkitems();
-            foreach(var item in workitems) {
-                if(item.GetProperty("Name").ToString() != name) {
-                    continue;
-                }
-
-                return item;
-            }
-            return null;
+            return workitems.FirstOrDefault(item => item.GetProperty("Name").ToString() == name);
         }
 
         private OmProject GetOmProject(string name, string token) {

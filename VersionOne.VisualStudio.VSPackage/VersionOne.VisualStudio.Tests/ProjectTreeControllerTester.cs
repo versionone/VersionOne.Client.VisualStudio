@@ -95,7 +95,7 @@ namespace VersionOne.VisualStudio.Tests {
         }
 
         [Test]
-        public void ProjectSelectedTest() {
+        public void ProjectSelected() {
             const string oldProject = "old project";
             const string newProject = "new project";
             
