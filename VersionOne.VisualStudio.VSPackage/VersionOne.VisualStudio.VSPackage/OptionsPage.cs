@@ -1,4 +1,3 @@
-using System;
 using System.ComponentModel;
 using Microsoft.VisualStudio.Shell;
 using System.Windows.Forms;
@@ -9,13 +8,10 @@ using System.Runtime.InteropServices;
 namespace VersionOne.VisualStudio.VSPackage {
 	[Guid("4E2431D7-8F2C-952E-2696-B2CCAD694217")]
     public partial class OptionsPage : DialogPage {
-        #region Fields
         // The path to the image file which must be shown.
-        private string selectedImagePath = String.Empty;
+        private string selectedImagePath = string.Empty;
         private OptionsPageControl optionsControl;
-        #endregion Fields
 
-        #region Properties
         /// <summary>
         /// Gets the window an instance of DialogPage that it uses as its user interface.
         /// </summary>
@@ -30,8 +26,7 @@ namespace VersionOne.VisualStudio.VSPackage {
         [Browsable(false), DesignerSerializationVisibility(DesignerSerializationVisibility.Hidden)]
         protected override IWin32Window Window {
             get {
-                optionsControl = new OptionsPageControl();
-                optionsControl.Location = new Point(0, 0);
+                optionsControl = new OptionsPageControl {Location = new Point(0, 0)};
                 return optionsControl;
             }
         }
@@ -48,8 +43,6 @@ namespace VersionOne.VisualStudio.VSPackage {
                 selectedImagePath = value;
             }
         }
-        #endregion Properties
-
 
         /// <summary>
         /// Handles "Activate" messages from the Visual Studio environment.
