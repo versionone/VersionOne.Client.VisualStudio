@@ -260,7 +260,7 @@ namespace VersionOne.VisualStudio.VSPackage.Controllers {
 
         public ICollection<Workitem> GetWorkitems() {
             try {
-                lock(this) {
+                lock(DataLayer) {
                     return DataLayer.GetWorkitems();
                 }
             } catch(DataLayerException) {
