@@ -94,6 +94,7 @@ namespace VersionOne.VisualStudio.VSPackage.Controls {
             miClose.Click += miClose_Click;
             miNewTask.Click += AddTask_Click;
             miNewDefect.Click += AddDefect_Click;
+            miNewTest.Click += AddTest_Click;
             tvWorkitems.ContextMenu.Popup += ContextMenu_Popup;
 
             btnAddTask.Click += AddTask_Click;
