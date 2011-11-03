@@ -1,5 +1,5 @@
 ﻿namespace VersionOne.VisualStudio.VSPackage {
-    partial class BackgroundTaskRunner : ITaskRunner {
+    partial class BackgroundTaskRunner {
         /// <summary>
         /// Required designer variable.
         /// </summary>

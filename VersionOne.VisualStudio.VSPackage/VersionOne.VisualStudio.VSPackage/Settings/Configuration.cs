@@ -12,15 +12,13 @@ namespace VersionOne.VisualStudio.VSPackage.Settings {
         private static Configuration configuration;
 
         private void Save(Stream stream) {
-            XmlSerializer xmlSerializer = new XmlSerializer(typeof(Configuration));
-
-            xmlSerializer.Serialize(stream, this);
+            var serializer = new XmlSerializer(typeof(Configuration));
+            serializer.Serialize(stream, this);
         }
 
         private static Configuration Load(Stream stream) {
-            XmlSerializer xmlSerializer = new XmlSerializer(typeof(Configuration));
-
-            return (Configuration)xmlSerializer.Deserialize(stream);
+            var serializer = new XmlSerializer(typeof(Configuration));
+            return (Configuration) serializer.Deserialize(stream);
         }
 
         public GridSettings GridSettings {
@@ -46,7 +44,7 @@ namespace VersionOne.VisualStudio.VSPackage.Settings {
 
         private static string ConfigurationFile {
             get {
-                DirectoryInfo info = new DirectoryInfo(Assembly.GetCallingAssembly().Location);
+                var info = new DirectoryInfo(Assembly.GetCallingAssembly().Location);
                 return info.Parent.FullName + "\\configuration.xml";
             }
         }
@@ -54,7 +52,7 @@ namespace VersionOne.VisualStudio.VSPackage.Settings {
         public static Configuration Instance {
             get {
                 if (configuration == null) {
-                    using (FileStream configurationFile = File.OpenRead(ConfigurationFile)) {
+                    using (var configurationFile = File.OpenRead(ConfigurationFile)) {
                         configuration = Load(configurationFile);
                     }
                 }
