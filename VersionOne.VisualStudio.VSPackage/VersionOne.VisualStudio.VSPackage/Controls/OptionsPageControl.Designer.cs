@@ -191,7 +191,8 @@ namespace VersionOne.VisualStudio.VSPackage.Controls {
                         | System.Windows.Forms.AnchorStyles.Right)));
             this.txtProxyPassword.Location = new System.Drawing.Point(103, 67);
             this.txtProxyPassword.Name = "txtProxyPassword";
-            this.txtProxyPassword.Size = new System.Drawing.Size(201, 20);
+            this.txtProxyPassword.PasswordChar = '*';
+            this.txtProxyPassword.Size = new System.Drawing.Size(201, 20);            
             this.txtProxyPassword.TabIndex = 6;
             // 
             // lblProxyDomain

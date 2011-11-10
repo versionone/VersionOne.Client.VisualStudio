@@ -1,4 +1,6 @@
 using System;
+using System.Net;
+using System.Net.Sockets;
 using System.Windows.Forms;
 using VersionOne.VisualStudio.DataLayer;
 using VersionOne.VisualStudio.DataLayer.Settings;
@@ -31,6 +33,7 @@ namespace VersionOne.VisualStudio.VSPackage.Controls {
             txtProxyUsername.Text = settings.ProxyUsername;
             txtProxyPassword.Text = settings.ProxyPassword;
             txtProxyDomain.Text = settings.ProxyDomain;
+            SetProxyRelatedFieldsEnabled(settings.UseProxy);
         }
 
         public void SaveSettings() {
@@ -74,7 +77,7 @@ namespace VersionOne.VisualStudio.VSPackage.Controls {
         private static string GetUrl(string text) {
             var url = text.Trim();
 
-            if(!url.EndsWith("/")) {
+            if(!string.IsNullOrEmpty(url) && !url.EndsWith("/")) {
                 url += "/";
             }
 
@@ -82,6 +85,15 @@ namespace VersionOne.VisualStudio.VSPackage.Controls {
         }
 
         private void VerifyConnectionSettings() {
+            if (!UrlIsValid(txtUrl.Text)) {
+                MessageBox.Show("Application URL is not valid.", "Test Connection", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                return;
+            }
+            if (chkUseProxy.Checked && !UrlIsValid(txtProxyUrl.Text)) {
+                MessageBox.Show("Proxy server URL is not valid.", "Test Connection", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                return;
+            }
+
             try {
                 var versionOneSettings = new VersionOneSettings {
                             Path = GetUrl(txtUrl.Text),
@@ -102,6 +114,15 @@ namespace VersionOne.VisualStudio.VSPackage.Controls {
                 MessageBox.Show("Login Successful!", "Test Connection", MessageBoxButtons.OK, MessageBoxIcon.Information);
             } catch(DataLayerException ex) {
                 MessageBox.Show(ex.Message, "Test Connection", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+            }
+        }
+
+        private static bool UrlIsValid(string url) {
+            try {
+                new Uri(url);
+                return true;
+            } catch(Exception) {
+                return false;
             }
         }
 
