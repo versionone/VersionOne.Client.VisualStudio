@@ -120,6 +120,7 @@
       <DependentUpon>BackgroundTaskRunner.cs</DependentUpon>
     </Compile>
     <Compile Include="Controllers\BaseController.cs" />
+    <Compile Include="Controllers\OptionsPageController.cs" />
     <Compile Include="Controllers\ProjectTreeController.cs" />
     <Compile Include="Controllers\WorkitemTreeController.cs" />
     <Compile Include="Controls\ErrorMessageControl.cs">
@@ -128,6 +129,7 @@
     <Compile Include="Controls\ErrorMessageControl.Designer.cs">
       <DependentUpon>ErrorMessageControl.cs</DependentUpon>
     </Compile>
+    <Compile Include="Controls\IOptionsPageView.cs" />
     <Compile Include="Controls\IProjectTreeView.cs" />
     <Compile Include="Controls\IWaitCursorProvider.cs" />
     <Compile Include="Controls\IWorkitemTreeView.cs" />

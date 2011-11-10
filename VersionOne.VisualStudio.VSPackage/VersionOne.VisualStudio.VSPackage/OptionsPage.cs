@@ -2,8 +2,12 @@ using System.ComponentModel;
 using Microsoft.VisualStudio.Shell;
 using System.Windows.Forms;
 using System.Drawing;
+using VersionOne.VisualStudio.DataLayer;
+using VersionOne.VisualStudio.VSPackage.Controllers;
 using VersionOne.VisualStudio.VSPackage.Controls;
 using System.Runtime.InteropServices;
+using VersionOne.VisualStudio.VSPackage.Events;
+using VersionOne.VisualStudio.VSPackage.Settings;
 
 namespace VersionOne.VisualStudio.VSPackage {
 	[Guid("4E2431D7-8F2C-952E-2696-B2CCAD694217")]
@@ -11,8 +15,16 @@ namespace VersionOne.VisualStudio.VSPackage {
         // The path to the image file which must be shown.
         private string selectedImagePath = string.Empty;
         private OptionsPageControl optionsControl;
+	    private OptionsPageController controller;
 
-        /// <summary>
+	    public OptionsPage() {
+            controller = new OptionsPageController(ApiDataLayer.Instance, SettingsImpl.Instance, EventDispatcher.Instance);
+            optionsControl = new OptionsPageControl();
+            controller.RegisterView(optionsControl);
+            controller.PrepareView();
+	    }
+
+	    /// <summary>
         /// Gets the window an instance of DialogPage that it uses as its user interface.
         /// </summary>
         /// <devdoc>
@@ -26,7 +38,6 @@ namespace VersionOne.VisualStudio.VSPackage {
         [Browsable(false), DesignerSerializationVisibility(DesignerSerializationVisibility.Hidden)]
         protected override IWin32Window Window {
             get {
-                optionsControl = new OptionsPageControl {Location = new Point(0, 0)};
                 return optionsControl;
             }
         }
@@ -52,7 +63,7 @@ namespace VersionOne.VisualStudio.VSPackage {
         /// </devdoc>
         /// <remarks>If the Cancel property of the event is set to true, the page is not activated.</remarks>
         protected override void OnActivate(CancelEventArgs e) {
-            optionsControl.LoadSettings();
+            controller.UpdateData();
             base.OnActivate(e);
         }
 
@@ -63,7 +74,7 @@ namespace VersionOne.VisualStudio.VSPackage {
         /// This event is raised when the page is closed.
         /// </devdoc>
         protected override void OnApply(PageApplyEventArgs e) {
-            optionsControl.SaveSettings();
+            controller.HandleSaveCommand();
         }
     }
 }

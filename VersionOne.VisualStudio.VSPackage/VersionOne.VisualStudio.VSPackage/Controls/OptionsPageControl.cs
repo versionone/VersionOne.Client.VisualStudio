@@ -1,22 +1,15 @@
 using System;
-using System.Net;
-using System.Net.Sockets;
 using System.Windows.Forms;
-using VersionOne.VisualStudio.DataLayer;
-using VersionOne.VisualStudio.DataLayer.Settings;
-using VersionOne.VisualStudio.VSPackage.Events;
+using VersionOne.VisualStudio.VSPackage.Controllers;
 using VersionOne.VisualStudio.VSPackage.Settings;
 
 namespace VersionOne.VisualStudio.VSPackage.Controls {
-    public partial class OptionsPageControl : UserControl {
-        private readonly ISettings settings;
-        private readonly IEventDispatcher eventDispatcher;
+    public partial class OptionsPageControl : UserControl, IOptionsPageView {
+        public ISettings Model { get; set; }
+        public OptionsPageController Controller { get; set; }
 
         public OptionsPageControl() {
             InitializeComponent();
-
-            settings = SettingsImpl.Instance;
-            eventDispatcher = EventDispatcher.Instance;
 
             btnTestConnection.Click += btnTestConnection_Click;
             chkIntegrated.CheckedChanged += chkIntegrated_CheckedChanged;
@@ -24,54 +17,38 @@ namespace VersionOne.VisualStudio.VSPackage.Controls {
         }
 
         public void LoadSettings() {
-            txtUserName.Text = settings.Username;
-            txtPassword.Text = settings.Password;
-            txtUrl.Text = settings.ApplicationUrl;
-            chkIntegrated.Checked = settings.IntegratedAuth;
-            chkUseProxy.Checked = settings.UseProxy;
-            txtProxyUrl.Text = settings.ProxyUrl;
-            txtProxyUsername.Text = settings.ProxyUsername;
-            txtProxyPassword.Text = settings.ProxyPassword;
-            txtProxyDomain.Text = settings.ProxyDomain;
-            SetProxyRelatedFieldsEnabled(settings.UseProxy);
+            txtUserName.Text = Model.Username;
+            txtPassword.Text = Model.Password;
+            txtUrl.Text = Model.ApplicationUrl;
+            chkIntegrated.Checked = Model.IntegratedAuth;
+            chkUseProxy.Checked = Model.UseProxy;
+            txtProxyUrl.Text = Model.ProxyUrl;
+            txtProxyUsername.Text = Model.ProxyUsername;
+            txtProxyPassword.Text = Model.ProxyPassword;
+            txtProxyDomain.Text = Model.ProxyDomain;
+
+            SetProxyRelatedFieldsEnabled(Model.UseProxy);
         }
 
         public void SaveSettings() {
-            settings.Username = txtUserName.Text.Trim();
-            settings.Password = txtPassword.Text.Trim();
-            settings.ApplicationUrl = GetUrl(txtUrl.Text);
-            settings.IntegratedAuth = chkIntegrated.Checked;
-            settings.UseProxy = chkUseProxy.Checked;
-            settings.ProxyUrl = GetUrl(txtProxyUrl.Text);
-            settings.ProxyUsername = txtProxyUsername.Text;
-            settings.ProxyPassword = txtProxyPassword.Text;
-            settings.ProxyDomain = txtProxyDomain.Text;
+            UpdateModel(Model);
+            Controller.HandleSaveCommand();
+        }
 
-            settings.StoreSettings();
+        public void UpdateModel() {
+            UpdateModel(Model);
+        }
 
-            try {
-                var versionOneSettings = new VersionOneSettings {
-                            Path = settings.ApplicationUrl,
-                            Username = settings.Username,
-                            Password = settings.Password,
-                            Integrated = settings.IntegratedAuth,
-                            ProxySettings = {
-                                                UseProxy = settings.UseProxy,
-                                                Url = settings.ProxyUrl,
-                                                Domain = settings.ProxyDomain,
-                                                Username = settings.ProxyUsername,
-                                                Password = settings.ProxyPassword
-                                            }
-                        };
-
-                ApiDataLayer.Instance.Connect(versionOneSettings);
-            } catch(DataLayerException ex) {
-                MessageBox.Show(string.Format("Settings are invalid or V1 server inaccessible ({0}).", ex.Message), "Verification failed", MessageBoxButtons.OK, MessageBoxIcon.Warning);
-            }
-
-            eventDispatcher.InvokeModelChanged(this, ModelChangedArgs.SettingsChanged);
-
-            return;
+        private void UpdateModel(ISettings model) {
+            model.Username = txtUserName.Text.Trim();
+            model.Password = txtPassword.Text.Trim();
+            model.ApplicationUrl = GetUrl(txtUrl.Text);
+            model.IntegratedAuth = chkIntegrated.Checked;
+            model.UseProxy = chkUseProxy.Checked;
+            model.ProxyUrl = GetUrl(txtProxyUrl.Text);
+            model.ProxyUsername = txtProxyUsername.Text;
+            model.ProxyPassword = txtProxyPassword.Text;
+            model.ProxyDomain = txtProxyDomain.Text;
         }
 
         private static string GetUrl(string text) {
@@ -89,33 +66,17 @@ namespace VersionOne.VisualStudio.VSPackage.Controls {
                 MessageBox.Show("Application URL is not valid.", "Test Connection", MessageBoxButtons.OK, MessageBoxIcon.Warning);
                 return;
             }
+
             if (chkUseProxy.Checked && !UrlIsValid(txtProxyUrl.Text)) {
                 MessageBox.Show("Proxy server URL is not valid.", "Test Connection", MessageBoxButtons.OK, MessageBoxIcon.Warning);
                 return;
             }
 
-            try {
-                var versionOneSettings = new VersionOneSettings {
-                            Path = GetUrl(txtUrl.Text),
-                            Username = txtUserName.Text.Trim(),
-                            Password = txtPassword.Text.Trim(),
-                            Integrated = chkIntegrated.Checked,
-                            ProxySettings = {
-                                                UseProxy = chkUseProxy.Checked,
-                                                Url = GetUrl(txtProxyUrl.Text),
-                                                Domain = txtProxyDomain.Text.Trim(),
-                                                Username = txtProxyUsername.Text.Trim(),
-                                                Password = txtProxyPassword.Text.Trim()
-                                            }
-                        };
-
-                ApiDataLayer.Instance.CheckConnection(versionOneSettings);
-
-                MessageBox.Show("Login Successful!", "Test Connection", MessageBoxButtons.OK, MessageBoxIcon.Information);
-            } catch(DataLayerException ex) {
-                MessageBox.Show(ex.Message, "Test Connection", MessageBoxButtons.OK, MessageBoxIcon.Warning);
-            }
+            var model = new SettingsImpl();
+            UpdateModel(model);
+            Controller.HandleVerifyConnectionCommand(model);
         }
+
 
         private static bool UrlIsValid(string url) {
             try {
@@ -130,8 +91,6 @@ namespace VersionOne.VisualStudio.VSPackage.Controls {
             txtProxyUrl.Enabled = txtProxyUsername.Enabled = txtProxyPassword.Enabled = txtProxyDomain.Enabled = enabled;
         }
 
-        #region Event Handlers
-
         private void btnTestConnection_Click(object sender, EventArgs e) {
             VerifyConnectionSettings();
         }
@@ -145,6 +104,13 @@ namespace VersionOne.VisualStudio.VSPackage.Controls {
             SetProxyRelatedFieldsEnabled(chkUseProxy.Checked);
         }
 
-        #endregion
+        public void ShowErrorMessage(string message, string caption) {
+            MessageBox.Show(message, caption, MessageBoxButtons.OK, MessageBoxIcon.Error);
+        }
+
+        public void ShowMessage(string message, string caption) {
+            MessageBox.Show(message, caption, MessageBoxButtons.OK, MessageBoxIcon.Information);
+        }
+
     }
 }
