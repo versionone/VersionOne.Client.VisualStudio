@@ -73,6 +73,7 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="DataLayerBenchmark.cs" />
     <Compile Include="DataLayerTests.cs" />
     <Compile Include="ProjectTreeControllerTester.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />

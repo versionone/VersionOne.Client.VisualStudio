@@ -10,9 +10,9 @@ using VersionOne.VisualStudio.DataLayer.Settings;
 using VersionOne.VisualStudio.VSPackage;
 using VersionOne.VisualStudio.VSPackage.Settings;
 
-namespace VersionOne.VisualStudio.Tests {
-    [TestFixture]
+namespace VersionOne.VisualStudio.Tests {    
     //this is not unit test but benchmark.
+    [TestFixture]
     public class DataLayerBenchmark {
         private const int Tries = 10;
         private readonly VersionOneSettings settings;
