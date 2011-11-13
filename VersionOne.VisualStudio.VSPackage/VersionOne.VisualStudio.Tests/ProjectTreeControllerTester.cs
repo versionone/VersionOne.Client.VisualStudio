@@ -88,7 +88,7 @@ namespace VersionOne.VisualStudio.Tests {
             controller = new ProjectTreeController(dataLayerMock, settingsMock, eventDispatcherMock);
             controller.RegisterView(viewMock);
             controller.Prepare();
-            modelChangedRaiser.Raise(null, new ModelChangedArgs(EventReceiver.ProjectView, EventContext.V1SettingsChanged));
+            modelChangedRaiser.Raise(null, new ModelChangedArgs(EventReceiver.ProjectView, EventContext.ProjectsRequested));
 
             mockRepository.VerifyAll();
         }

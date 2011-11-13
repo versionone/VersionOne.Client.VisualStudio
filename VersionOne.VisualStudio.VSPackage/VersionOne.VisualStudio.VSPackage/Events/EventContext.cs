@@ -5,7 +5,8 @@
         ProjectSelected,
         WorkitemsRequested,
         WorkitemsChanged,
-        WorkitemPropertiesUpdated,
+        WorkitemPropertiesUpdatedFromView,
+        WorkitemPropertiesUpdatedFromPropertyView,
         ProjectPropertiesUpdated,
     }
 }

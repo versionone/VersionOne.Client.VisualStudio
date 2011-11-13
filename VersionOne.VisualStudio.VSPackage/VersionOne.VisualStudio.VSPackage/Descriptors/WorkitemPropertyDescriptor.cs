@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.ComponentModel;
 using System.Diagnostics;
@@ -12,6 +13,13 @@ namespace VersionOne.VisualStudio.VSPackage.Descriptors {
     public class WorkitemPropertyDescriptor : PropertyDescriptor {
         private readonly string attribute;
         private readonly PropertyUpdateSource updateSource;
+
+        private static readonly IDictionary<PropertyUpdateSource, EventContext> ContextMappings = new Dictionary<PropertyUpdateSource, EventContext>() {
+                                          { PropertyUpdateSource.ProjectPropertyView, EventContext.ProjectPropertiesUpdated },
+                                          { PropertyUpdateSource.ProjectView, EventContext.ProjectPropertiesUpdated },
+                                          { PropertyUpdateSource.WorkitemPropertyView, EventContext.WorkitemPropertiesUpdatedFromPropertyView },
+                                          { PropertyUpdateSource.WorkitemView, EventContext.WorkitemPropertiesUpdatedFromView },
+                                      };
 
         private readonly IEventDispatcher eventDispatcher = EventDispatcher.Instance;
 
@@ -82,10 +90,9 @@ namespace VersionOne.VisualStudio.VSPackage.Descriptors {
                 new[] {PropertyUpdateSource.ProjectPropertyView, PropertyUpdateSource.ProjectView}.Contains(updateSource)
                     ? EventReceiver.ProjectView
                     : EventReceiver.WorkitemView;
-            var context =
-                new[] {PropertyUpdateSource.ProjectView, PropertyUpdateSource.WorkitemView}.Contains(updateSource)
-                    ? EventContext.WorkitemPropertiesUpdated
-                    : EventContext.ProjectPropertiesUpdated;
+
+            var context = ContextMappings[updateSource];
+
             return new ModelChangedArgs(receiver, context);
         }
 

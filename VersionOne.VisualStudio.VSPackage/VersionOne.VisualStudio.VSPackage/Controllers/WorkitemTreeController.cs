@@ -21,17 +21,18 @@ namespace VersionOne.VisualStudio.VSPackage.Controllers {
         public WorkitemTreeController(IDataLayer dataLayer, ISettings settings, IEventDispatcher eventDispatcher) : base(dataLayer, settings, eventDispatcher) { }
 
         protected override void HandleModelChanged(object sender, ModelChangedArgs e) {
-            HandleModelChanged();
-
             switch (e.Context) {
-                case EventContext.WorkitemPropertiesUpdated:
-                    // TODO distinguish between sources
+                case EventContext.WorkitemPropertiesUpdatedFromView:
+                    HandleWorkitemPropertiesUpdated(PropertyUpdateSource.WorkitemView);
+                    break;
+                case EventContext.WorkitemPropertiesUpdatedFromPropertyView:
                     HandleWorkitemPropertiesUpdated(PropertyUpdateSource.WorkitemPropertyView);
                     break;
                 case EventContext.WorkitemsChanged:
                     UpdateViewData();
                     break;
                 case EventContext.ProjectSelected:
+                    HandleModelChanged();
                     break;
                 default:
                     throw new NotSupportedException();

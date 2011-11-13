@@ -1,3 +1,4 @@
+using System;
 using System.Diagnostics;
 using VersionOne.VisualStudio.DataLayer.Entities;
 using VersionOne.VisualStudio.VSPackage.Controls;
@@ -25,10 +26,15 @@ namespace VersionOne.VisualStudio.VSPackage.Controllers {
         }
 
         protected override void HandleModelChanged(object sender, ModelChangedArgs e) {
-            View.UpdateData();
-
-            if(e.Context == EventContext.ProjectSelected) {
-                EventDispatcher.Notify(this, new ModelChangedArgs(EventReceiver.WorkitemView, EventContext.ProjectSelected));
+            switch(e.Context) {
+                case EventContext.ProjectsRequested:
+                    View.UpdateData();
+                    break;
+                case EventContext.ProjectSelected:
+                    EventDispatcher.Notify(this, new ModelChangedArgs(EventReceiver.WorkitemView, EventContext.ProjectSelected));
+                    break;
+                default:
+                    throw new NotSupportedException();
             }
         }
 
