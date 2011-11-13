@@ -34,6 +34,9 @@ namespace VersionOne.VisualStudio.VSPackage.Controllers {
                 case EventContext.ProjectSelected:
                     HandleModelChanged();
                     break;
+                case EventContext.WorkitemsRequested:
+                    HandleModelChanged();
+                    break;
                 default:
                     throw new NotSupportedException();
             }
@@ -135,7 +138,7 @@ namespace VersionOne.VisualStudio.VSPackage.Controllers {
             if(descriptor != null) {
                 RunTaskAsync(view.GetWaitCursor(),
                     () => descriptor.Workitem.Signup(),
-                    () => EventDispatcher.Notify(null, new ModelChangedArgs(EventReceiver.WorkitemView, EventContext.WorkitemsChanged)));
+                    () => EventDispatcher.Notify(null, new ModelChangedArgs(EventReceiver.WorkitemView, EventContext.WorkitemPropertiesUpdatedFromView)));
             }
         }
         
@@ -180,15 +183,13 @@ namespace VersionOne.VisualStudio.VSPackage.Controllers {
         #region Command handlers
 
         public void HandleRefreshCommand() {
-            RunTaskAsync(view.GetWaitCursor(),
-                () => DataLayer.DropWorkitemCache(),
-                () => EventDispatcher.Notify(null, new ModelChangedArgs(EventReceiver.WorkitemView, EventContext.WorkitemsRequested)),
-                ex => {
-                    if(ex is DataLayerException) {
-                        view.ResetPropertyView();
-                        Debug.WriteLine("Refresh failed: " + ex.Message);
-                    }
-                });
+            try {
+                DataLayer.DropWorkitemCache();
+                EventDispatcher.Notify(null, new ModelChangedArgs(EventReceiver.WorkitemView, EventContext.WorkitemsRequested));
+            } catch(DataLayerException ex) {
+                view.ResetPropertyView();
+                Debug.WriteLine("Refresh failed: " + ex.Message);
+            }
         }
 
         // TODO refactor; NullReferenceException is marked a workaround - investigate on it
