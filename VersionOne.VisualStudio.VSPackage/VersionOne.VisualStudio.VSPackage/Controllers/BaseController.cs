@@ -9,10 +9,26 @@ namespace VersionOne.VisualStudio.VSPackage.Controllers {
         protected readonly IDataLayer DataLayer;
         protected readonly IEventDispatcher EventDispatcher;
 
+        protected abstract EventReceiver ReceiverType { get; }
+
         protected BaseController(IDataLayer dataLayer, ISettings settings, IEventDispatcher eventDispatcher) {
             Settings = settings;
             DataLayer = dataLayer;
             EventDispatcher = eventDispatcher;
+        }
+
+        public void Prepare() {
+            EventDispatcher.ModelChanged += (sender, e) => {
+                                                if (ShouldHandleModelChangedEvent(e)) {
+                                                    HandleModelChanged(sender, e);
+                                                }
+                                            };
+        }
+
+        protected virtual void HandleModelChanged(object sender, ModelChangedArgs e) { }
+
+        private bool ShouldHandleModelChangedEvent(ModelChangedArgs e) {
+            return ReceiverType == e.Receiver || e.Receiver == EventReceiver.All;
         }
 
         protected void RunTaskAsync(IWaitCursor waitCursor, Action task, Action onComplete, Action<Exception> onError = null) {

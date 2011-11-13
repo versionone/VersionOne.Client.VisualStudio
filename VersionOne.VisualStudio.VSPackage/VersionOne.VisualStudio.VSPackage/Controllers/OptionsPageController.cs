@@ -1,5 +1,4 @@
-﻿using System.Windows.Forms;
-using VersionOne.VisualStudio.DataLayer;
+﻿using VersionOne.VisualStudio.DataLayer;
 using VersionOne.VisualStudio.DataLayer.Settings;
 using VersionOne.VisualStudio.VSPackage.Controls;
 using VersionOne.VisualStudio.VSPackage.Events;
@@ -8,6 +7,8 @@ using VersionOne.VisualStudio.VSPackage.Settings;
 namespace VersionOne.VisualStudio.VSPackage.Controllers {
     public class OptionsPageController : BaseController {
         private IOptionsPageView view;
+
+        protected override EventReceiver ReceiverType { get { return EventReceiver.OptionsView; } }
 
         public OptionsPageController(IDataLayer dataLayer, ISettings settings, IEventDispatcher eventDispatcher) : base(dataLayer, settings, eventDispatcher) { }
 
@@ -21,6 +22,12 @@ namespace VersionOne.VisualStudio.VSPackage.Controllers {
             view.Model = model;
         }
 
+        protected override void HandleModelChanged(object sender, ModelChangedArgs e) {
+            var versionOneSettings = CreateVersionOneSettings(view.Model);
+            DataLayer.Connect(versionOneSettings);
+            EventDispatcher.Notify(this, new ModelChangedArgs(EventReceiver.ProjectView, EventContext.ProjectsRequested));
+        }
+
         public void UpdateData() {
             view.LoadSettings();
         }
@@ -30,13 +37,10 @@ namespace VersionOne.VisualStudio.VSPackage.Controllers {
             view.Model.StoreSettings();
 
             try {
-                var versionOneSettings = CreateVersionOneSettings(view.Model);
-                ApiDataLayer.Instance.Connect(versionOneSettings);
+                EventDispatcher.Notify(this, new ModelChangedArgs(EventReceiver.OptionsView, EventContext.V1SettingsChanged));
             } catch(DataLayerException ex) {
                 view.ShowErrorMessage(string.Format("Settings are invalid or V1 server inaccessible ({0}).", ex.Message), "Verification failed");
             }
-
-            EventDispatcher.InvokeModelChanged(this, ModelChangedArgs.SettingsChanged);
         }
 
         public void HandleVerifyConnectionCommand(ISettings settings) {

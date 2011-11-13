@@ -72,7 +72,7 @@ namespace VersionOne.VisualStudio.DataLayer {
             get { return currentProjectId; }
             set {
                 currentProjectId = value;
-                allAssets = null;
+                DropWorkitemCache();
             }
         }
 
@@ -86,7 +86,7 @@ namespace VersionOne.VisualStudio.DataLayer {
             }
             set {
                 currentProjectId = value.Id;
-                allAssets = null;
+                DropWorkitemCache();
             }
         }
 
@@ -230,6 +230,10 @@ namespace VersionOne.VisualStudio.DataLayer {
             return result.TotalAvaliable == 1 ? WorkitemFactory.CreateProject(result.Assets[0], null) : null;
         }
 
+        public void DropWorkitemCache() {
+            allAssets = null;
+        }
+
         public List<Workitem> GetWorkitems() {
             connector.CheckConnection();
             
@@ -271,15 +275,8 @@ namespace VersionOne.VisualStudio.DataLayer {
                 }
             }
 
-            var res = new List<Workitem>(allAssets.Count);
-            
-            foreach(var asset in allAssets) {
-                if(ShowAllTasks || AssetPassesShowMyTasksFilter(asset)) {
-                    res.Add(WorkitemFactory.CreateWorkitem(asset, null));
-                }
-            }
-
-            return res;
+            return allAssets.Where(asset => ShowAllTasks || AssetPassesShowMyTasksFilter(asset))
+                            .Select(asset => WorkitemFactory.CreateWorkitem(asset, null)).ToList();
         }
 
         /// <summary>
@@ -334,7 +331,7 @@ namespace VersionOne.VisualStudio.DataLayer {
 
         public bool Connect(VersionOneSettings settings) {
             connector.IsConnected = false;
-            allAssets = null;
+            DropWorkitemCache();
 
             try {
                 connector.Connect(settings);
@@ -499,6 +496,7 @@ namespace VersionOne.VisualStudio.DataLayer {
                         //Do nothing
                     }
                 }
+
                 return connector.IsConnected;
             }
         }

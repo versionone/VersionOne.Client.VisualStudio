@@ -26,6 +26,11 @@ namespace VersionOne.VisualStudio.DataLayer {
         void CommitChanges();
 
         /// <summary>
+        /// Remove assets stored in allAssets collection so that subsequent requests world re-download them. In perspective, Data Layer should not manage caches.
+        /// </summary>
+        void DropWorkitemCache();
+
+        /// <summary>
         /// Using this property makes query to V1 server. Use CurrentProject if it is posible.
         /// </summary>
         string CurrentProjectId { get; set;}

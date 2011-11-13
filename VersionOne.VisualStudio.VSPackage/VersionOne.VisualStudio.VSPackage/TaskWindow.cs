@@ -46,6 +46,7 @@ namespace VersionOne.VisualStudio.VSPackage {
             control = new WorkitemTreeControl(this);
             controller.Register(control);
             controller.PrepareView();
+            controller.Prepare();
         }
 
         /// <summary>

@@ -1,19 +1,19 @@
 using System;
+using System.Linq;
 using System.ComponentModel;
 using System.Diagnostics;
 using System.Drawing.Design;
 using System.Globalization;
-using VersionOne.VisualStudio.DataLayer;
 using VersionOne.VisualStudio.DataLayer.Entities;
 using VersionOne.VisualStudio.VSPackage.Events;
 using VersionOne.VisualStudio.VSPackage.Settings;
 
 namespace VersionOne.VisualStudio.VSPackage.Descriptors {
     public class WorkitemPropertyDescriptor : PropertyDescriptor {
-        protected readonly string attribute;
-        protected readonly PropertyUpdateSource updateSource;
+        private readonly string attribute;
+        private readonly PropertyUpdateSource updateSource;
 
-        protected readonly IEventDispatcher eventDispatcher = EventDispatcher.Instance;
+        private readonly IEventDispatcher eventDispatcher = EventDispatcher.Instance;
 
         protected bool readOnly;
         protected readonly Entity entity;
@@ -67,25 +67,38 @@ namespace VersionOne.VisualStudio.VSPackage.Descriptors {
         }
 
         public override void SetValue(object component, object newValue) {
-            Entity item = (Entity) component;
+            var item = (Entity) component;
 
             if (newValue != null && newValue.Equals(string.Empty)) {
                 newValue = null; 
             }
 
             item.SetProperty(Attribute, newValue);
+            eventDispatcher.Notify(this, ResolveChangeArgs());
+        }
 
-            eventDispatcher.InvokeWorkitemPropertiesUpdated(this, new WorkitemPropertiesUpdatedArgs(updateSource));
+        private ModelChangedArgs ResolveChangeArgs() {
+            var receiver =
+                new[] {PropertyUpdateSource.ProjectPropertyView, PropertyUpdateSource.ProjectView}.Contains(updateSource)
+                    ? EventReceiver.ProjectView
+                    : EventReceiver.WorkitemView;
+            var context =
+                new[] {PropertyUpdateSource.ProjectView, PropertyUpdateSource.WorkitemView}.Contains(updateSource)
+                    ? EventContext.WorkitemPropertiesUpdated
+                    : EventContext.ProjectPropertiesUpdated;
+            return new ModelChangedArgs(receiver, context);
         }
 
         public override object GetValue(object component) {
-            Entity item = entity;
+            var item = entity;
 
             try {
-                object value = item.GetProperty(Attribute);
-                if (value is double) {
+                var value = item.GetProperty(Attribute);
+                
+                if(value is double) {
                     return ((double)value).ToString("0.00", CultureInfo.CurrentCulture);
                 } 
+
                 return value;
             } catch (Exception ex) {
                 // TODO use logger and/or exception manager
@@ -96,10 +109,10 @@ namespace VersionOne.VisualStudio.VSPackage.Descriptors {
 
         public override object GetEditor(Type editorBaseType) {
             if (editorBaseType == typeof(UITypeEditor)) {
-                EditorAttribute editor = (EditorAttribute)Attributes[typeof(EditorAttribute)];
+                var editor = (EditorAttribute) Attributes[typeof(EditorAttribute)];
 
                 if (editor != null) {
-                    Type type = Type.GetType(editor.EditorTypeName);
+                    var type = Type.GetType(editor.EditorTypeName);
                     return Activator.CreateInstance(type);
                 }
             }

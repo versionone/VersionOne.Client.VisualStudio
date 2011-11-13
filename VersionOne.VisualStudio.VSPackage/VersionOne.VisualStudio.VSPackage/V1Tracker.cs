@@ -79,8 +79,7 @@ namespace VersionOne.VisualStudio.VSPackage {
                         };
 
                 dataLayer.Connect(versionOneSettings);
-                
-                eventDispatcher.InvokeModelChanged(this, ModelChangedArgs.SettingsChanged);
+                eventDispatcher.Notify(this, new ModelChangedArgs(EventReceiver.OptionsView, EventContext.V1SettingsChanged));
             } catch(DataLayerException ex) {
                 Debug.WriteLine("Error while loading V1Package: " + ex.Message);
                 Debug.WriteLine("\t" + ex.StackTrace);

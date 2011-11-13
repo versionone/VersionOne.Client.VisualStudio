@@ -1,7 +1,6 @@
 using System.ComponentModel;
 using Microsoft.VisualStudio.Shell;
 using System.Windows.Forms;
-using System.Drawing;
 using VersionOne.VisualStudio.DataLayer;
 using VersionOne.VisualStudio.VSPackage.Controllers;
 using VersionOne.VisualStudio.VSPackage.Controls;
@@ -22,6 +21,7 @@ namespace VersionOne.VisualStudio.VSPackage {
             optionsControl = new OptionsPageControl();
             controller.RegisterView(optionsControl);
             controller.PrepareView();
+	        controller.Prepare();
 	    }
 
 	    /// <summary>

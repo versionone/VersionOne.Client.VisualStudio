@@ -8,8 +8,6 @@ using VersionOne.VisualStudio.VSPackage.Controls;
 using VersionOne.VisualStudio.VSPackage.Events;
 using VersionOne.VisualStudio.VSPackage.Settings;
 
-using Is = Rhino.Mocks.Constraints.Is;
-
 namespace VersionOne.VisualStudio.Tests {
     [TestFixture]
     public class ProjectTreeControllerTester {
@@ -27,6 +25,8 @@ namespace VersionOne.VisualStudio.Tests {
             dataLayerMock = mockRepository.StrictMock<IDataLayer>();
             eventDispatcherMock = mockRepository.StrictMock<IEventDispatcher>();
             settingsMock = mockRepository.StrictMock<ISettings>();
+
+            controller = new ProjectTreeController(dataLayerMock, settingsMock, eventDispatcherMock);
         }
 
         [Test]
@@ -37,9 +37,9 @@ namespace VersionOne.VisualStudio.Tests {
 
             mockRepository.ReplayAll();
 
-            controller = new ProjectTreeController(dataLayerMock, settingsMock, eventDispatcherMock);
             controller.RegisterView(viewMock);
             controller.PrepareView();
+            controller.Prepare();
             Assert.AreEqual(viewMock.Controller, controller);
             Assert.AreEqual(controller.View, viewMock);
 
@@ -54,8 +54,8 @@ namespace VersionOne.VisualStudio.Tests {
 
             mockRepository.ReplayAll();
 
-            controller = new ProjectTreeController(dataLayerMock, settingsMock, eventDispatcherMock);
             controller.RegisterView(viewMock);
+            controller.Prepare();
             controller.HandleRefreshAction();
 
             mockRepository.VerifyAll();
@@ -69,16 +69,15 @@ namespace VersionOne.VisualStudio.Tests {
 
             mockRepository.ReplayAll();
 
-            controller = new ProjectTreeController(dataLayerMock, settingsMock, eventDispatcherMock);
             controller.RegisterView(viewMock);
-            // this call should not affect Projects view
-            modelChangedRaiser.Raise(null, ModelChangedArgs.WorkitemChanged);
+            controller.Prepare();
+            modelChangedRaiser.Raise(null, new ModelChangedArgs(EventReceiver.WorkitemView, EventContext.WorkitemsChanged));
 
             mockRepository.VerifyAll();
         }
 
         [Test]
-        public void ModelChangedImportantChangesTest() {
+        public void ModelChangedImportantChanges() {
             Expect.Call(() => eventDispatcherMock.ModelChanged += null).IgnoreArguments();
             var modelChangedRaiser = LastCall.GetEventRaiser();
             Expect.Call(viewMock.Controller).PropertyBehavior();
@@ -88,8 +87,8 @@ namespace VersionOne.VisualStudio.Tests {
 
             controller = new ProjectTreeController(dataLayerMock, settingsMock, eventDispatcherMock);
             controller.RegisterView(viewMock);
-            // this call should cause controller to update view
-            modelChangedRaiser.Raise(null, ModelChangedArgs.SettingsChanged);
+            controller.Prepare();
+            modelChangedRaiser.Raise(null, new ModelChangedArgs(EventReceiver.ProjectView, EventContext.V1SettingsChanged));
 
             mockRepository.VerifyAll();
         }
@@ -109,12 +108,12 @@ namespace VersionOne.VisualStudio.Tests {
             Expect.Call(settingsMock.StoreSettings);
             Expect.Call(dataLayerMock.CurrentProject).PropertyBehavior().IgnoreArguments();
             Expect.Call(viewMock.RefreshProperties);
-            Expect.Call(() => eventDispatcherMock.InvokeModelChanged(null, null)).IgnoreArguments().Constraints(Is.Anything(), Is.Equal(ModelChangedArgs.ProjectChanged));
+            Expect.Call(() => eventDispatcherMock.Notify(null, null)).IgnoreArguments();
 
             mockRepository.ReplayAll();
 
-            controller = new ProjectTreeController(dataLayerMock, settingsMock, eventDispatcherMock);
             controller.RegisterView(viewMock);
+            controller.Prepare();
             controller.HandleProjectSelected(project);
 
             mockRepository.VerifyAll();
@@ -137,6 +136,7 @@ namespace VersionOne.VisualStudio.Tests {
             controller = new TestProjectTreeController(dataLayerMock, settingsMock, eventDispatcherMock);
             controller.RegisterView(viewMock);
             controller.PrepareView();
+            controller.Prepare();
             controller.HandleProjectsRequest();
 
             mockRepository.VerifyAll();

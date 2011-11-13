@@ -12,8 +12,8 @@ using VersionOne.VisualStudio.VSPackage.Settings;
 namespace VersionOne.VisualStudio.VSPackage {
     [Guid("DE3F3B5C-86CD-4f59-A3F1-9E8BBD3F0D2C")]
     public class ProjectsWindow : ToolWindowPane, IParentWindow {
-        private ProjectTreeControl control;
-        private ProjectTreeController controller;
+        private readonly ProjectTreeControl control;
+        private readonly ProjectTreeController controller;
 
         public ProjectsWindow() : base(null) {
             Caption = Resources.ProjectsWindowTitle;
@@ -24,6 +24,7 @@ namespace VersionOne.VisualStudio.VSPackage {
             control = new ProjectTreeControl(this);
             controller.RegisterView(control);
             controller.PrepareView();
+            controller.Prepare();
         }
 
         override public IWin32Window Window {

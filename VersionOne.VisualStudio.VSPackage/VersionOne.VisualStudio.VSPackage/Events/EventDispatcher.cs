@@ -11,17 +11,10 @@ namespace VersionOne.VisualStudio.VSPackage.Events {
         private EventDispatcher() {}
 
         public event EventHandler<ModelChangedArgs> ModelChanged;
-        public event EventHandler<WorkitemPropertiesUpdatedArgs> WorkitemPropertiesUpdated;
 
-        public void InvokeModelChanged(object sender, ModelChangedArgs e) {
+        public void Notify(object sender, ModelChangedArgs e) {
             if(ModelChanged != null) {
                 ModelChanged(sender, e);
-            }
-        }
-
-        public void InvokeWorkitemPropertiesUpdated(object sender, WorkitemPropertiesUpdatedArgs e) {
-            if(WorkitemPropertiesUpdated != null) {
-                WorkitemPropertiesUpdated(sender, e);
             }
         }
     }

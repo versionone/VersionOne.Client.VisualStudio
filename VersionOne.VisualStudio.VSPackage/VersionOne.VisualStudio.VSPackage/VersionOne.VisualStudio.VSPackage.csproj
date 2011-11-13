@@ -169,6 +169,8 @@
     <Compile Include="Controls\WorkitemTreeControl.Designer.cs">
       <DependentUpon>WorkitemTreeControl.cs</DependentUpon>
     </Compile>
+    <Compile Include="Events\EventContext.cs" />
+    <Compile Include="Events\EventReceiver.cs" />
     <Compile Include="ITaskRunner.cs" />
     <Compile Include="SynchronousTaskRunner.cs">
       <SubType>Component</SubType>

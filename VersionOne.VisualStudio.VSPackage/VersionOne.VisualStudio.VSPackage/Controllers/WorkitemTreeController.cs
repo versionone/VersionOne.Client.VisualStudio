@@ -14,12 +14,31 @@ namespace VersionOne.VisualStudio.VSPackage.Controllers {
 
         public bool CanRetrieveData { get { return DataLayer.IsConnected; } }
 
-        public WorkitemTreeController(IDataLayer dataLayer, ISettings settings, IEventDispatcher eventDispatcher) : base(dataLayer, settings, eventDispatcher) {
-            eventDispatcher.ModelChanged += eventDispatcher_ModelChanged;
-            eventDispatcher.WorkitemPropertiesUpdated += eventDispatcher_WorkitemPropertiesUpdated;
+        protected override EventReceiver ReceiverType {
+            get { return EventReceiver.WorkitemView; }
         }
 
-        private void eventDispatcher_ModelChanged(object sender, ModelChangedArgs e) {
+        public WorkitemTreeController(IDataLayer dataLayer, ISettings settings, IEventDispatcher eventDispatcher) : base(dataLayer, settings, eventDispatcher) { }
+
+        protected override void HandleModelChanged(object sender, ModelChangedArgs e) {
+            HandleModelChanged();
+
+            switch (e.Context) {
+                case EventContext.WorkitemPropertiesUpdated:
+                    // TODO distinguish between sources
+                    HandleWorkitemPropertiesUpdated(PropertyUpdateSource.WorkitemPropertyView);
+                    break;
+                case EventContext.WorkitemsChanged:
+                    UpdateViewData();
+                    break;
+                case EventContext.ProjectSelected:
+                    break;
+                default:
+                    throw new NotSupportedException();
+            }
+        }
+
+        private void HandleModelChanged() {
             UpdateViewTitle();
             view.Model = model;
             UpdateViewData();
@@ -28,8 +47,8 @@ namespace VersionOne.VisualStudio.VSPackage.Controllers {
             view.AddTestCommandEnabled = mayAddSecondaryItems;
         }
 
-        private void eventDispatcher_WorkitemPropertiesUpdated(object sender, WorkitemPropertiesUpdatedArgs e) {
-            switch (e.Source) {
+        private void HandleWorkitemPropertiesUpdated(PropertyUpdateSource source) {
+            switch (source) {
                 case PropertyUpdateSource.WorkitemView:
                     view.RefreshProperties();
                     break;
@@ -84,7 +103,7 @@ namespace VersionOne.VisualStudio.VSPackage.Controllers {
             if(descriptor != null) {
                 RunTaskAsync(view.GetWaitCursor(),
                              () => descriptor.Workitem.CommitChanges(),
-                             () => EventDispatcher.InvokeModelChanged(null, ModelChangedArgs.WorkitemChanged),
+                             () => EventDispatcher.Notify(null, new ModelChangedArgs(EventReceiver.WorkitemView, EventContext.WorkitemsChanged)),
                              ex => {
                                  if(ex is ValidatorException) {
                                      view.ShowErrorMessage("Workitem cannot be saved because the following required fields are empty:" + ex.Message);
@@ -101,7 +120,7 @@ namespace VersionOne.VisualStudio.VSPackage.Controllers {
                 item.RevertChanges();
                 
                 if (item.IsVirtual) {
-                    EventDispatcher.InvokeModelChanged(null, ModelChangedArgs.WorkitemChanged);
+                    EventDispatcher.Notify(null, new ModelChangedArgs(EventReceiver.WorkitemView, EventContext.WorkitemsChanged));
                 }
                 
                 view.RefreshProperties();
@@ -115,7 +134,7 @@ namespace VersionOne.VisualStudio.VSPackage.Controllers {
             if(descriptor != null) {
                 RunTaskAsync(view.GetWaitCursor(),
                     () => descriptor.Workitem.Signup(),
-                    () => EventDispatcher.InvokeModelChanged(null, ModelChangedArgs.WorkitemChanged));
+                    () => EventDispatcher.Notify(null, new ModelChangedArgs(EventReceiver.WorkitemView, EventContext.WorkitemsChanged)));
             }
         }
         
@@ -125,7 +144,7 @@ namespace VersionOne.VisualStudio.VSPackage.Controllers {
             if(descriptor != null) {
                 RunTaskAsync(view.GetWaitCursor(),
                              () => descriptor.Workitem.QuickClose(),
-                             () => EventDispatcher.InvokeModelChanged(null, ModelChangedArgs.WorkitemChanged),
+                             () => EventDispatcher.Notify(null, new ModelChangedArgs(EventReceiver.WorkitemView, EventContext.WorkitemsChanged)),
                              ex => {
                                  if(ex is ValidatorException) {
                                      view.ShowErrorMessage("Workitem cannot be closed because some required fields are empty: " + ex.Message);
@@ -140,7 +159,7 @@ namespace VersionOne.VisualStudio.VSPackage.Controllers {
                              workitem.CommitChanges();
                              workitem.Close();
                          },
-                         () => EventDispatcher.InvokeModelChanged(null, ModelChangedArgs.WorkitemChanged),
+                         () => EventDispatcher.Notify(null, new ModelChangedArgs(EventReceiver.WorkitemView, EventContext.WorkitemsChanged)),
                          ex => {
                              if(ex.GetType() == typeof(ValidatorException)) {
                                  view.ShowValidationInformationDialog(ex.Message);
@@ -161,8 +180,8 @@ namespace VersionOne.VisualStudio.VSPackage.Controllers {
 
         public void HandleRefreshCommand() {
             RunTaskAsync(view.GetWaitCursor(),
-                () => DataLayer.Reconnect(),
-                () => EventDispatcher.InvokeModelChanged(null, ModelChangedArgs.SettingsChanged),
+                () => DataLayer.DropWorkitemCache(),
+                () => EventDispatcher.Notify(null, new ModelChangedArgs(EventReceiver.WorkitemView, EventContext.WorkitemsRequested)),
                 ex => {
                     if(ex is DataLayerException) {
                         view.ResetPropertyView();
@@ -176,9 +195,9 @@ namespace VersionOne.VisualStudio.VSPackage.Controllers {
             RunTaskAsync(view.GetWaitCursor(),
                          () => {
                              DataLayer.CommitChanges();
-                             DataLayer.Reconnect();
+                             DataLayer.DropWorkitemCache();
                          },
-                         () => EventDispatcher.InvokeModelChanged(null, ModelChangedArgs.SettingsChanged),
+                         () => EventDispatcher.Notify(null, new ModelChangedArgs(EventReceiver.WorkitemView, EventContext.WorkitemsRequested)),
                          ex => {
                              if(ex.GetType() == typeof(ValidatorException)) {
                                  view.ShowValidationInformationDialog(ex.Message);
@@ -209,7 +228,7 @@ namespace VersionOne.VisualStudio.VSPackage.Controllers {
             Settings.ShowMyTasks = onlyMyTasks;
             Settings.StoreSettings();
             DataLayer.ShowAllTasks = !onlyMyTasks;
-            EventDispatcher.InvokeModelChanged(null, ModelChangedArgs.WorkitemChanged);
+            EventDispatcher.Notify(null, new ModelChangedArgs(EventReceiver.WorkitemView, EventContext.WorkitemsChanged));
         }
 
         #endregion
@@ -233,7 +252,7 @@ namespace VersionOne.VisualStudio.VSPackage.Controllers {
 
         public void AddDefect() {
             var defect = DataLayer.CreateWorkitem(Entity.DefectPrefix, null);
-            EventDispatcher.InvokeModelChanged(null, ModelChangedArgs.ProjectChanged);
+            EventDispatcher.Notify(null, new ModelChangedArgs(EventReceiver.WorkitemView, EventContext.WorkitemsChanged));
             view.SelectWorkitem(defect);
             view.Refresh();
             view.RefreshProperties();
@@ -249,7 +268,7 @@ namespace VersionOne.VisualStudio.VSPackage.Controllers {
 
             var item = DataLayer.CreateWorkitem(type, parent);
 
-            EventDispatcher.InvokeModelChanged(null, ModelChangedArgs.WorkitemChanged);
+            EventDispatcher.Notify(null, new ModelChangedArgs(EventReceiver.WorkitemView, EventContext.WorkitemsChanged));
             view.ExpandCurrentNode();
             view.SelectWorkitem(item);
             view.Refresh();
