@@ -18,8 +18,7 @@ namespace VersionOne.VisualStudio.VSPackage.Controllers {
         }
 
         public void PrepareView() {
-            var model = SettingsImpl.Instance;
-            view.Model = model;
+            view.Model = Settings;
         }
 
         protected override void HandleModelChanged(object sender, ModelChangedArgs e) {
@@ -46,7 +45,7 @@ namespace VersionOne.VisualStudio.VSPackage.Controllers {
         public void HandleVerifyConnectionCommand(ISettings settings) {
             try {
                 var versionOneSettings = CreateVersionOneSettings(settings);
-                ApiDataLayer.Instance.CheckConnection(versionOneSettings);
+                DataLayer.CheckConnection(versionOneSettings);
                 view.ShowMessage("Login Successful!", "Test Connection");
             } catch(DataLayerException ex) {
                 view.ShowErrorMessage(ex.Message, "Test Connection");
