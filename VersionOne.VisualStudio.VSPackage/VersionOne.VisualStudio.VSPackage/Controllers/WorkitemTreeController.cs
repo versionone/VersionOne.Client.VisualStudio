@@ -29,7 +29,7 @@ namespace VersionOne.VisualStudio.VSPackage.Controllers {
                     HandleWorkitemPropertiesUpdated(PropertyUpdateSource.WorkitemPropertyView);
                     break;
                 case EventContext.WorkitemsChanged:
-                    UpdateViewData();
+                    model.InvokeStructureChanged();
                     break;
                 case EventContext.ProjectSelected:
                     HandleModelChanged();
@@ -71,6 +71,7 @@ namespace VersionOne.VisualStudio.VSPackage.Controllers {
                     view.SetSelection();
                 }
 
+                
                 view.Refresh();
             } catch (DataLayerException) {
 				view.ResetPropertyView();
