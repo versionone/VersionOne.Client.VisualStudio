@@ -13,7 +13,6 @@ using VersionOne.VisualStudio.VSPackage.Settings;
 
 namespace VersionOne.VisualStudio.Tests {
     [TestFixture]
-    [Ignore("Fix after rewriting the controller")]
     public class WorkitemTreeControllerTester {
         private WorkitemTreeController controller;
         private IDataLayer dataLayerMock;
@@ -68,31 +67,11 @@ namespace VersionOne.VisualStudio.Tests {
         [Test]
         public void HandleRefresh() {
             ExpectRegisterAndPrepareView();
-            Expect.Call(viewMock.GetWaitCursor()).Return(waitCursorStub);
-            Expect.Call(dataLayerMock.Reconnect);
-            Expect.Call(() => eventDispatcherMock.Notify(null, new ModelChangedArgs(EventReceiver.ProjectView, EventContext.V1SettingsChanged)));
+            Expect.Call(dataLayerMock.DropWorkitemCache);
+            Expect.Call(() => eventDispatcherMock.Notify(null, new ModelChangedArgs(EventReceiver.WorkitemView, EventContext.WorkitemsRequested)));
 
             mockRepository.ReplayAll();
 
-            controller = new TestWorkitemTreeController(dataLayerMock, settingsMock, eventDispatcherMock);
-            controller.Register(viewMock);
-            controller.PrepareView();
-            controller.HandleRefreshCommand();
-
-            mockRepository.VerifyAll();
-        }
-
-        [Test]
-        public void HandleRefreshWithException() {
-            ExpectRegisterAndPrepareView();
-            Expect.Call(viewMock.GetWaitCursor()).Return(waitCursorStub);
-            Expect.Call(dataLayerMock.Reconnect).Throw(new DataLayerException(null));
-            Expect.Call(viewMock.ResetPropertyView);
-            Expect.Call(() => eventDispatcherMock.Notify(null, new ModelChangedArgs(EventReceiver.ProjectView, EventContext.V1SettingsChanged)));
-
-            mockRepository.ReplayAll();
-
-            controller = new TestWorkitemTreeController(dataLayerMock, settingsMock, eventDispatcherMock);
             controller.Register(viewMock);
             controller.PrepareView();
             controller.HandleRefreshCommand();
@@ -156,7 +135,6 @@ namespace VersionOne.VisualStudio.Tests {
 
             mockRepository.ReplayAll();
 
-            controller = new WorkitemTreeController(dataLayerMock, settingsMock, eventDispatcherMock);
             controller.Register(viewMock);
             controller.PrepareView();
             controller.RevertItem();
@@ -269,6 +247,7 @@ namespace VersionOne.VisualStudio.Tests {
         }
 
         [Test]
+        [Ignore("Rewrite to cover ProjectSelected")]
         public void ModelChangedEvent() {
             Expect.Call(() => eventDispatcherMock.ModelChanged += null).IgnoreArguments();
             var raiser = LastCall.GetEventRaiser();
@@ -294,10 +273,9 @@ namespace VersionOne.VisualStudio.Tests {
 
             mockRepository.ReplayAll();
 
-            controller = new WorkitemTreeController(dataLayerMock, settingsMock, eventDispatcherMock);
             controller.Register(viewMock);
             controller.PrepareView();
-            raiser.Raise(null, new ModelChangedArgs(EventReceiver.ProjectView, EventContext.WorkitemsChanged));
+            raiser.Raise(null, new ModelChangedArgs(EventReceiver.WorkitemView, EventContext.ProjectSelected));
 
             mockRepository.VerifyAll();
         }
@@ -314,7 +292,6 @@ namespace VersionOne.VisualStudio.Tests {
             Expect.Call(viewMock.RefreshProperties);
 
             mockRepository.ReplayAll();
-            controller = new WorkitemTreeController(dataLayerMock, settingsMock, eventDispatcherMock);
             controller.Register(viewMock);
             controller.PrepareView();
             controller.AddDefect();
@@ -337,7 +314,6 @@ namespace VersionOne.VisualStudio.Tests {
             Expect.Call(viewMock.RefreshProperties);
 
             mockRepository.ReplayAll();
-            controller = new WorkitemTreeController(dataLayerMock, settingsMock, eventDispatcherMock);
             controller.Register(viewMock);
             controller.PrepareView();
             controller.AddTask();
@@ -355,7 +331,6 @@ namespace VersionOne.VisualStudio.Tests {
             Expect.Call(() => eventDispatcherMock.Notify(null, new ModelChangedArgs(EventReceiver.WorkitemView, EventContext.WorkitemsChanged)));
 
             mockRepository.ReplayAll();
-            controller = new WorkitemTreeController(dataLayerMock, settingsMock, eventDispatcherMock);
             controller.Register(viewMock);
             controller.PrepareView();
             controller.HandleFilteringByOwner(onlyMyTasks);
@@ -367,8 +342,8 @@ namespace VersionOne.VisualStudio.Tests {
             ExpectRegisterAndPrepareView();
             Expect.Call(viewMock.GetWaitCursor()).Return(waitCursorStub);
             Expect.Call(dataLayerMock.CommitChanges);
-            Expect.Call(dataLayerMock.Reconnect);
-            Expect.Call(() => eventDispatcherMock.Notify(null, new ModelChangedArgs(EventReceiver.ProjectView, EventContext.ProjectSelected)));
+            Expect.Call(dataLayerMock.DropWorkitemCache);
+            Expect.Call(() => eventDispatcherMock.Notify(null, new ModelChangedArgs(EventReceiver.WorkitemView, EventContext.WorkitemsRequested)));
 
             mockRepository.ReplayAll();
             controller = new TestWorkitemTreeController(dataLayerMock, settingsMock, eventDispatcherMock);
@@ -384,9 +359,8 @@ namespace VersionOne.VisualStudio.Tests {
             ExpectRegisterAndPrepareView();
             Expect.Call(viewMock.GetWaitCursor()).Return(waitCursorStub);
             Expect.Call(dataLayerMock.CommitChanges).Throw(new ValidatorException(null));
-            Expect.Call(dataLayerMock.Reconnect).Repeat.Never();
+            Expect.Call(dataLayerMock.DropWorkitemCache).Repeat.Never();
             Expect.Call(() => viewMock.ShowValidationInformationDialog(null)).IgnoreArguments();
-            //Expect.Call(() => eventDispatcherMock.InvokeModelChanged(null, ModelChangedArgs.SettingsChanged));
 
             mockRepository.ReplayAll();
             controller = new TestWorkitemTreeController(dataLayerMock, settingsMock, eventDispatcherMock);
@@ -402,29 +376,9 @@ namespace VersionOne.VisualStudio.Tests {
             ExpectRegisterAndPrepareView();
             Expect.Call(viewMock.GetWaitCursor()).Return(waitCursorStub);
             Expect.Call(dataLayerMock.CommitChanges).Throw(new DataLayerException(null));
-            Expect.Call(dataLayerMock.Reconnect).Repeat.Never();
+            Expect.Call(dataLayerMock.DropWorkitemCache).Repeat.Never();
             Expect.Call(() => viewMock.ShowErrorMessage(null)).IgnoreArguments();
             Expect.Call(viewMock.ResetPropertyView);
-            //Expect.Call(() => eventDispatcherMock.InvokeModelChanged(null, ModelChangedArgs.SettingsChanged));
-
-            mockRepository.ReplayAll();
-            controller = new TestWorkitemTreeController(dataLayerMock, settingsMock, eventDispatcherMock);
-            controller.Register(viewMock);
-            controller.PrepareView();
-            controller.HandleSaveCommand();
-
-            mockRepository.VerifyAll();
-        }
-
-        [Test]
-        public void HandleSaveCommandNullReferenceException() {
-            ExpectRegisterAndPrepareView();
-            Expect.Call(viewMock.GetWaitCursor()).Return(waitCursorStub);
-            Expect.Call(dataLayerMock.CommitChanges);
-            Expect.Call(dataLayerMock.Reconnect).Throw(new NullReferenceException());
-            Expect.Call(() => viewMock.ShowErrorMessage(null)).IgnoreArguments();
-            Expect.Call(viewMock.ResetPropertyView);
-            //Expect.Call(() => eventDispatcherMock.InvokeModelChanged(null, ModelChangedArgs.SettingsChanged));
 
             mockRepository.ReplayAll();
             controller = new TestWorkitemTreeController(dataLayerMock, settingsMock, eventDispatcherMock);

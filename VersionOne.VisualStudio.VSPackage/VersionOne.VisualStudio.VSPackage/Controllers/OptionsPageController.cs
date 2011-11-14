@@ -53,7 +53,7 @@ namespace VersionOne.VisualStudio.VSPackage.Controllers {
             }
         }
 
-        private VersionOneSettings CreateVersionOneSettings(ISettings settings) {
+        private static VersionOneSettings CreateVersionOneSettings(ISettings settings) {
             var versionOneSettings = new VersionOneSettings {
                 Path = settings.ApplicationUrl,
                 Username = settings.Username,

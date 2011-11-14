@@ -138,7 +138,7 @@ namespace VersionOne.VisualStudio.VSPackage.Controllers {
             if(descriptor != null) {
                 RunTaskAsync(view.GetWaitCursor(),
                     () => descriptor.Workitem.Signup(),
-                    () => EventDispatcher.Notify(null, new ModelChangedArgs(EventReceiver.WorkitemView, EventContext.WorkitemPropertiesUpdatedFromView)));
+                    () => EventDispatcher.Notify(null, new ModelChangedArgs(EventReceiver.WorkitemView, EventContext.WorkitemsChanged)));
             }
         }
         
@@ -148,7 +148,7 @@ namespace VersionOne.VisualStudio.VSPackage.Controllers {
             if(descriptor != null) {
                 RunTaskAsync(view.GetWaitCursor(),
                              () => descriptor.Workitem.QuickClose(),
-                             () => EventDispatcher.Notify(null, new ModelChangedArgs(EventReceiver.WorkitemView, EventContext.WorkitemsChanged)),
+                             () => EventDispatcher.Notify(null, new ModelChangedArgs(EventReceiver.WorkitemView, EventContext.WorkitemsRequested)),
                              ex => {
                                  if(ex is ValidatorException) {
                                      view.ShowErrorMessage("Workitem cannot be closed because some required fields are empty: " + ex.Message);
@@ -163,7 +163,7 @@ namespace VersionOne.VisualStudio.VSPackage.Controllers {
                              workitem.CommitChanges();
                              workitem.Close();
                          },
-                         () => EventDispatcher.Notify(null, new ModelChangedArgs(EventReceiver.WorkitemView, EventContext.WorkitemsChanged)),
+                         () => EventDispatcher.Notify(null, new ModelChangedArgs(EventReceiver.WorkitemView, EventContext.WorkitemsRequested)),
                          ex => {
                              if(ex.GetType() == typeof(ValidatorException)) {
                                  view.ShowValidationInformationDialog(ex.Message);
@@ -192,7 +192,6 @@ namespace VersionOne.VisualStudio.VSPackage.Controllers {
             }
         }
 
-        // TODO refactor; NullReferenceException is marked a workaround - investigate on it
         public void HandleSaveCommand() {
             RunTaskAsync(view.GetWaitCursor(),
                          () => {
@@ -206,12 +205,6 @@ namespace VersionOne.VisualStudio.VSPackage.Controllers {
                              }
 
                              if(ex.GetType() == typeof(DataLayerException)) {
-                                 view.ResetPropertyView();
-                                 view.ShowErrorMessage("Failed to save changes.");
-                             }
-
-                             if(ex.GetType() == typeof(NullReferenceException)) {
-                                 //Workaround
                                  view.ResetPropertyView();
                                  view.ShowErrorMessage("Failed to save changes.");
                              }
@@ -230,7 +223,7 @@ namespace VersionOne.VisualStudio.VSPackage.Controllers {
             Settings.ShowMyTasks = onlyMyTasks;
             Settings.StoreSettings();
             DataLayer.ShowAllTasks = !onlyMyTasks;
-            EventDispatcher.Notify(null, new ModelChangedArgs(EventReceiver.WorkitemView, EventContext.WorkitemsChanged));
+            EventDispatcher.Notify(null, new ModelChangedArgs(EventReceiver.WorkitemView, EventContext.WorkitemsRequested));
         }
 
         #endregion
@@ -254,7 +247,7 @@ namespace VersionOne.VisualStudio.VSPackage.Controllers {
 
         public void AddDefect() {
             var defect = DataLayer.CreateWorkitem(Entity.DefectPrefix, null);
-            EventDispatcher.Notify(null, new ModelChangedArgs(EventReceiver.WorkitemView, EventContext.WorkitemsChanged));
+            EventDispatcher.Notify(null, new ModelChangedArgs(EventReceiver.WorkitemView, EventContext.WorkitemsRequested));
             view.SelectWorkitem(defect);
             view.Refresh();
             view.RefreshProperties();
@@ -270,7 +263,7 @@ namespace VersionOne.VisualStudio.VSPackage.Controllers {
 
             var item = DataLayer.CreateWorkitem(type, parent);
 
-            EventDispatcher.Notify(null, new ModelChangedArgs(EventReceiver.WorkitemView, EventContext.WorkitemsChanged));
+            EventDispatcher.Notify(null, new ModelChangedArgs(EventReceiver.WorkitemView, EventContext.WorkitemsRequested));
             view.ExpandCurrentNode();
             view.SelectWorkitem(item);
             view.Refresh();
