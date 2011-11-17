@@ -22,6 +22,10 @@ namespace VersionOne.VisualStudio.VSPackage.Controllers {
         }
 
         protected override void HandleModelChanged(object sender, ModelChangedArgs e) {
+            if (!ReferenceEquals(sender, this)) {
+                return;
+            }
+
             var versionOneSettings = CreateVersionOneSettings(view.Model);
             DataLayer.Connect(versionOneSettings);
             EventDispatcher.Notify(this, new ModelChangedArgs(EventReceiver.ProjectView, EventContext.ProjectsRequested));

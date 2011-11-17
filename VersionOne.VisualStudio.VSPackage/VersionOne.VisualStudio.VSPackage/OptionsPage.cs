@@ -13,8 +13,8 @@ namespace VersionOne.VisualStudio.VSPackage {
     public partial class OptionsPage : DialogPage {
         // The path to the image file which must be shown.
         private string selectedImagePath = string.Empty;
-        private OptionsPageControl optionsControl;
-	    private OptionsPageController controller;
+        private readonly OptionsPageControl optionsControl;
+	    private readonly OptionsPageController controller;
 
 	    public OptionsPage() {
             controller = new OptionsPageController(ApiDataLayer.Instance, SettingsImpl.Instance, EventDispatcher.Instance);

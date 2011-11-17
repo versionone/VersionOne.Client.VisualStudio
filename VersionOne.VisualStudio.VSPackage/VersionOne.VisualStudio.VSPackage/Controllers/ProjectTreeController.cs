@@ -48,8 +48,9 @@ namespace VersionOne.VisualStudio.VSPackage.Controllers {
                 Settings.StoreSettings();
                 DataLayer.CurrentProject = project;
                 View.RefreshProperties();
-                EventDispatcher.Notify(this, new ModelChangedArgs(EventReceiver.ProjectView, EventContext.ProjectSelected));
             }
+
+            EventDispatcher.Notify(this, new ModelChangedArgs(EventReceiver.ProjectView, EventContext.ProjectSelected));
         }
 
         public void HandleProjectsRequest() {

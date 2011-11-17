@@ -18,11 +18,17 @@ namespace VersionOne.VisualStudio.VSPackage.Controllers {
         }
 
         public void Prepare() {
-            EventDispatcher.ModelChanged += (sender, e) => {
-                                                if (ShouldHandleModelChangedEvent(e)) {
-                                                    HandleModelChanged(sender, e);
-                                                }
-                                            };
+            EventDispatcher.ModelChanged += ModelChanged;
+        }
+
+        public void Unsubscribe() {
+            EventDispatcher.ModelChanged -= ModelChanged;
+        }
+
+        private void ModelChanged(object sender, ModelChangedArgs e) {
+            if(ShouldHandleModelChangedEvent(e)) {
+                HandleModelChanged(sender, e);
+            }
         }
 
         protected virtual void HandleModelChanged(object sender, ModelChangedArgs e) { }
