@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using VersionOne.SDK.APIClient;
 
 namespace VersionOne.VisualStudio.DataLayer.Entities {
@@ -51,12 +52,12 @@ namespace VersionOne.VisualStudio.DataLayer.Entities {
             if(asset == null || asset.Children == null) {
                 return;
             }
-            foreach (Asset childAsset in asset.Children) {
-                if (DataLayer.ShowAllTasks || DataLayer.AssetPassesShowMyTasksFilter(childAsset)) {
-                    Children.Add(WorkitemFactory.CreateWorkitem(childAsset, this));
-                    Children.Sort(new WorkitemComparer(DataLayer.TestType.Token, DataLayer.TaskType.Token));
-                }
+
+            foreach (var childAsset in asset.Children.Where(childAsset => DataLayer.ShowAllTasks || DataLayer.AssetPassesShowMyTasksFilter(childAsset))) {
+                Children.Add(WorkitemFactory.CreateWorkitem(childAsset, this));
+                Children.Sort(new WorkitemComparer(DataLayer.TestType.Token, DataLayer.TaskType.Token));
             }
+
             Children.TrimExcess();
         }
 
@@ -66,7 +67,7 @@ namespace VersionOne.VisualStudio.DataLayer.Entities {
             try {
                 return DataLayer.IsEffortTrackingRelated(propertyName) && AreEffortTrackingPropertiesReadOnly();
             } catch (Exception ex) {
-                Logger.Warning("Cannot get property: " + fullName, ex);
+                Logger.Warn("Cannot get property: " + fullName, ex);
                 return true;
             }
         }
@@ -83,8 +84,8 @@ namespace VersionOne.VisualStudio.DataLayer.Entities {
                 case TaskPrefix:
                 case TestPrefix:
                     EffortTrackingLevel parentLevel;
-                    
-                switch(Parent.TypePrefix) {
+
+                    switch(Parent.TypePrefix) {
                         case StoryPrefix:
                             parentLevel = storyLevel;
                             break;
@@ -94,6 +95,7 @@ namespace VersionOne.VisualStudio.DataLayer.Entities {
                         default:
                             throw new InvalidOperationException("Unexpected parent asset type.");
                     }
+
                     return parentLevel != EffortTrackingLevel.SecondaryWorkitem && parentLevel != EffortTrackingLevel.Both;
                 default:
                     throw new NotSupportedException("Unexpected asset type.");

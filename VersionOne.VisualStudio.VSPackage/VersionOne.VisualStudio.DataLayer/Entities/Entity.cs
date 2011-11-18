@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Globalization;
 using System.Linq;
 using VersionOne.SDK.APIClient;
+using VersionOne.VisualStudio.DataLayer.Logging;
 
 namespace VersionOne.VisualStudio.DataLayer.Entities {
     public abstract class Entity {
@@ -25,7 +26,10 @@ namespace VersionOne.VisualStudio.DataLayer.Entities {
 
         #endregion
 
-        protected readonly ApiDataLayer DataLayer = ApiDataLayer.Instance as ApiDataLayer;
+        // TODO use IDataLayerInternal
+        protected readonly ApiDataLayer DataLayer;
+        protected readonly ILogger Logger;
+
         protected internal readonly Asset Asset;
 
         public abstract string TypePrefix { get; }
@@ -39,6 +43,9 @@ namespace VersionOne.VisualStudio.DataLayer.Entities {
         }
 
         protected Entity(Asset asset) {
+            // TODO use IDataLayerInternal or even refactor further
+            DataLayer = (ApiDataLayer) ApiDataLayer.Instance;
+            Logger = DataLayer.Logger;
             Asset = asset;
         }
 
@@ -98,7 +105,7 @@ namespace VersionOne.VisualStudio.DataLayer.Entities {
 
                 SetPropertyInternal(propertyName, newValue);
             } catch (Exception ex) {
-                Logger.Warning("Cannot set property: " + propertyName, ex);
+                Logger.Warn("Cannot set property: " + propertyName, ex);
             }
         }
 
@@ -183,7 +190,7 @@ namespace VersionOne.VisualStudio.DataLayer.Entities {
             try {
                 return propertyName != EffortProperty && Asset.Attributes[fullName].Definition.IsReadOnly;
             } catch (Exception ex) {
-                Logger.Warning("Cannot get property: " + fullName, ex);
+                Logger.Warn("Cannot get property: " + fullName, ex);
                 return true;
             }
         }

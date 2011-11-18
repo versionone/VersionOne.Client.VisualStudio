@@ -44,6 +44,10 @@
       <Private>false</Private>
     </Reference>
     <Reference Include="Microsoft.VisualStudio.Shell.Immutable.10.0" />
+    <Reference Include="NLog, Version=2.0.0.0, Culture=neutral, PublicKeyToken=5120e14c03d0593c, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\Common\NLog-2.0\netfx40\NLog.dll</HintPath>
+    </Reference>
     <Reference Include="System" />
     <Reference Include="System.Core" />
     <Reference Include="System.Data" />
@@ -172,6 +176,8 @@
     <Compile Include="Events\EventContext.cs" />
     <Compile Include="Events\EventReceiver.cs" />
     <Compile Include="ITaskRunner.cs" />
+    <Compile Include="Logging\Logger.cs" />
+    <Compile Include="Logging\LoggerFactory.cs" />
     <Compile Include="SynchronousTaskRunner.cs">
       <SubType>Component</SubType>
     </Compile>

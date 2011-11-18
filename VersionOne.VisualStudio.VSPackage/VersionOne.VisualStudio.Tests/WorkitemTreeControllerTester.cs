@@ -4,6 +4,7 @@ using Rhino.Mocks;
 using NUnit.Framework;
 using VersionOne.VisualStudio.DataLayer;
 using VersionOne.VisualStudio.DataLayer.Entities;
+using VersionOne.VisualStudio.DataLayer.Logging;
 using VersionOne.VisualStudio.VSPackage;
 using VersionOne.VisualStudio.VSPackage.Controllers;
 using VersionOne.VisualStudio.VSPackage.Controls;
@@ -20,6 +21,7 @@ namespace VersionOne.VisualStudio.Tests {
         private IEventDispatcher eventDispatcherMock;
         private IWorkitemTreeView viewMock;
         private IWaitCursor waitCursorStub;
+        private ILoggerFactory loggerFactoryMock;
 
         private readonly MockRepository mockRepository = new MockRepository();
 
@@ -30,8 +32,10 @@ namespace VersionOne.VisualStudio.Tests {
             viewMock = mockRepository.StrictMock<IWorkitemTreeView>();
             waitCursorStub = mockRepository.Stub<IWaitCursor>();
             eventDispatcherMock = mockRepository.Stub<IEventDispatcher>();
+            loggerFactoryMock = mockRepository.DynamicMock<ILoggerFactory>();
+            loggerFactoryMock.Stub(x => x.GetLogger(null)).IgnoreArguments().Return(mockRepository.Stub<ILogger>());
 
-            controller = new WorkitemTreeController(dataLayerMock, settingsMock, eventDispatcherMock);
+            controller = new WorkitemTreeController(loggerFactoryMock, dataLayerMock, settingsMock, eventDispatcherMock);
         }
 
         private void ExpectRegisterAndPrepareView() {
@@ -92,7 +96,7 @@ namespace VersionOne.VisualStudio.Tests {
 
             mockRepository.ReplayAll();
 
-            controller = new TestWorkitemTreeController(dataLayerMock, settingsMock, eventDispatcherMock);
+            controller = new TestWorkitemTreeController(loggerFactoryMock, dataLayerMock, settingsMock, eventDispatcherMock);
             controller.Register(viewMock);
             controller.PrepareView();
             controller.CommitItem();
@@ -114,7 +118,7 @@ namespace VersionOne.VisualStudio.Tests {
 
             mockRepository.ReplayAll();
 
-            controller = new TestWorkitemTreeController(dataLayerMock, settingsMock, eventDispatcherMock);
+            controller = new TestWorkitemTreeController(loggerFactoryMock, dataLayerMock, settingsMock, eventDispatcherMock);
             controller.Register(viewMock);
             controller.PrepareView();
             controller.CommitItem();
@@ -155,7 +159,7 @@ namespace VersionOne.VisualStudio.Tests {
 
             mockRepository.ReplayAll();
 
-            controller = new TestWorkitemTreeController(dataLayerMock, settingsMock, eventDispatcherMock);
+            controller = new TestWorkitemTreeController(loggerFactoryMock, dataLayerMock, settingsMock, eventDispatcherMock);
             controller.Register(viewMock);
             controller.PrepareView();
             controller.SignupItem();
@@ -176,7 +180,7 @@ namespace VersionOne.VisualStudio.Tests {
 
             mockRepository.ReplayAll();
 
-            controller = new TestWorkitemTreeController(dataLayerMock, settingsMock, eventDispatcherMock);
+            controller = new TestWorkitemTreeController(loggerFactoryMock, dataLayerMock, settingsMock, eventDispatcherMock);
             controller.Register(viewMock);
             controller.PrepareView();
             controller.QuickCloseItem();
@@ -196,7 +200,7 @@ namespace VersionOne.VisualStudio.Tests {
 
             mockRepository.ReplayAll();
 
-            controller = new TestWorkitemTreeController(dataLayerMock, settingsMock, eventDispatcherMock);
+            controller = new TestWorkitemTreeController(loggerFactoryMock, dataLayerMock, settingsMock, eventDispatcherMock);
             controller.Register(viewMock);
             controller.PrepareView();
             controller.CloseItem(workitemMock);
@@ -217,7 +221,7 @@ namespace VersionOne.VisualStudio.Tests {
 
             mockRepository.ReplayAll();
 
-            controller = new TestWorkitemTreeController(dataLayerMock, settingsMock, eventDispatcherMock);
+            controller = new TestWorkitemTreeController(loggerFactoryMock, dataLayerMock, settingsMock, eventDispatcherMock);
             controller.Register(viewMock);
             controller.PrepareView();
             controller.CloseItem(workitemMock);
@@ -238,7 +242,7 @@ namespace VersionOne.VisualStudio.Tests {
 
             mockRepository.ReplayAll();
 
-            controller = new TestWorkitemTreeController(dataLayerMock, settingsMock, eventDispatcherMock);
+            controller = new TestWorkitemTreeController(loggerFactoryMock, dataLayerMock, settingsMock, eventDispatcherMock);
             controller.Register(viewMock);
             controller.PrepareView();
             controller.CloseItem(workitemMock);
@@ -346,7 +350,7 @@ namespace VersionOne.VisualStudio.Tests {
             Expect.Call(() => eventDispatcherMock.Notify(null, new ModelChangedArgs(EventReceiver.WorkitemView, EventContext.WorkitemsRequested)));
 
             mockRepository.ReplayAll();
-            controller = new TestWorkitemTreeController(dataLayerMock, settingsMock, eventDispatcherMock);
+            controller = new TestWorkitemTreeController(loggerFactoryMock, dataLayerMock, settingsMock, eventDispatcherMock);
             controller.Register(viewMock);
             controller.PrepareView();
             controller.HandleSaveCommand();
@@ -363,7 +367,7 @@ namespace VersionOne.VisualStudio.Tests {
             Expect.Call(() => viewMock.ShowValidationInformationDialog(null)).IgnoreArguments();
 
             mockRepository.ReplayAll();
-            controller = new TestWorkitemTreeController(dataLayerMock, settingsMock, eventDispatcherMock);
+            controller = new TestWorkitemTreeController(loggerFactoryMock, dataLayerMock, settingsMock, eventDispatcherMock);
             controller.Register(viewMock);
             controller.PrepareView();
             controller.HandleSaveCommand();
@@ -381,7 +385,7 @@ namespace VersionOne.VisualStudio.Tests {
             Expect.Call(viewMock.ResetPropertyView);
 
             mockRepository.ReplayAll();
-            controller = new TestWorkitemTreeController(dataLayerMock, settingsMock, eventDispatcherMock);
+            controller = new TestWorkitemTreeController(loggerFactoryMock, dataLayerMock, settingsMock, eventDispatcherMock);
             controller.Register(viewMock);
             controller.PrepareView();
             controller.HandleSaveCommand();
@@ -397,7 +401,7 @@ namespace VersionOne.VisualStudio.Tests {
             Expect.Call(dataLayerMock.GetWorkitems()).Return(workitems);
 
             mockRepository.ReplayAll();
-            controller = new TestWorkitemTreeController(dataLayerMock, settingsMock, eventDispatcherMock);
+            controller = new TestWorkitemTreeController(loggerFactoryMock, dataLayerMock, settingsMock, eventDispatcherMock);
             controller.Register(viewMock);
             controller.PrepareView();
             var returnedWorkitems = controller.GetWorkitems();
@@ -413,7 +417,7 @@ namespace VersionOne.VisualStudio.Tests {
             Expect.Call(() => viewMock.ShowErrorMessage(null)).IgnoreArguments();
 
             mockRepository.ReplayAll();
-            controller = new TestWorkitemTreeController(dataLayerMock, settingsMock, eventDispatcherMock);
+            controller = new TestWorkitemTreeController(loggerFactoryMock, dataLayerMock, settingsMock, eventDispatcherMock);
             controller.Register(viewMock);
             controller.PrepareView();
             var returnedWorkitems = controller.GetWorkitems();
@@ -426,7 +430,7 @@ namespace VersionOne.VisualStudio.Tests {
         /// Use it instead of original controller anytime you need to test async methods.
         /// </summary>
         private class TestWorkitemTreeController : WorkitemTreeController {
-            internal TestWorkitemTreeController(IDataLayer dataLayer, ISettings settings, IEventDispatcher eventDispatcher) : base(dataLayer, settings, eventDispatcher) { }
+            internal TestWorkitemTreeController(ILoggerFactory loggerFactory, IDataLayer dataLayer, ISettings settings, IEventDispatcher eventDispatcher) : base(loggerFactory, dataLayer, settings, eventDispatcher) { }
 
             protected override ITaskRunner GetTaskRunner(IWaitCursor waitCursor) {
                 return new SynchronousTaskRunner(waitCursor);

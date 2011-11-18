@@ -6,6 +6,7 @@ using VersionOne.VisualStudio.VSPackage.Controllers;
 using VersionOne.VisualStudio.VSPackage.Controls;
 using System.Runtime.InteropServices;
 using VersionOne.VisualStudio.VSPackage.Events;
+using VersionOne.VisualStudio.VSPackage.Logging;
 using VersionOne.VisualStudio.VSPackage.Settings;
 
 namespace VersionOne.VisualStudio.VSPackage {
@@ -17,7 +18,7 @@ namespace VersionOne.VisualStudio.VSPackage {
 	    private readonly OptionsPageController controller;
 
 	    public OptionsPage() {
-            controller = new OptionsPageController(ApiDataLayer.Instance, SettingsImpl.Instance, EventDispatcher.Instance);
+            controller = new OptionsPageController(LoggerFactory.Instance, ApiDataLayer.Instance, SettingsImpl.Instance, EventDispatcher.Instance);
             optionsControl = new OptionsPageControl();
             controller.RegisterView(optionsControl);
             controller.PrepareView();

@@ -1,9 +1,15 @@
 using System.Collections.Generic;
 using VersionOne.VisualStudio.DataLayer.Entities;
+using VersionOne.VisualStudio.DataLayer.Logging;
 using VersionOne.VisualStudio.DataLayer.Settings;
 
 namespace VersionOne.VisualStudio.DataLayer {
     public interface IDataLayer {
+        /// <summary>
+        /// Logger factory used to resolve Data Layer logger
+        /// </summary>
+        ILoggerFactory LoggerFactory { get; set; }
+
         /// <summary>
         /// Validate VersionOne connection
         /// </summary>

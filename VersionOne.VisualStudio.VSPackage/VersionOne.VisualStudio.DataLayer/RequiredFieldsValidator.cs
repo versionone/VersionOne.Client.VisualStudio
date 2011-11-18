@@ -1,22 +1,27 @@
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Text;
 
 using VersionOne.SDK.APIClient;
 using VersionOne.VisualStudio.DataLayer.Entities;
+using VersionOne.VisualStudio.DataLayer.Logging;
 using Attribute = VersionOne.SDK.APIClient.Attribute;
 
 namespace VersionOne.VisualStudio.DataLayer {
     internal class RequiredFieldsValidator {
         private readonly IMetaModel metaModel;
         private readonly IServices services;
-        private readonly IDataLayer dataLayer;
+        private readonly IDataLayerInternal dataLayer;
+        private readonly ILogger logger;
         private readonly Dictionary<string, List<RequiredFieldsDto>> requiredFieldsList = new Dictionary<string, List<RequiredFieldsDto>>();
 
-        internal RequiredFieldsValidator(IMetaModel metaModel, IServices services, IDataLayer dataLayer) {
+        internal RequiredFieldsValidator(IMetaModel metaModel, IServices services, IDataLayerInternal dataLayer) {
             this.metaModel = metaModel;
             this.services = services;
             this.dataLayer = dataLayer;
+            
+            logger = dataLayer.Logger;
 
             requiredFieldsList.Add(Entity.TaskPrefix, GetRequiredFields(Entity.TaskPrefix));
             requiredFieldsList.Add(Entity.DefectPrefix, GetRequiredFields(Entity.DefectPrefix));
@@ -25,15 +30,15 @@ namespace VersionOne.VisualStudio.DataLayer {
         }
 
         private List<RequiredFieldsDto> GetRequiredFields(string assetType) {
-            List<RequiredFieldsDto> fields = new List<RequiredFieldsDto>();
-            IAssetType attributeDefinitionAssetType = metaModel.GetAssetType("AttributeDefinition");
-            IAttributeDefinition nameAttributeDef = attributeDefinitionAssetType.GetAttributeDefinition("Name");
-            IAttributeDefinition assetNameAttributeDef = attributeDefinitionAssetType.GetAttributeDefinition("Asset.AssetTypesMeAndDown.Name");
-            IAssetType taskType = metaModel.GetAssetType(assetType);
+            var fields = new List<RequiredFieldsDto>();
+            var attributeDefinitionAssetType = metaModel.GetAssetType("AttributeDefinition");
+            var nameAttributeDef = attributeDefinitionAssetType.GetAttributeDefinition("Name");
+            var assetNameAttributeDef = attributeDefinitionAssetType.GetAttributeDefinition("Asset.AssetTypesMeAndDown.Name");
+            var taskType = metaModel.GetAssetType(assetType);
 
-            Query query = new Query(attributeDefinitionAssetType);
+            var query = new Query(attributeDefinitionAssetType);
             query.Selection.Add(nameAttributeDef);
-            FilterTerm assetTypeTerm = new FilterTerm(assetNameAttributeDef);
+            var assetTypeTerm = new FilterTerm(assetNameAttributeDef);
             assetTypeTerm.Equal(assetType);
             query.Filter = new AndFilterTerm(new IFilterTerm[] { assetTypeTerm });
 
@@ -41,45 +46,46 @@ namespace VersionOne.VisualStudio.DataLayer {
             try {
                 result = services.Retrieve(query);
             } catch (Exception ex) {
-                Logger.Error("Cannot get meta data for " + assetType, ex);
+                logger.Error("Cannot get meta data for " + assetType, ex);
                 return null;
             }
 
-            foreach (Asset asset in result.Assets) {
+            foreach (var asset in result.Assets) {
                 try {
-                    string name = asset.GetAttribute(nameAttributeDef).Value.ToString();
-                    if (IsRequiredField(taskType, name)) {
-                        RequiredFieldsDto reqFieldData = new RequiredFieldsDto(name, taskType.GetAttributeDefinition(name).DisplayName);
-
+                    var name = asset.GetAttribute(nameAttributeDef).Value.ToString();
+                    
+                    if(IsRequiredField(taskType, name)) {
+                        var reqFieldData = new RequiredFieldsDto(name, taskType.GetAttributeDefinition(name).DisplayName);
                         fields.Add(reqFieldData);
                     }
-                } catch (Exception ex) {
-                    Logger.Error("Cannot get meta data for " + assetType, ex);
+                } catch(Exception ex) {
+                    logger.Error("Cannot get meta data for " + assetType, ex);
                 }
             }
 
             return fields;
         }
 
-        private bool IsRequiredField(IAssetType taskType, string name) {
-            IAttributeDefinition def = taskType.GetAttributeDefinition(name);
+        private static bool IsRequiredField(IAssetType taskType, string name) {
+            var def = taskType.GetAttributeDefinition(name);
             return def.IsRequired && !def.IsReadOnly;
         }
 
         private void ValidateAsset(Asset asset, IDictionary<Asset, List<RequiredFieldsDto>> validationResults) {
-            List<RequiredFieldsDto> fields = Validate(asset);
+            var fields = Validate(asset);
             
             if (fields.Count > 0) {
                 validationResults.Add(asset, fields);
             }
         }
 
-        internal Dictionary<Asset, List<RequiredFieldsDto>> Validate(ICollection<Asset> assets) {
-            Dictionary<Asset, List<RequiredFieldsDto>> requiredData = new Dictionary<Asset, List<RequiredFieldsDto>>();
-            foreach (Asset asset in assets) {
+        internal Dictionary<Asset, List<RequiredFieldsDto>> Validate(IEnumerable<Asset> assets) {
+            var requiredData = new Dictionary<Asset, List<RequiredFieldsDto>>();
+            
+            foreach (var asset in assets) {
                 ValidateAsset(asset, requiredData);
                 
-                foreach(Asset child in asset.Children) {
+                foreach(var child in asset.Children) {
                     ValidateAsset(child, requiredData);
                 }
             }
@@ -88,18 +94,19 @@ namespace VersionOne.VisualStudio.DataLayer {
         }
 
         internal List<RequiredFieldsDto> Validate(Asset asset) {
-            List<RequiredFieldsDto> unfilledFields = new List<RequiredFieldsDto>();
-            string type = asset.AssetType.Token;
-            if (!requiredFieldsList.ContainsKey(type)) {
+            var unfilledFields = new List<RequiredFieldsDto>();
+            var type = asset.AssetType.Token;
+            
+            if(!requiredFieldsList.ContainsKey(type)) {
                 return unfilledFields;
             }
 
-            foreach (RequiredFieldsDto field in requiredFieldsList[type]) {
-                string fullName = type + "." + field.Name;
-                Attribute attribute = asset.Attributes[fullName];
+            foreach(var field in requiredFieldsList[type]) {
+                var fullName = type + "." + field.Name;
+                var attribute = asset.Attributes[fullName];
 
-                if (attribute == null) {
-                    Logger.Error("Incorrect attribute: " + fullName);
+                if(attribute == null) {
+                    logger.Error("Incorrect attribute: " + fullName);
                 }
 
                 if (IsMultiValueAndUnfilled(attribute) || IsSingleValueAndUnfilled(attribute)) {
@@ -110,7 +117,7 @@ namespace VersionOne.VisualStudio.DataLayer {
             return unfilledFields;
         }
 
-        private bool IsSingleValueAndUnfilled(Attribute attribute) {
+        private static bool IsSingleValueAndUnfilled(Attribute attribute) {
             return !attribute.Definition.IsMultiValue &&
                     ((attribute.Value is Oid && ((Oid)attribute.Value).IsNull) || attribute.Value == null);
         }
@@ -121,13 +128,13 @@ namespace VersionOne.VisualStudio.DataLayer {
 
 
         internal string CreateErrorMessage(Dictionary<Asset, List<RequiredFieldsDto>> requiredData) {
-            StringBuilder message = new StringBuilder();
+            var message = new StringBuilder();
 
-            foreach (Asset asset in requiredData.Keys) {
-                string type = asset.AssetType.Token;
-                string assetDisplayName = dataLayer.LocalizerResolve(asset.AssetType.DisplayName);
-                Attribute idAttribute = asset.Attributes[type + ".Number"];
-                string id = idAttribute != null && idAttribute.Value != null ? idAttribute.Value.ToString() : "<New>";
+            foreach(var asset in requiredData.Keys) {
+                var type = asset.AssetType.Token;
+                var assetDisplayName = dataLayer.LocalizerResolve(asset.AssetType.DisplayName);
+                var idAttribute = asset.Attributes[type + ".Number"];
+                var id = idAttribute != null && idAttribute.Value != null ? idAttribute.Value.ToString() : "<New>";
 
                 message.Append("The following fields are not filled for ").Append(id).Append(" ").Append(assetDisplayName).Append(":");
                 message.Append(GetMessageOfUnfilledFieldsList(requiredData[asset], Environment.NewLine + "   ", Environment.NewLine + "   ")).Append(Environment.NewLine);
@@ -136,22 +143,19 @@ namespace VersionOne.VisualStudio.DataLayer {
             return message.ToString();
         }
 
-        internal string GetMessageOfUnfilledFieldsList(List<RequiredFieldsDto> unfilledFields, string startWith, string delimiter) {
-            StringBuilder message = new StringBuilder(startWith);
+        internal string GetMessageOfUnfilledFieldsList(IEnumerable<RequiredFieldsDto> unfilledFields, string startWith, string delimiter) {
+            var message = new StringBuilder(startWith);
 
-            foreach (RequiredFieldsDto field in unfilledFields) {
-                string fieldDisplayName = dataLayer.LocalizerResolve(field.DisplayName);
+            foreach(var fieldDisplayName in unfilledFields.Select(field => dataLayer.LocalizerResolve(field.DisplayName))) {
                 message.Append(fieldDisplayName).Append(delimiter);
             }
+
             message.Remove(message.Length - delimiter.Length, delimiter.Length);
             return message.ToString();
         }
 
         public List<RequiredFieldsDto> GetFields(string typePrefix) {
-            if (requiredFieldsList.ContainsKey(typePrefix)) {
-                return requiredFieldsList[typePrefix];
-            }
-            return null;
+            return requiredFieldsList.ContainsKey(typePrefix) ? requiredFieldsList[typePrefix] : null;
         }
     }
 }

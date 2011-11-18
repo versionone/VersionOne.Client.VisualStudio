@@ -1,6 +1,7 @@
 ﻿using NUnit.Framework;
 using Rhino.Mocks;
 using VersionOne.VisualStudio.DataLayer;
+using VersionOne.VisualStudio.DataLayer.Logging;
 using VersionOne.VisualStudio.VSPackage.Controllers;
 using VersionOne.VisualStudio.VSPackage.Controls;
 using VersionOne.VisualStudio.VSPackage.Events;
@@ -16,6 +17,7 @@ namespace VersionOne.VisualStudio.Tests {
         private IDataLayer dataLayerMock;
         private ISettings settingsStub;
         private IEventDispatcher eventDispatcherMock;
+        private ILoggerFactory loggerFactoryMock;
 
         [SetUp]
         public void SetUp() {
@@ -23,7 +25,9 @@ namespace VersionOne.VisualStudio.Tests {
             settingsStub = mockRepository.Stub<ISettings>();
             eventDispatcherMock = mockRepository.StrictMock<IEventDispatcher>();
             viewMock = mockRepository.StrictMock<IOptionsPageView>();
-            controller = new OptionsPageController(dataLayerMock, settingsStub, eventDispatcherMock);
+            loggerFactoryMock = mockRepository.DynamicMock<ILoggerFactory>();
+            loggerFactoryMock.Stub(x => x.GetLogger(null)).IgnoreArguments().Return(mockRepository.Stub<ILogger>());
+            controller = new OptionsPageController(loggerFactoryMock, dataLayerMock, settingsStub, eventDispatcherMock);
         }
 
         [Test]

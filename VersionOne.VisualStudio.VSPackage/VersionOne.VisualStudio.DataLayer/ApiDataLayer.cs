@@ -4,24 +4,27 @@ using System.Linq;
 using VersionOne.SDK.APIClient;
 using System.Net;
 using VersionOne.VisualStudio.DataLayer.Entities;
+using VersionOne.VisualStudio.DataLayer.Logging;
 using VersionOne.VisualStudio.DataLayer.Settings;
 
 namespace VersionOne.VisualStudio.DataLayer {
-    public class ApiDataLayer : IDataLayer {
+    public class ApiDataLayer : IDataLayerInternal {
         #region Private fields
 
         private readonly VersionOneConnector connector = new VersionOneConnector();
 
-        private static IDataLayer dataLayer;
+        private static ApiDataLayer dataLayer;
         private readonly static LinkedList<AttributeInfo> AttributesToQuery = new LinkedList<AttributeInfo>();
 
         private RequiredFieldsValidator requiredFieldsValidator;
         internal Dictionary<string, IAssetType> Types;
-        internal IAssetType ProjectType;
-        internal IAssetType TaskType;
-        internal IAssetType TestType;
-        internal IAssetType DefectType;
-        internal IAssetType StoryType;
+
+        public IAssetType ProjectType;
+        public IAssetType TaskType;
+        public IAssetType TestType;
+        public IAssetType DefectType;
+        public IAssetType StoryType;
+        
         private IAssetType workitemType;
         private IAssetType primaryWorkitemType;
         private IAssetType effortType;
@@ -38,9 +41,19 @@ namespace VersionOne.VisualStudio.DataLayer {
             "Actuals",
         };
 
+        private ILogger logger;
+
         #endregion
 
         internal Oid MemberOid;
+
+        public ILoggerFactory LoggerFactory { get; set; }
+
+        public ILogger Logger {
+            get {
+                return logger ?? (logger = LoggerFactory == null ? new BlackholeLogger() : LoggerFactory.GetLogger("DataLayer"));
+            }
+        }
 
         private ApiDataLayer() {
             var prefixes = new[] {
@@ -93,7 +106,9 @@ namespace VersionOne.VisualStudio.DataLayer {
         public bool ShowAllTasks { get; set; }
 
         public void CommitChanges() {
-            connector.CheckConnection();
+            if(!connector.IsConnected) {
+                Logger.Error("Not connected to VersionOne.");
+            }
 
             try {
                 var validationResult = new Dictionary<Asset, List<RequiredFieldsDto>>();
@@ -173,21 +188,19 @@ namespace VersionOne.VisualStudio.DataLayer {
             }
         }
 
-        internal bool IsEffortTrackingRelated(string attributeName) {
+        public bool IsEffortTrackingRelated(string attributeName) {
             return effortTrackingAttributes.Contains(attributeName);
         }
 
         #endregion
 
         private void AddSelection(Query query, string typePrefix) {
-            foreach(var attrInfo in AttributesToQuery) {
-                if(attrInfo.Prefix == typePrefix) {
-                    try {
-                        var def = Types[attrInfo.Prefix].GetAttributeDefinition(attrInfo.Attr);
-                        query.Selection.Add(def);
-                    } catch(MetaException e) {
-                        Logger.Warning("Wrong attribute: " + attrInfo, e);
-                    }
+            foreach (var attrInfo in AttributesToQuery.Where(attrInfo => attrInfo.Prefix == typePrefix)) {
+                try {
+                    var def = Types[attrInfo.Prefix].GetAttributeDefinition(attrInfo.Attr);
+                    query.Selection.Add(def);
+                } catch(MetaException ex) {
+                    Logger.Warn("Wrong attribute: " + attrInfo, ex);
                 }
             }
 
@@ -199,8 +212,8 @@ namespace VersionOne.VisualStudio.DataLayer {
                 try {
                     var def = Types[typePrefix].GetAttributeDefinition(field.Name);
                     query.Selection.Add(def);
-                } catch(MetaException e) {
-                    Logger.Warning("Wrong attribute: " + field.Name, e);
+                } catch(MetaException ex) {
+                    Logger.Warn("Wrong attribute: " + field.Name, ex);
                 }
             }
         }
@@ -216,18 +229,16 @@ namespace VersionOne.VisualStudio.DataLayer {
 
             var query = new Query(Oid.FromToken(id, connector.MetaModel));
             AddSelection(query, Entity.ProjectPrefix);
-            QueryResult result;
             
             try {
-                result = connector.Services.Retrieve(query);
+                var result = connector.Services.Retrieve(query);
+                return result.TotalAvaliable == 1 ? WorkitemFactory.CreateProject(result.Assets[0], null) : null;
             } catch(MetaException ex) {
                 connector.IsConnected = false;
                 throw new DataLayerException("Unable to get projects", ex);
             } catch(Exception ex) {
                 throw new DataLayerException("Unable to get projects", ex);
             }
-
-            return result.TotalAvaliable == 1 ? WorkitemFactory.CreateProject(result.Assets[0], null) : null;
         }
 
         public void DropWorkitemCache() {
@@ -235,7 +246,9 @@ namespace VersionOne.VisualStudio.DataLayer {
         }
 
         public List<Workitem> GetWorkitems() {
-            connector.CheckConnection();
+            if(!connector.IsConnected) {
+                Logger.Error("Not connected to VersionOne.");
+            }
             
             if(currentProjectId == null) {
                 throw new DataLayerException("Current project is not selected");
@@ -284,7 +297,7 @@ namespace VersionOne.VisualStudio.DataLayer {
         /// </summary>
         /// <param name="asset">Story, Task, Defect or Test</param>
         /// <returns>true if current user is owner of asset, false - otherwise</returns>
-        internal bool AssetPassesShowMyTasksFilter(Asset asset) {
+        public bool AssetPassesShowMyTasksFilter(Asset asset) {
             if(asset.HasChanged || asset.Oid.IsNull) {
                 return true;
             }
@@ -326,7 +339,11 @@ namespace VersionOne.VisualStudio.DataLayer {
         }
 
         public void CheckConnection(VersionOneSettings settings) {
-            connector.CheckConnection(settings);
+            try {
+                connector.CheckConnection(settings);
+            } catch(Exception ex) {
+                logger.Error("Cannot connect to V1 server.", ex);
+            }
         }
 
         public bool Connect(VersionOneSettings settings) {
@@ -357,7 +374,7 @@ namespace VersionOne.VisualStudio.DataLayer {
 
                 MemberOid = connector.Services.LoggedIn;
                 listPropertyValues = GetListPropertyValues();
-                requiredFieldsValidator = new RequiredFieldsValidator(connector.MetaModel, connector.Services, Instance);
+                requiredFieldsValidator = new RequiredFieldsValidator(connector.MetaModel, connector.Services, InternalInstance);
                 connector.IsConnected = true;
 
                 return true;
@@ -487,6 +504,10 @@ namespace VersionOne.VisualStudio.DataLayer {
             get { return dataLayer ?? (dataLayer = new ApiDataLayer()); }
         }
 
+        internal static IDataLayerInternal InternalInstance {
+            get { return dataLayer ?? (dataLayer = new ApiDataLayer()); }
+        }
+
         public bool IsConnected {
             get {
                 if(!connector.IsConnected) {
@@ -537,14 +558,14 @@ namespace VersionOne.VisualStudio.DataLayer {
             // connector.Reconnect();
         }
 
-        internal double? GetEffort(Asset asset) {
+        public double? GetEffort(Asset asset) {
             double res;
             if(efforts.TryGetValue(asset, out res))
                 return res;
             return null;
         }
 
-        internal void AddEffort(Asset asset, double newValue) {
+        public void AddEffort(Asset asset, double newValue) {
             if(efforts.ContainsKey(asset)) {
                 if(newValue == 0) {
                     efforts.Remove(asset);

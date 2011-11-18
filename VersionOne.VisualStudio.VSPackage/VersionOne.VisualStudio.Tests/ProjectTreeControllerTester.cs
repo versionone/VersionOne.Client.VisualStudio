@@ -2,6 +2,7 @@
 using Rhino.Mocks;
 using VersionOne.VisualStudio.DataLayer;
 using VersionOne.VisualStudio.DataLayer.Entities;
+using VersionOne.VisualStudio.DataLayer.Logging;
 using VersionOne.VisualStudio.VSPackage;
 using VersionOne.VisualStudio.VSPackage.Controllers;
 using VersionOne.VisualStudio.VSPackage.Controls;
@@ -16,6 +17,7 @@ namespace VersionOne.VisualStudio.Tests {
         private IDataLayer dataLayerMock;
         private IEventDispatcher eventDispatcherMock;
         private ISettings settingsMock;
+        private ILoggerFactory loggerFactoryMock;
         
         private readonly MockRepository mockRepository = new MockRepository();
 
@@ -25,8 +27,10 @@ namespace VersionOne.VisualStudio.Tests {
             dataLayerMock = mockRepository.StrictMock<IDataLayer>();
             eventDispatcherMock = mockRepository.StrictMock<IEventDispatcher>();
             settingsMock = mockRepository.StrictMock<ISettings>();
+            loggerFactoryMock = mockRepository.DynamicMock<ILoggerFactory>();
+            loggerFactoryMock.Stub(x => x.GetLogger(null)).IgnoreArguments().Return(mockRepository.Stub<ILogger>());
 
-            controller = new ProjectTreeController(dataLayerMock, settingsMock, eventDispatcherMock);
+            controller = new ProjectTreeController(loggerFactoryMock, dataLayerMock, settingsMock, eventDispatcherMock);
         }
 
         [Test]
@@ -85,7 +89,7 @@ namespace VersionOne.VisualStudio.Tests {
 
             mockRepository.ReplayAll();
 
-            controller = new ProjectTreeController(dataLayerMock, settingsMock, eventDispatcherMock);
+            controller = new ProjectTreeController(loggerFactoryMock, dataLayerMock, settingsMock, eventDispatcherMock);
             controller.RegisterView(viewMock);
             controller.Prepare();
             modelChangedRaiser.Raise(null, new ModelChangedArgs(EventReceiver.ProjectView, EventContext.ProjectsRequested));
@@ -133,7 +137,7 @@ namespace VersionOne.VisualStudio.Tests {
 
             mockRepository.ReplayAll();
             
-            controller = new TestProjectTreeController(dataLayerMock, settingsMock, eventDispatcherMock);
+            controller = new TestProjectTreeController(loggerFactoryMock, dataLayerMock, settingsMock, eventDispatcherMock);
             controller.RegisterView(viewMock);
             controller.PrepareView();
             controller.Prepare();
@@ -143,7 +147,7 @@ namespace VersionOne.VisualStudio.Tests {
         }
 
         private class TestProjectTreeController : ProjectTreeController {
-            internal TestProjectTreeController(IDataLayer dataLayer, ISettings settings, IEventDispatcher eventDispatcher) : base(dataLayer, settings, eventDispatcher) { }
+            internal TestProjectTreeController(ILoggerFactory loggerFactory, IDataLayer dataLayer, ISettings settings, IEventDispatcher eventDispatcher) : base(loggerFactory, dataLayer, settings, eventDispatcher) { }
 
             protected override ITaskRunner GetTaskRunner(IWaitCursor waitCursor) {
                 return new SynchronousTaskRunner(waitCursor);

@@ -3,6 +3,7 @@ using System.Windows.Forms;
 using VersionOne.VisualStudio.DataLayer;
 using VersionOne.VisualStudio.VSPackage.Controllers;
 using VersionOne.VisualStudio.VSPackage.Events;
+using VersionOne.VisualStudio.VSPackage.Logging;
 using VersionOne.VisualStudio.VSPackage.Settings;
 
 namespace VersionOne.VisualStudio.VSPackage.Forms {
@@ -12,7 +13,7 @@ namespace VersionOne.VisualStudio.VSPackage.Forms {
         public OptionsDialog() {
             InitializeComponent();
             
-            controller = new OptionsPageController(ApiDataLayer.Instance, SettingsImpl.Instance, EventDispatcher.Instance);
+            controller = new OptionsPageController(LoggerFactory.Instance, ApiDataLayer.Instance, SettingsImpl.Instance, EventDispatcher.Instance);
             controller.RegisterView(optionsPage);
             controller.PrepareView();
             controller.Prepare();

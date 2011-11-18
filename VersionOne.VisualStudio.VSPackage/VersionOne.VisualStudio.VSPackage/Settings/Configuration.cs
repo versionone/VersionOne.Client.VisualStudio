@@ -56,6 +56,7 @@ namespace VersionOne.VisualStudio.VSPackage.Settings {
                         configuration = Load(configurationFile);
                     }
                 }
+
                 return configuration;
             }
         }

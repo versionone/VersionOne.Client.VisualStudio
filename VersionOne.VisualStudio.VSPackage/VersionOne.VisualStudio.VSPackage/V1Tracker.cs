@@ -10,6 +10,7 @@ using VersionOne.VisualStudio.DataLayer;
 using VersionOne.VisualStudio.DataLayer.Entities;
 using VersionOne.VisualStudio.DataLayer.Settings;
 using VersionOne.VisualStudio.VSPackage.Events;
+using VersionOne.VisualStudio.VSPackage.Logging;
 using VersionOne.VisualStudio.VSPackage.Settings;
 
 namespace VersionOne.VisualStudio.VSPackage {
@@ -58,6 +59,7 @@ namespace VersionOne.VisualStudio.VSPackage {
 
             try {
                 //Setup DataLayer
+                dataLayer.LoggerFactory = LoggerFactory.Instance;
                 dataLayer.ApiVersion = cfg.APIVersion;
                 AddProperties(cfg);
 

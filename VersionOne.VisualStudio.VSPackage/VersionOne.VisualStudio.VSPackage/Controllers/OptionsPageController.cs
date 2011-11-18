@@ -1,4 +1,5 @@
 ﻿using VersionOne.VisualStudio.DataLayer;
+using VersionOne.VisualStudio.DataLayer.Logging;
 using VersionOne.VisualStudio.DataLayer.Settings;
 using VersionOne.VisualStudio.VSPackage.Controls;
 using VersionOne.VisualStudio.VSPackage.Events;
@@ -10,7 +11,7 @@ namespace VersionOne.VisualStudio.VSPackage.Controllers {
 
         protected override EventReceiver ReceiverType { get { return EventReceiver.OptionsView; } }
 
-        public OptionsPageController(IDataLayer dataLayer, ISettings settings, IEventDispatcher eventDispatcher) : base(dataLayer, settings, eventDispatcher) { }
+        public OptionsPageController(ILoggerFactory loggerFactory, IDataLayer dataLayer, ISettings settings, IEventDispatcher eventDispatcher) : base(loggerFactory, dataLayer, settings, eventDispatcher) { }
 
         public void RegisterView(IOptionsPageView view) {
             this.view = view;

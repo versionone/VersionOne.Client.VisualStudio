@@ -1,5 +1,6 @@
 using System;
 using VersionOne.SDK.APIClient;
+using VersionOne.VisualStudio.DataLayer.Logging;
 using VersionOne.VisualStudio.DataLayer.Settings;
 
 namespace VersionOne.VisualStudio.DataLayer {
@@ -45,7 +46,7 @@ namespace VersionOne.VisualStudio.DataLayer {
             VersionOneSettings = settings;
         }
 
-        private ProxyProvider GetProxy(ProxyConnectionSettings settings) {
+        private static ProxyProvider GetProxy(ProxyConnectionSettings settings) {
             if(settings == null || !settings.UseProxy) {
                 return null;
             }
@@ -54,21 +55,9 @@ namespace VersionOne.VisualStudio.DataLayer {
             return new ProxyProvider(uri, settings.Username, settings.Password, settings.Domain);
         }
 
-        internal void CheckConnection() {
-            if(!IsConnected) {
-                Logger.Error("Connection is not established");
-            }
-        }
-
         public void CheckConnection(VersionOneSettings settings) {
-            var connectionValidator = new V1ConnectionValidator(settings.Path, settings.Username,
-                                                                settings.Password, settings.Integrated,
-                                                                GetProxy(settings.ProxySettings));
-            try {
-                connectionValidator.Test(ApiVersion);
-            } catch(Exception ex) {
-                Logger.Error("Cannot connect to V1 server.", ex);
-            }
+            var connectionValidator = new V1ConnectionValidator(settings.Path, settings.Username, settings.Password, settings.Integrated, GetProxy(settings.ProxySettings));
+            connectionValidator.Test(ApiVersion);
         }
     }
 }

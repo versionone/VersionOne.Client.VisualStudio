@@ -1,6 +1,7 @@
 using System;
 using System.Diagnostics;
 using VersionOne.VisualStudio.DataLayer.Entities;
+using VersionOne.VisualStudio.DataLayer.Logging;
 using VersionOne.VisualStudio.VSPackage.Controls;
 using VersionOne.VisualStudio.DataLayer;
 using VersionOne.VisualStudio.VSPackage.Events;
@@ -14,7 +15,7 @@ namespace VersionOne.VisualStudio.VSPackage.Controllers {
 
         public IProjectTreeView View { get; private set; }
 
-        public ProjectTreeController(IDataLayer dataLayer, ISettings settings, IEventDispatcher eventDispatcher) : base(dataLayer, settings, eventDispatcher) { }
+        public ProjectTreeController(ILoggerFactory loggerFactory, IDataLayer dataLayer, ISettings settings, IEventDispatcher eventDispatcher) : base(loggerFactory, dataLayer, settings, eventDispatcher) { }
 
         public void RegisterView(IProjectTreeView view) {
             View = view;
@@ -28,9 +29,11 @@ namespace VersionOne.VisualStudio.VSPackage.Controllers {
         protected override void HandleModelChanged(object sender, ModelChangedArgs e) {
             switch(e.Context) {
                 case EventContext.ProjectsRequested:
+                    Logger.Debug("Projects loading..");
                     View.UpdateData();
                     break;
                 case EventContext.ProjectSelected:
+                    Logger.Debug("Project selected, sending update request to Workitem view");
                     EventDispatcher.Notify(this, new ModelChangedArgs(EventReceiver.WorkitemView, EventContext.ProjectSelected));
                     break;
                 default:

@@ -1,17 +1,24 @@
 using System;
 using VersionOne.VisualStudio.DataLayer;
+using VersionOne.VisualStudio.DataLayer.Logging;
 using VersionOne.VisualStudio.VSPackage.Events;
 using VersionOne.VisualStudio.VSPackage.Settings;
 
 namespace VersionOne.VisualStudio.VSPackage.Controllers {
     public abstract class BaseController {
+        private ILogger logger;
+
         protected readonly ISettings Settings;
         protected readonly IDataLayer DataLayer;
         protected readonly IEventDispatcher EventDispatcher;
 
         protected abstract EventReceiver ReceiverType { get; }
 
-        protected BaseController(IDataLayer dataLayer, ISettings settings, IEventDispatcher eventDispatcher) {
+        private readonly ILoggerFactory loggerFactory;
+        protected ILogger Logger { get { return logger ?? (logger = loggerFactory.GetLogger(GetType().Name)); } }
+
+        protected BaseController(ILoggerFactory loggerFactory, IDataLayer dataLayer, ISettings settings, IEventDispatcher eventDispatcher) {
+            this.loggerFactory = loggerFactory;
             Settings = settings;
             DataLayer = dataLayer;
             EventDispatcher = eventDispatcher;

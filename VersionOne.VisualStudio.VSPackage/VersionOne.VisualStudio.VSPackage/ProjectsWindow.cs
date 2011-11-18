@@ -7,6 +7,7 @@ using VersionOne.VisualStudio.VSPackage.Controllers;
 using VersionOne.VisualStudio.VSPackage.Controls;
 using VersionOne.VisualStudio.DataLayer;
 using VersionOne.VisualStudio.VSPackage.Events;
+using VersionOne.VisualStudio.VSPackage.Logging;
 using VersionOne.VisualStudio.VSPackage.Settings;
 
 namespace VersionOne.VisualStudio.VSPackage {
@@ -20,7 +21,7 @@ namespace VersionOne.VisualStudio.VSPackage {
             BitmapResourceID = 300;
             BitmapIndex = 1;
 
-            controller = new ProjectTreeController(ApiDataLayer.Instance, SettingsImpl.Instance, EventDispatcher.Instance);
+            controller = new ProjectTreeController(LoggerFactory.Instance, ApiDataLayer.Instance, SettingsImpl.Instance, EventDispatcher.Instance);
             control = new ProjectTreeControl(this);
             controller.RegisterView(control);
             controller.PrepareView();

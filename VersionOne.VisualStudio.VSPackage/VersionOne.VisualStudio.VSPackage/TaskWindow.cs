@@ -7,6 +7,7 @@ using VersionOne.VisualStudio.VSPackage.Controllers;
 using VersionOne.VisualStudio.VSPackage.Controls;
 using VersionOne.VisualStudio.DataLayer;
 using VersionOne.VisualStudio.VSPackage.Events;
+using VersionOne.VisualStudio.VSPackage.Logging;
 using VersionOne.VisualStudio.VSPackage.Settings;
 
 namespace VersionOne.VisualStudio.VSPackage {
@@ -42,7 +43,7 @@ namespace VersionOne.VisualStudio.VSPackage {
             BitmapResourceID = 300;
             BitmapIndex = 1;
 
-            controller = new WorkitemTreeController(ApiDataLayer.Instance, SettingsImpl.Instance, EventDispatcher.Instance);
+            controller = new WorkitemTreeController(LoggerFactory.Instance, ApiDataLayer.Instance, SettingsImpl.Instance, EventDispatcher.Instance);
             control = new WorkitemTreeControl(this);
             controller.Register(control);
             controller.PrepareView();
