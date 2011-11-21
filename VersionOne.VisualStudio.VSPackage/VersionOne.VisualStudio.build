@@ -18,7 +18,16 @@
 			</fileset>
 		</update-version>
     -->
-    <replace file='./VersionOne.VisualStudio.VSPackage/source.extension.vsixmanifest' token='&lt;Version&gt;1.0&lt;/Version&gt;' value='&lt;Version&gt;1.1.${ver.build}&lt;/Version&gt;'/>
+    <property name='manifest.file' value='./VersionOne.VisualStudio.VSPackage/source.extension.vsixmanifest'/>
+    <loadfile file="${manifest.file}" property="manifest.file.content" >
+      <filterchain>
+        <replacetokens>
+          <token key='VERSION' value='1.1.${ver.build}'/>
+        </replacetokens>
+      </filterchain>
+    </loadfile>
+    <delete if='${file::exists(manifest.file)}' file='${manifest.file}' />
+    <echo file='${manifest.file}'>${manifest.file.content}</echo>
 	</target>
 
 	<target name='cleanscc' description='Remove source control bindings from source code'>
