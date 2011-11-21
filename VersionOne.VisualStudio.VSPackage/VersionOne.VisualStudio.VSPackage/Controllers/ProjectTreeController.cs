@@ -29,7 +29,7 @@ namespace VersionOne.VisualStudio.VSPackage.Controllers {
         protected override void HandleModelChanged(object sender, ModelChangedArgs e) {
             switch(e.Context) {
                 case EventContext.ProjectsRequested:
-                    Logger.Debug("Projects loading..");
+                    Logger.Debug("Loading projects...");
                     View.UpdateData();
                     break;
                 case EventContext.ProjectSelected:
@@ -47,6 +47,7 @@ namespace VersionOne.VisualStudio.VSPackage.Controllers {
 
         public void HandleProjectSelected(Project project) {
             if(Settings.SelectedProjectId != project.Id) {
+                Logger.Debug("Selected project is changed, saving new Project ID");
                 Settings.SelectedProjectId = project.Id;
                 Settings.StoreSettings();
                 DataLayer.CurrentProject = project;
@@ -61,9 +62,9 @@ namespace VersionOne.VisualStudio.VSPackage.Controllers {
                 () => View.Projects = DataLayer.GetProjectTree(),
                 () => View.CompleteProjectsRequest(),
                 ex => {
-                    if (ex is DataLayerException) {
+                    if(ex is DataLayerException) {
                         View.ResetPropertyView();
-                        Debug.WriteLine("Refresh failed: " + ex.Message);
+                        Logger.Error("Failed to download Projects", ex);
                     }
                 });
         }

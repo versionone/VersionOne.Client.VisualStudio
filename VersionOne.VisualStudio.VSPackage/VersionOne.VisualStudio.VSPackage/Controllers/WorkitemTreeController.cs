@@ -72,9 +72,9 @@ namespace VersionOne.VisualStudio.VSPackage.Controllers {
                     view.SetSelection();
                 }
 
-                
                 view.Refresh();
-            } catch (DataLayerException) {
+            } catch (DataLayerException ex) {
+                Logger.Error("Failed to update view", ex);
 				view.ResetPropertyView();
             }
         }
@@ -113,6 +113,7 @@ namespace VersionOne.VisualStudio.VSPackage.Controllers {
                              ex => {
                                  if(ex is ValidatorException) {
                                      view.ShowErrorMessage("Workitem cannot be saved because the following required fields are empty:" + ex.Message);
+                                     Logger.Warn("Workitem validation error, item cannot be persisted", ex);
                                  }
                              });
             }
@@ -153,6 +154,7 @@ namespace VersionOne.VisualStudio.VSPackage.Controllers {
                              () => EventDispatcher.Notify(null, new ModelChangedArgs(EventReceiver.WorkitemView, EventContext.WorkitemsRequested)),
                              ex => {
                                  if(ex is ValidatorException) {
+                                     Logger.Warn("Cannot save workitem before closing it because of validation errors", ex);
                                      view.ShowErrorMessage("Workitem cannot be closed because some required fields are empty: " + ex.Message);
                                  }
                              });
@@ -168,8 +170,10 @@ namespace VersionOne.VisualStudio.VSPackage.Controllers {
                          () => EventDispatcher.Notify(null, new ModelChangedArgs(EventReceiver.WorkitemView, EventContext.WorkitemsRequested)),
                          ex => {
                              if(ex.GetType() == typeof(ValidatorException)) {
+                                 Logger.Warn("Cannot save workitem before closing it because of validation errors", ex);
                                  view.ShowValidationInformationDialog(ex.Message);
                              } else if(ex.GetType() == typeof(DataLayerException)) {
+                                 Logger.Error("Failed to close workitem", ex);
                                  view.ShowErrorMessage("Server communication error. Failed to close workitem. " + Environment.NewLine + ex.Message);
                              }
                          });
@@ -190,7 +194,7 @@ namespace VersionOne.VisualStudio.VSPackage.Controllers {
                 EventDispatcher.Notify(null, new ModelChangedArgs(EventReceiver.WorkitemView, EventContext.WorkitemsRequested));
             } catch(DataLayerException ex) {
                 view.ResetPropertyView();
-                Debug.WriteLine("Refresh failed: " + ex.Message);
+                Logger.Error("Refresh failed", ex);
             }
         }
 
@@ -203,10 +207,12 @@ namespace VersionOne.VisualStudio.VSPackage.Controllers {
                          () => EventDispatcher.Notify(null, new ModelChangedArgs(EventReceiver.WorkitemView, EventContext.WorkitemsRequested)),
                          ex => {
                              if(ex.GetType() == typeof(ValidatorException)) {
+                                 Logger.Warn("Cannot save workitems because of validation errors", ex);
                                  view.ShowValidationInformationDialog(ex.Message);
                              }
 
                              if(ex.GetType() == typeof(DataLayerException)) {
+                                 Logger.Error("Failed to save changes", ex);
                                  view.ResetPropertyView();
                                  view.ShowErrorMessage("Failed to save changes.");
                              }
@@ -276,6 +282,7 @@ namespace VersionOne.VisualStudio.VSPackage.Controllers {
 
         public ICollection<Workitem> GetWorkitems() {
             try {
+                // NOTE this may be totally wrong - DataLayer object is shared among many clients. But it is not thread safe, that's why local lock object is not used
                 lock(DataLayer) {
                     return DataLayer.GetWorkitems();
                 }

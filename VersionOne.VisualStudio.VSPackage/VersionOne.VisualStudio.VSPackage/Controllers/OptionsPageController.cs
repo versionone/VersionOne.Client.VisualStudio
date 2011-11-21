@@ -28,7 +28,9 @@ namespace VersionOne.VisualStudio.VSPackage.Controllers {
             }
 
             var versionOneSettings = CreateVersionOneSettings(view.Model);
+            Logger.Info("Connecting to VersionOne with new settings...");
             DataLayer.Connect(versionOneSettings);
+            Logger.Debug("Sending update request to Projects view...");
             EventDispatcher.Notify(this, new ModelChangedArgs(EventReceiver.ProjectView, EventContext.ProjectsRequested));
         }
 
@@ -37,13 +39,16 @@ namespace VersionOne.VisualStudio.VSPackage.Controllers {
         }
 
         public void HandleSaveCommand() {
+            Logger.Debug("Saving settings");
             view.UpdateModel();
             view.Model.StoreSettings();
 
             try {
                 EventDispatcher.Notify(this, new ModelChangedArgs(EventReceiver.OptionsView, EventContext.V1SettingsChanged));
             } catch(DataLayerException ex) {
-                view.ShowErrorMessage(string.Format("Settings are invalid or V1 server inaccessible ({0}).", ex.Message), "Verification failed");
+                var message = string.Format("Settings are invalid or V1 server inaccessible ({0}).", ex.Message);
+                Logger.Error(message, ex);
+                view.ShowErrorMessage(message, "Verification failed");
             }
         }
 
