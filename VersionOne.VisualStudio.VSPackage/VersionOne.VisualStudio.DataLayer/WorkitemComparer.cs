@@ -1,7 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 using VersionOne.VisualStudio.DataLayer.Entities;
 
 namespace VersionOne.VisualStudio.DataLayer {
@@ -17,22 +15,28 @@ namespace VersionOne.VisualStudio.DataLayer {
         public int Compare (Workitem w1, Workitem w2) {
             if (ReferenceEquals(w1, w2)) {
                 return 0;
-            }            
+            }    
+        
             if(w1.TypePrefix == TestToken && w2.TypePrefix == TaskToken) {
                 return -1;
             }
+
             if(w1.TypePrefix == TaskToken && w2.TypePrefix == TestToken) {
                 return 1;
             }
+
             if (w2.IsVirtual && w1.IsVirtual) {
                 return -1;
             }
+
             if (w2.IsVirtual) {
                 return -1;
             }
+
             if (w1.IsVirtual) {
                 return 1;
             }
+
             try {
                 int order1;
                 int order2;

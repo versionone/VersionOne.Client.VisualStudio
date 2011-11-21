@@ -224,6 +224,7 @@ namespace VersionOne.VisualStudio.DataLayer {
             }
 
             if(currentProjectId == null) {
+                Logger.Error("Current project is not selected");
                 throw new DataLayerException("Current project is not selected");
             }
 
@@ -277,7 +278,6 @@ namespace VersionOne.VisualStudio.DataLayer {
 				    };
 
                     allAssets.RemoveAll(asset => !allowedTypeTokens.Contains(asset.AssetType.Token));
-
                 } catch(MetaException ex) {
                     Logger.Error("Unable to get workitems.", ex);
                 } catch(WebException ex) {
@@ -433,6 +433,7 @@ namespace VersionOne.VisualStudio.DataLayer {
                 var propertyName = ResolvePropertyKey(propertyAlias);
 
                 PropertyValues values;
+                
                 if(res.ContainsKey(propertyName)) {
                     values = res[propertyName];
                 } else {
@@ -493,7 +494,9 @@ namespace VersionOne.VisualStudio.DataLayer {
                     result = connector.Localizer.Resolve(key);
                     return true;
                 }
-            } catch(V1Exception) { }
+            } catch(V1Exception) {
+                Logger.Debug(string.Format("Failed to resolve localized string by key '{0}'", key));
+            }
 
             return false;
         }
@@ -513,8 +516,8 @@ namespace VersionOne.VisualStudio.DataLayer {
                 if(!connector.IsConnected) {
                     try {
                         Reconnect();
-                    } catch(DataLayerException) {
-                        //Do nothing
+                    } catch(DataLayerException ex) {
+                        Logger.Warn("Unable to reconnect to VersionOne", ex);
                     }
                 }
 
@@ -560,8 +563,11 @@ namespace VersionOne.VisualStudio.DataLayer {
 
         public double? GetEffort(Asset asset) {
             double res;
-            if(efforts.TryGetValue(asset, out res))
+            
+            if(efforts.TryGetValue(asset, out res)) {
                 return res;
+            }
+            
             return null;
         }
 
@@ -619,8 +625,8 @@ namespace VersionOne.VisualStudio.DataLayer {
             }
 
             allAssets.Remove(item.Asset);
-
             efforts.Remove(item.Asset);
+            
             foreach(var child in item.Asset.Children) {
                 efforts.Remove(child);
             }
@@ -668,7 +674,7 @@ namespace VersionOne.VisualStudio.DataLayer {
         }
 
         public Workitem CreateWorkitem(string assetType, Workitem parent) {
-            var assetFactory = new AssetFactory(this, CurrentProject, AttributesToQuery);
+            var assetFactory = new AssetFactory(this, CurrentProject, LoggerFactory, AttributesToQuery);
             var item = WorkitemFactory.CreateWorkitem(assetFactory, assetType, parent);
 
             if(item.IsPrimary) {

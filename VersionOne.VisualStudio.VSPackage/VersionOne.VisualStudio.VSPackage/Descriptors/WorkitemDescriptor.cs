@@ -87,36 +87,33 @@ namespace VersionOne.VisualStudio.VSPackage.Descriptors {
         }
 
         private void ConfigurePropertyDescriptors(IEnumerable<ColumnSetting> columns) {
-            foreach (ColumnSetting column in columns) {
+            foreach (var column in columns) {
                 if (ShouldSkipColumnDueToEffortTracking(column)) {
                     continue;
                 }
 
-                List<Attribute> attrs = new List<Attribute>();
+                var attrs = new List<Attribute> {new CategoryAttribute(column.Category)};
 
-                attrs.Add(new CategoryAttribute(column.Category));
-
-                string name = ApiDataLayer.Instance.LocalizerResolve(column.Name);
+                var name = ApiDataLayer.Instance.LocalizerResolve(column.Name);
 
                 switch (column.Type) {
                     case "String":
                     case "Effort":
                         break;
-
                     case "List":
                         attrs.Add(new EditorAttribute(typeof(ListPropertyEditor), typeof(UITypeEditor)));
                         break;
-
                     case "Multi":
                         attrs.Add(new EditorAttribute(typeof(MultiValueEditor), typeof(UITypeEditor)));
                         break;
-
                     case "RichText":
                         attrs.Add(new EditorAttribute(typeof(RichTextTypeEditor), typeof(UITypeEditor)));
                         break;
                 }
+                
                 propertyDescriptors.Add(new WorkitemPropertyDescriptor(entity, name, column, attrs.ToArray(), updateSource));
             }
+
             if (!iconless) {
                 propertyDescriptors.Add(new IconDescriptor("Icon"));
             }
@@ -134,7 +131,7 @@ namespace VersionOne.VisualStudio.VSPackage.Descriptors {
             if (obj.GetType() != typeof(WorkitemDescriptor)) {
                 return false;
             }
-            WorkitemDescriptor other = (WorkitemDescriptor)obj;
+            var other = (WorkitemDescriptor)obj;
             return Equals(other.entity, entity);
         }
 

@@ -30,11 +30,6 @@ namespace VersionOne.VisualStudio.VSPackage.Controls {
             SetProxyRelatedFieldsEnabled(Model.UseProxy);
         }
 
-        public void SaveSettings() {
-            UpdateModel(Model);
-            Controller.HandleSaveCommand();
-        }
-
         public void UpdateModel() {
             UpdateModel(Model);
         }
@@ -111,6 +106,5 @@ namespace VersionOne.VisualStudio.VSPackage.Controls {
         public void ShowMessage(string message, string caption) {
             MessageBox.Show(message, caption, MessageBoxButtons.OK, MessageBoxIcon.Information);
         }
-
     }
 }

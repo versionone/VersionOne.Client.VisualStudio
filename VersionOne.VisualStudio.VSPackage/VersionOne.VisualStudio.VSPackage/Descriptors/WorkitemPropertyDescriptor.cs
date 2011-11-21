@@ -23,8 +23,8 @@ namespace VersionOne.VisualStudio.VSPackage.Descriptors {
 
         private readonly IEventDispatcher eventDispatcher = EventDispatcher.Instance;
 
-        protected bool readOnly;
-        protected readonly Entity entity;
+        private readonly bool readOnly;
+        private readonly Entity entity;
 
         public Workitem Workitem {
             get { return entity as Workitem; }
@@ -38,7 +38,7 @@ namespace VersionOne.VisualStudio.VSPackage.Descriptors {
             get { return attribute; }
         }
 
-        public WorkitemPropertyDescriptor(Entity entity, string name, string attribute, Attribute[] attrs, PropertyUpdateSource updateSource)
+        private WorkitemPropertyDescriptor(Entity entity, string name, string attribute, Attribute[] attrs, PropertyUpdateSource updateSource)
             : base(name, attrs) {
             this.entity = entity;
             this.attribute = attribute;
@@ -108,7 +108,7 @@ namespace VersionOne.VisualStudio.VSPackage.Descriptors {
 
                 return value;
             } catch (Exception ex) {
-                // TODO use logger and/or exception manager
+                // TODO possibly log this, but this would the only Logger usage among descriptors
                 Debug.WriteLine(string.Format("Cannot get value of {0} of asset {1}.", Attribute, item), ex);
                 return string.Empty;
             }

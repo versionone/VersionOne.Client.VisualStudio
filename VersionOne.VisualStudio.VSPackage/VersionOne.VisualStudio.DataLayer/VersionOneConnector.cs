@@ -1,6 +1,5 @@
 using System;
 using VersionOne.SDK.APIClient;
-using VersionOne.VisualStudio.DataLayer.Logging;
 using VersionOne.VisualStudio.DataLayer.Settings;
 
 namespace VersionOne.VisualStudio.DataLayer {
