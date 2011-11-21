@@ -17,7 +17,8 @@ namespace VersionOne.VisualStudio.VSPackage.Logging {
             var fileTarget = new FileTarget {
                                  ArchiveAboveSize = 10485760,
                                  MaxArchiveFiles = 2,
-                                 FileName = "${basedir}\\v1tracker-log.txt",
+                                 FileName = "${specialfolder:dir=.VersionOne.VisualStudioTracker:folder=MyDocuments}\\v1tracker-log.txt",
+                                 Layout = "${longdate} | ${level:uppercase=true} | ${logger} | ${message} | ${exception:format=ToString}",
                              };
             loggingConfiguration.AddTarget("file", fileTarget);
             loggingConfiguration.LoggingRules.Add(new LoggingRule("*", LogLevel.Debug, fileTarget));

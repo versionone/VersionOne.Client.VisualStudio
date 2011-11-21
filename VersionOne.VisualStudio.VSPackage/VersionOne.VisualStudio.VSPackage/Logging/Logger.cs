@@ -7,7 +7,7 @@ namespace VersionOne.VisualStudio.VSPackage.Logging {
         private readonly NLogLogger wrappedLogger;
 
         internal Logger(NLogLogger logger) {
-            this.wrappedLogger = logger;
+            wrappedLogger = logger;
         }
 
         public void Debug(string message) {
@@ -23,7 +23,7 @@ namespace VersionOne.VisualStudio.VSPackage.Logging {
         }
 
         public void Info(string message, Exception ex) {
-            wrappedLogger.Info(message, ex);
+            wrappedLogger.InfoException(message, ex);
         }
 
         public void Warn(string message) {
@@ -31,7 +31,7 @@ namespace VersionOne.VisualStudio.VSPackage.Logging {
         }
 
         public void Warn(string message, Exception ex) {
-            wrappedLogger.Warn(message, ex);
+            wrappedLogger.WarnException(message, ex);
         }
 
         public void Error(string message) {
@@ -39,7 +39,7 @@ namespace VersionOne.VisualStudio.VSPackage.Logging {
         }
 
         public void Error(string message, Exception ex) {
-            wrappedLogger.Error(message, ex);
+            wrappedLogger.ErrorException(message, ex);
         }
     }
 }
