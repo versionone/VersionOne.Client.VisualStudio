@@ -94,30 +94,30 @@ namespace VersionOne.VisualStudio.VSPackage {
             LoadOrderProperties();
 
             foreach(var column in cfg.AssetDetail.TaskColumns) {
-                AddProperty(column, Entity.TaskPrefix);
+                AddProperty(column, Entity.TaskType);
             }
 
             foreach(var column in cfg.AssetDetail.StoryColumns) {
-                AddProperty(column, Entity.StoryPrefix);
+                AddProperty(column, Entity.StoryType);
             }
 
             foreach(var column in cfg.AssetDetail.DefectColumns) {
-                AddProperty(column, Entity.DefectPrefix);
+                AddProperty(column, Entity.DefectType);
             }
 
             foreach(var column in cfg.AssetDetail.TestColumns) {
-                AddProperty(column, Entity.TestPrefix);
+                AddProperty(column, Entity.TestType);
             }
 
             foreach(var column in cfg.GridSettings.Columns) {
-                AddProperty(column, Entity.TaskPrefix);
-                AddProperty(column, Entity.StoryPrefix);
-                AddProperty(column, Entity.DefectPrefix);
-                AddProperty(column, Entity.TestPrefix);
+                AddProperty(column, Entity.TaskType);
+                AddProperty(column, Entity.StoryType);
+                AddProperty(column, Entity.DefectType);
+                AddProperty(column, Entity.TestType);
             }
 
             foreach(var column in cfg.ProjectTree.Columns) {
-                AddProperty(column, Entity.ProjectPrefix);
+                AddProperty(column, Entity.ProjectType);
             }
         }
 
@@ -126,8 +126,8 @@ namespace VersionOne.VisualStudio.VSPackage {
         /// Order property has special type, it currently can not be set properly.
         /// </summary>
         private static void LoadOrderProperties() {
-            ApiDataLayer.Instance.AddProperty(Entity.OrderProperty, Entity.TestPrefix, false);
-            ApiDataLayer.Instance.AddProperty(Entity.OrderProperty, Entity.TaskPrefix, false);
+            ApiDataLayer.Instance.AddProperty(Entity.OrderProperty, Entity.TestType, false);
+            ApiDataLayer.Instance.AddProperty(Entity.OrderProperty, Entity.TaskType, false);
         }
 
         private static void AddProperty(ColumnSetting column, string prefix) {

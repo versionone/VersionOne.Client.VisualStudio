@@ -51,6 +51,7 @@ namespace VersionOne.VisualStudio.VSPackage.Controllers {
                 Settings.SelectedProjectId = project.Id;
                 Settings.StoreSettings();
                 DataLayer.CurrentProject = project;
+                EventDispatcher.Notify(this, new ModelChangedArgs(EventReceiver.WorkitemView, EventContext.WorkitemCacheInvalidated));
                 View.RefreshProperties();
             }
 

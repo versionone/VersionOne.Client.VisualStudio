@@ -23,10 +23,10 @@ namespace VersionOne.VisualStudio.DataLayer {
             
             logger = dataLayer.Logger;
 
-            requiredFieldsList.Add(Entity.TaskPrefix, GetRequiredFields(Entity.TaskPrefix));
-            requiredFieldsList.Add(Entity.DefectPrefix, GetRequiredFields(Entity.DefectPrefix));
-            requiredFieldsList.Add(Entity.StoryPrefix, GetRequiredFields(Entity.StoryPrefix));
-            requiredFieldsList.Add(Entity.TestPrefix, GetRequiredFields(Entity.TestPrefix));
+            requiredFieldsList.Add(Entity.TaskType, GetRequiredFields(Entity.TaskType));
+            requiredFieldsList.Add(Entity.DefectType, GetRequiredFields(Entity.DefectType));
+            requiredFieldsList.Add(Entity.StoryType, GetRequiredFields(Entity.StoryType));
+            requiredFieldsList.Add(Entity.TestType, GetRequiredFields(Entity.TestType));
         }
 
         private List<RequiredFieldsDto> GetRequiredFields(string assetType) {

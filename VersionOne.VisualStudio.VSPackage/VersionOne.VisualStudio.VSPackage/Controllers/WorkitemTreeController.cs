@@ -1,6 +1,5 @@
 using System;
 using System.Collections.Generic;
-using System.Diagnostics;
 using VersionOne.VisualStudio.DataLayer.Entities;
 using VersionOne.VisualStudio.DataLayer.Logging;
 using VersionOne.VisualStudio.VSPackage.Controls;
@@ -18,6 +17,8 @@ namespace VersionOne.VisualStudio.VSPackage.Controllers {
         protected override EventReceiver ReceiverType {
             get { return EventReceiver.WorkitemView; }
         }
+
+        private IAssetCache assetCache;
 
         public WorkitemTreeController(ILoggerFactory loggerFactory, IDataLayer dataLayer, ISettings settings, IEventDispatcher eventDispatcher) : base(loggerFactory, dataLayer, settings, eventDispatcher) { }
 
@@ -37,6 +38,9 @@ namespace VersionOne.VisualStudio.VSPackage.Controllers {
                     break;
                 case EventContext.WorkitemsRequested:
                     HandleModelChanged();
+                    break;
+                case EventContext.WorkitemCacheInvalidated:
+                    assetCache.Drop();
                     break;
                 default:
                     throw new NotSupportedException();
@@ -86,6 +90,7 @@ namespace VersionOne.VisualStudio.VSPackage.Controllers {
 
             this.view = view;
             view.Controller = this;
+            assetCache = DataLayer.CreateAssetCache();
         }
 
         public void PrepareView() {
@@ -190,7 +195,7 @@ namespace VersionOne.VisualStudio.VSPackage.Controllers {
 
         public void HandleRefreshCommand() {
             try {
-                DataLayer.DropWorkitemCache();
+                assetCache.Drop();
                 EventDispatcher.Notify(null, new ModelChangedArgs(EventReceiver.WorkitemView, EventContext.WorkitemsRequested));
             } catch(DataLayerException ex) {
                 view.ResetPropertyView();
@@ -201,8 +206,8 @@ namespace VersionOne.VisualStudio.VSPackage.Controllers {
         public void HandleSaveCommand() {
             RunTaskAsync(view.GetWaitCursor(),
                          () => {
-                             DataLayer.CommitChanges();
-                             DataLayer.DropWorkitemCache();
+                             DataLayer.CommitChanges(assetCache);
+                             assetCache.Drop();
                          },
                          () => EventDispatcher.Notify(null, new ModelChangedArgs(EventReceiver.WorkitemView, EventContext.WorkitemsRequested)),
                          ex => {
@@ -250,11 +255,12 @@ namespace VersionOne.VisualStudio.VSPackage.Controllers {
         #region Add Workitems
 
         public void AddTask() {
-            AddSecondaryWorkitem(Entity.TaskPrefix);
+            AddSecondaryWorkitem(Entity.TaskType);
         }
 
         public void AddDefect() {
-            var defect = DataLayer.CreateWorkitem(Entity.DefectPrefix, null);
+            var defect = DataLayer.CreateWorkitem(Entity.DefectType, null, assetCache);
+            assetCache.Add(defect);
             EventDispatcher.Notify(null, new ModelChangedArgs(EventReceiver.WorkitemView, EventContext.WorkitemsRequested));
             view.SelectWorkitem(defect);
             view.Refresh();
@@ -262,14 +268,14 @@ namespace VersionOne.VisualStudio.VSPackage.Controllers {
         }
 
         public void AddTest() {
-            AddSecondaryWorkitem(Entity.TestPrefix);
+            AddSecondaryWorkitem(Entity.TestType);
         }
 
         private void AddSecondaryWorkitem(string type) {
             var selectedItem = view.CurrentWorkitemDescriptor.Workitem;
             var parent = selectedItem.IsPrimary ? selectedItem : selectedItem.Parent;
 
-            var item = DataLayer.CreateWorkitem(type, parent);
+            var item = DataLayer.CreateWorkitem(type, parent, assetCache);
 
             EventDispatcher.Notify(null, new ModelChangedArgs(EventReceiver.WorkitemView, EventContext.WorkitemsRequested));
             view.ExpandCurrentNode();
@@ -284,7 +290,8 @@ namespace VersionOne.VisualStudio.VSPackage.Controllers {
             try {
                 // NOTE this may be totally wrong - DataLayer object is shared among many clients. But it is not thread safe, that's why local lock object is not used
                 lock(DataLayer) {
-                    return DataLayer.GetWorkitems();
+                    DataLayer.GetWorkitems(assetCache);
+                    return assetCache.GetWorkitems(!Settings.ShowMyTasks);
                 }
             } catch(DataLayerException) {
                 view.ShowErrorMessage("Unable to download workitems.");

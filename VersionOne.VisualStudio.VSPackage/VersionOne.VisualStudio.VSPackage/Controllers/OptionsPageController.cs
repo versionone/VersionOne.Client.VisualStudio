@@ -30,6 +30,7 @@ namespace VersionOne.VisualStudio.VSPackage.Controllers {
             var versionOneSettings = CreateVersionOneSettings(view.Model);
             Logger.Info("Connecting to VersionOne with new settings...");
             DataLayer.Connect(versionOneSettings);
+            EventDispatcher.Notify(this, new ModelChangedArgs(EventReceiver.WorkitemView, EventContext.WorkitemCacheInvalidated));
             Logger.Debug("Sending update request to Projects view...");
             EventDispatcher.Notify(this, new ModelChangedArgs(EventReceiver.ProjectView, EventContext.ProjectsRequested));
         }

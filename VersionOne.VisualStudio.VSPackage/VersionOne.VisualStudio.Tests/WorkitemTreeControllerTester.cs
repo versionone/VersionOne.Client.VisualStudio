@@ -17,6 +17,7 @@ namespace VersionOne.VisualStudio.Tests {
     public class WorkitemTreeControllerTester {
         private WorkitemTreeController controller;
         private IDataLayer dataLayerMock;
+        private IAssetCache assetCacheMock;
         private ISettings settingsMock;
         private IEventDispatcher eventDispatcherMock;
         private IWorkitemTreeView viewMock;
@@ -28,6 +29,7 @@ namespace VersionOne.VisualStudio.Tests {
         [SetUp]
         public void SetUp() {
             dataLayerMock = mockRepository.StrictMock<IDataLayer>();
+            assetCacheMock = mockRepository.StrictMock<IAssetCache>();
             settingsMock = mockRepository.StrictMock<ISettings>();
             viewMock = mockRepository.StrictMock<IWorkitemTreeView>();
             waitCursorStub = mockRepository.Stub<IWaitCursor>();
@@ -41,6 +43,7 @@ namespace VersionOne.VisualStudio.Tests {
         private void ExpectRegisterAndPrepareView() {
             Expect.Call(() => eventDispatcherMock.ModelChanged += null).IgnoreArguments();
             Expect.Call(viewMock.Controller).PropertyBehavior();
+            Expect.Call(dataLayerMock.CreateAssetCache()).Return(assetCacheMock);
             Expect.Call(dataLayerMock.CurrentProject).Return(null);
             Expect.Call(viewMock.Title).IgnoreArguments().PropertyBehavior();
             Expect.Call(viewMock.Model).IgnoreArguments().PropertyBehavior();
@@ -71,7 +74,7 @@ namespace VersionOne.VisualStudio.Tests {
         [Test]
         public void HandleRefresh() {
             ExpectRegisterAndPrepareView();
-            Expect.Call(dataLayerMock.DropWorkitemCache);
+            Expect.Call(assetCacheMock.Drop);
             Expect.Call(() => eventDispatcherMock.Notify(null, new ModelChangedArgs(EventReceiver.WorkitemView, EventContext.WorkitemsRequested)));
 
             mockRepository.ReplayAll();
@@ -85,7 +88,7 @@ namespace VersionOne.VisualStudio.Tests {
 
         [Test]
         public void CommitItem() {
-            var workitemMock = mockRepository.PartialMock<TestWorkitem>(Guid.NewGuid().ToString(), true);
+            var workitemMock = mockRepository.PartialMock<TestWorkitem>(Guid.NewGuid().ToString(), true, assetCacheMock);
             var descriptor = new WorkitemDescriptor(workitemMock, new ColumnSetting[0], PropertyUpdateSource.WorkitemView, true);
 
             ExpectRegisterAndPrepareView();
@@ -106,7 +109,7 @@ namespace VersionOne.VisualStudio.Tests {
 
         [Test]
         public void CommitItemValidationFailure() {
-            var workitemMock = mockRepository.PartialMock<TestWorkitem>(Guid.NewGuid().ToString(), true);
+            var workitemMock = mockRepository.PartialMock<TestWorkitem>(Guid.NewGuid().ToString(), true, assetCacheMock);
             var descriptor = new WorkitemDescriptor(workitemMock, new ColumnSetting[0], PropertyUpdateSource.WorkitemView, true);
 
             ExpectRegisterAndPrepareView();
@@ -128,7 +131,7 @@ namespace VersionOne.VisualStudio.Tests {
 
         [Test]
         public void RevertNonVirtualItem() {
-            var workitemMock = mockRepository.PartialMock<TestWorkitem>(Guid.NewGuid().ToString(), false);
+            var workitemMock = mockRepository.PartialMock<TestWorkitem>(Guid.NewGuid().ToString(), false, assetCacheMock);
             var descriptor = new WorkitemDescriptor(workitemMock, new ColumnSetting[0], PropertyUpdateSource.WorkitemView, true);
 
             ExpectRegisterAndPrepareView();
@@ -148,7 +151,7 @@ namespace VersionOne.VisualStudio.Tests {
 
         [Test]
         public void SignupItem() {
-            var workitemMock = mockRepository.PartialMock<TestWorkitem>(Guid.NewGuid().ToString(), false);
+            var workitemMock = mockRepository.PartialMock<TestWorkitem>(Guid.NewGuid().ToString(), false, assetCacheMock);
             var descriptor = new WorkitemDescriptor(workitemMock, new ColumnSetting[0], PropertyUpdateSource.WorkitemView, true);
 
             ExpectRegisterAndPrepareView();
@@ -169,7 +172,7 @@ namespace VersionOne.VisualStudio.Tests {
 
         [Test]
         public void QuickCloseItem() {
-            var workitemMock = mockRepository.PartialMock<TestWorkitem>(Guid.NewGuid().ToString(), false);
+            var workitemMock = mockRepository.PartialMock<TestWorkitem>(Guid.NewGuid().ToString(), false, assetCacheMock);
             var descriptor = new WorkitemDescriptor(workitemMock, new ColumnSetting[0], PropertyUpdateSource.WorkitemView, true);
 
             ExpectRegisterAndPrepareView();
@@ -190,7 +193,7 @@ namespace VersionOne.VisualStudio.Tests {
 
         [Test]
         public void CloseItem() {
-            var workitemMock = mockRepository.PartialMock<TestWorkitem>(Guid.NewGuid().ToString(), true);
+            var workitemMock = mockRepository.PartialMock<TestWorkitem>(Guid.NewGuid().ToString(), true, assetCacheMock);
 
             ExpectRegisterAndPrepareView();
             Expect.Call(viewMock.GetWaitCursor()).Return(waitCursorStub);
@@ -210,7 +213,7 @@ namespace VersionOne.VisualStudio.Tests {
 
         [Test]
         public void CloseItemValidationFailure() {
-            var workitemMock = mockRepository.PartialMock<TestWorkitem>(Guid.NewGuid().ToString(), true);
+            var workitemMock = mockRepository.PartialMock<TestWorkitem>(Guid.NewGuid().ToString(), true, assetCacheMock);
 
             ExpectRegisterAndPrepareView();
             Expect.Call(viewMock.GetWaitCursor()).Return(waitCursorStub);
@@ -231,7 +234,7 @@ namespace VersionOne.VisualStudio.Tests {
 
         [Test]
         public void CloseItemWithGenericDataLayerException() {
-            var workitemMock = mockRepository.PartialMock<TestWorkitem>(Guid.NewGuid().ToString(), true);
+            var workitemMock = mockRepository.PartialMock<TestWorkitem>(Guid.NewGuid().ToString(), true, assetCacheMock);
 
             ExpectRegisterAndPrepareView();
             Expect.Call(viewMock.GetWaitCursor()).Return(waitCursorStub);
@@ -286,10 +289,11 @@ namespace VersionOne.VisualStudio.Tests {
 
         [Test]
         public void AddDefect() {
-            var workitemMock = mockRepository.PartialMock<TestWorkitem>(Guid.NewGuid().ToString(), true);
+            var workitemMock = mockRepository.PartialMock<TestWorkitem>(Guid.NewGuid().ToString(), true, assetCacheMock);
 
             ExpectRegisterAndPrepareView();
-            Expect.Call(dataLayerMock.CreateWorkitem(Entity.DefectPrefix, null)).Return(workitemMock);
+            Expect.Call(dataLayerMock.CreateWorkitem(Entity.DefectType, null, assetCacheMock)).Return(workitemMock);
+            Expect.Call(() => assetCacheMock.Add(workitemMock));
             Expect.Call(() => eventDispatcherMock.Notify(null, new ModelChangedArgs(EventReceiver.ProjectView, EventContext.ProjectSelected)));
             Expect.Call(() => viewMock.SelectWorkitem(workitemMock));
             Expect.Call(viewMock.Refresh);
@@ -304,13 +308,13 @@ namespace VersionOne.VisualStudio.Tests {
 
         [Test]
         public void AddTask() {
-            var parentWorkitemMock = mockRepository.PartialMock<TestWorkitem>(Guid.NewGuid().ToString(), true);
-            var workitemMock = mockRepository.PartialMock<TestWorkitem>(Guid.NewGuid().ToString(), false);
+            var parentWorkitemMock = mockRepository.PartialMock<TestWorkitem>(Guid.NewGuid().ToString(), true, assetCacheMock);
+            var workitemMock = mockRepository.PartialMock<TestWorkitem>(Guid.NewGuid().ToString(), false, assetCacheMock);
             var descriptor = new WorkitemDescriptor(parentWorkitemMock, new ColumnSetting[0], PropertyUpdateSource.WorkitemView, true);
 
             ExpectRegisterAndPrepareView();
             Expect.Call(viewMock.CurrentWorkitemDescriptor).Return(descriptor);
-            Expect.Call(dataLayerMock.CreateWorkitem(Entity.TaskPrefix, parentWorkitemMock)).Return(workitemMock);
+            Expect.Call(dataLayerMock.CreateWorkitem(Entity.TaskType, parentWorkitemMock, assetCacheMock)).Return(workitemMock);
             Expect.Call(() => eventDispatcherMock.Notify(null, new ModelChangedArgs(EventReceiver.WorkitemView, EventContext.WorkitemsChanged)));
             Expect.Call(viewMock.ExpandCurrentNode);
             Expect.Call(() => viewMock.SelectWorkitem(workitemMock));
@@ -345,8 +349,8 @@ namespace VersionOne.VisualStudio.Tests {
         public void HandleSaveCommand() {
             ExpectRegisterAndPrepareView();
             Expect.Call(viewMock.GetWaitCursor()).Return(waitCursorStub);
-            Expect.Call(dataLayerMock.CommitChanges);
-            Expect.Call(dataLayerMock.DropWorkitemCache);
+            Expect.Call(() => dataLayerMock.CommitChanges(assetCacheMock));
+            Expect.Call(assetCacheMock.Drop);
             Expect.Call(() => eventDispatcherMock.Notify(null, new ModelChangedArgs(EventReceiver.WorkitemView, EventContext.WorkitemsRequested)));
 
             mockRepository.ReplayAll();
@@ -362,8 +366,8 @@ namespace VersionOne.VisualStudio.Tests {
         public void HandleSaveCommandValidationException() {
             ExpectRegisterAndPrepareView();
             Expect.Call(viewMock.GetWaitCursor()).Return(waitCursorStub);
-            Expect.Call(dataLayerMock.CommitChanges).Throw(new ValidatorException(null));
-            Expect.Call(dataLayerMock.DropWorkitemCache).Repeat.Never();
+            Expect.Call(() => dataLayerMock.CommitChanges(assetCacheMock)).Throw(new ValidatorException(null));
+            Expect.Call(assetCacheMock.Drop).Repeat.Never();
             Expect.Call(() => viewMock.ShowValidationInformationDialog(null)).IgnoreArguments();
 
             mockRepository.ReplayAll();
@@ -379,8 +383,8 @@ namespace VersionOne.VisualStudio.Tests {
         public void HandleSaveCommandGenericDataLayerException() {
             ExpectRegisterAndPrepareView();
             Expect.Call(viewMock.GetWaitCursor()).Return(waitCursorStub);
-            Expect.Call(dataLayerMock.CommitChanges).Throw(new DataLayerException(null));
-            Expect.Call(dataLayerMock.DropWorkitemCache).Repeat.Never();
+            Expect.Call(() => dataLayerMock.CommitChanges(assetCacheMock)).Throw(new DataLayerException(null));
+            Expect.Call(assetCacheMock.Drop).Repeat.Never();
             Expect.Call(() => viewMock.ShowErrorMessage(null)).IgnoreArguments();
             Expect.Call(viewMock.ResetPropertyView);
 
@@ -398,7 +402,9 @@ namespace VersionOne.VisualStudio.Tests {
             var workitems = new List<Workitem>();
 
             ExpectRegisterAndPrepareView();
-            Expect.Call(dataLayerMock.GetWorkitems()).Return(workitems);
+            Expect.Call(() => dataLayerMock.GetWorkitems(assetCacheMock));
+            Expect.Call(settingsMock.ShowMyTasks).Return(false);
+            Expect.Call(assetCacheMock.GetWorkitems(true)).Return(workitems);
 
             mockRepository.ReplayAll();
             controller = new TestWorkitemTreeController(loggerFactoryMock, dataLayerMock, settingsMock, eventDispatcherMock);
@@ -413,7 +419,7 @@ namespace VersionOne.VisualStudio.Tests {
         [Test]
         public void GetWorkitemsFailure() {
             ExpectRegisterAndPrepareView();
-            Expect.Call(dataLayerMock.GetWorkitems()).Throw(new DataLayerException(null));
+            Expect.Call(() => dataLayerMock.GetWorkitems(assetCacheMock)).Throw(new DataLayerException(null));
             Expect.Call(() => viewMock.ShowErrorMessage(null)).IgnoreArguments();
 
             mockRepository.ReplayAll();

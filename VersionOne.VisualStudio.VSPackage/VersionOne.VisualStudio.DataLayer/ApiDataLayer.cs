@@ -14,24 +14,22 @@ namespace VersionOne.VisualStudio.DataLayer {
         private readonly VersionOneConnector connector = new VersionOneConnector();
 
         private static ApiDataLayer dataLayer;
-        private readonly static LinkedList<AttributeInfo> AttributesToQuery = new LinkedList<AttributeInfo>();
+        private readonly static IList<AttributeInfo> AttributesToQuery = new List<AttributeInfo>();
 
         private RequiredFieldsValidator requiredFieldsValidator;
-        internal Dictionary<string, IAssetType> Types;
+        public IDictionary<string, IAssetType> Types { get; private set; }
 
-        public IAssetType ProjectType;
-        public IAssetType TaskType;
-        public IAssetType TestType;
-        public IAssetType DefectType;
-        public IAssetType StoryType;
+        public IAssetType ProjectType { get; private set; }
+        public IAssetType TaskType  { get; private set; }
+        public IAssetType TestType  { get; private set; }
+        public IAssetType DefectType  { get; private set; }
+        public IAssetType StoryType  { get; private set; }
         
         private IAssetType workitemType;
         private IAssetType primaryWorkitemType;
         private IAssetType effortType;
 
-        private Dictionary<string, PropertyValues> listPropertyValues;
-        private AssetList allAssets = new AssetList();
-        private readonly Dictionary<Asset, double> efforts = new Dictionary<Asset, double>();
+        private IDictionary<string, PropertyValues> listPropertyValues;
 
         private readonly IList<string> effortTrackingAttributes = new List<string> {
             "DetailEstimate",
@@ -45,7 +43,7 @@ namespace VersionOne.VisualStudio.DataLayer {
 
         #endregion
 
-        internal Oid MemberOid;
+        public Oid MemberOid { get; private set; }
 
         public ILoggerFactory LoggerFactory { get; set; }
 
@@ -57,18 +55,18 @@ namespace VersionOne.VisualStudio.DataLayer {
 
         private ApiDataLayer() {
             var prefixes = new[] {
-                Entity.TaskPrefix, 
-                Entity.DefectPrefix, 
-                Entity.StoryPrefix, 
-                Entity.TestPrefix
+                Entity.TaskType, 
+                Entity.DefectType, 
+                Entity.StoryType, 
+                Entity.TestType
             };
 
             foreach(var prefix in prefixes) {
-                AttributesToQuery.AddLast(new AttributeInfo("CheckQuickClose", prefix, false));
-                AttributesToQuery.AddLast(new AttributeInfo("CheckQuickSignup", prefix, false));
+                AttributesToQuery.Add(new AttributeInfo("CheckQuickClose", prefix, false));
+                AttributesToQuery.Add(new AttributeInfo("CheckQuickSignup", prefix, false));
             }
 
-            AttributesToQuery.AddLast(new AttributeInfo("Schedule.EarliestActiveTimebox", Entity.ProjectPrefix, false));
+            AttributesToQuery.Add(new AttributeInfo("Schedule.EarliestActiveTimebox", Entity.ProjectType, false));
         }
 
         public string ApiVersion {
@@ -80,48 +78,41 @@ namespace VersionOne.VisualStudio.DataLayer {
             get { return Oid.Null.Token; }
         }
 
-        private string currentProjectId;
-        public string CurrentProjectId {
-            get { return currentProjectId; }
-            set {
-                currentProjectId = value;
-                DropWorkitemCache();
-            }
-        }
+        public string CurrentProjectId { get; set; }
 
         public Project CurrentProject {
             get {
-                if(currentProjectId == null) {
-                    currentProjectId = "Scope:0";
+                if(CurrentProjectId == null) {
+                    CurrentProjectId = "Scope:0";
                 }
 
-                return GetProjectById(currentProjectId);
+                return GetProjectById(CurrentProjectId);
             }
             set {
-                currentProjectId = value.Id;
-                DropWorkitemCache();
+                CurrentProjectId = value.Id;
             }
         }
 
         public bool ShowAllTasks { get; set; }
 
-        public void CommitChanges() {
+        public void CommitChanges(IAssetCache assetCache) {
             if(!connector.IsConnected) {
                 Logger.Error("Not connected to VersionOne.");
             }
 
             try {
                 var validationResult = new Dictionary<Asset, List<RequiredFieldsDto>>();
+                var internalCache = assetCache.ToInternalCache();
 
-                var workitems = GetWorkitems();
+                var workitems = assetCache.GetWorkitems(true);
 
                 foreach(var item in workitems) {
-                    if(!ValidateWorkitemAndCommitOnSuccess(item, validationResult)) {
+                    if(!ValidateWorkitemAndCommitOnSuccess(item, internalCache.Efforts, validationResult)) {
                         continue;
                     }
 
                     foreach(var child in item.Children) {
-                        ValidateWorkitemAndCommitOnSuccess(child, validationResult);
+                        ValidateWorkitemAndCommitOnSuccess(child, internalCache.Efforts, validationResult);
                     }
                 }
 
@@ -134,12 +125,12 @@ namespace VersionOne.VisualStudio.DataLayer {
             }
         }
 
-        private bool ValidateWorkitemAndCommitOnSuccess(Workitem item, IDictionary<Asset, List<RequiredFieldsDto>> validationResults) {
+        private bool ValidateWorkitemAndCommitOnSuccess(Workitem item, IDictionary<Asset, double> efforts, IDictionary<Asset, List<RequiredFieldsDto>> validationResults) {
             var itemValidationResult = requiredFieldsValidator.Validate(item.Asset);
 
             if(itemValidationResult.Count == 0) {
                 item.CommitChanges();
-                CommitEfforts(item.Asset);
+                CommitEffort(efforts, item.Asset);
                 return true;
             }
 
@@ -155,7 +146,7 @@ namespace VersionOne.VisualStudio.DataLayer {
             terms.Add(term);
 
             term = new FilterTerm(assetType.GetAttributeDefinition("Scope.ParentMeAndUp"));
-            term.Equal(currentProjectId);
+            term.Equal(CurrentProjectId);
             terms.Add(term);
 
             term = new FilterTerm(assetType.GetAttributeDefinition("Timebox.State.Code"));
@@ -223,13 +214,13 @@ namespace VersionOne.VisualStudio.DataLayer {
                 return null;
             }
 
-            if(currentProjectId == null) {
+            if(CurrentProjectId == null) {
                 Logger.Error("Current project is not selected");
                 throw new DataLayerException("Current project is not selected");
             }
 
             var query = new Query(Oid.FromToken(id, connector.MetaModel));
-            AddSelection(query, Entity.ProjectPrefix);
+            AddSelection(query, Entity.ProjectType);
             
             try {
                 var result = connector.Services.Retrieve(query);
@@ -242,54 +233,43 @@ namespace VersionOne.VisualStudio.DataLayer {
             }
         }
 
-        public void DropWorkitemCache() {
-            allAssets = null;
-        }
-
-        public List<Workitem> GetWorkitems() {
+        public void GetWorkitems(IAssetCache assetCache) {
             if(!connector.IsConnected) {
                 Logger.Error("Not connected to VersionOne.");
             }
             
-            if(currentProjectId == null) {
+            if(CurrentProjectId == null) {
                 throw new DataLayerException("Current project is not selected");
             }
 
-            if(allAssets == null) {
-                try {
-                    var parentDef = workitemType.GetAttributeDefinition("Parent");
-
-                    var query = new Query(workitemType, parentDef);
-                    AddSelection(query, Entity.TaskPrefix);
-                    AddSelection(query, Entity.StoryPrefix);
-                    AddSelection(query, Entity.DefectPrefix);
-                    AddSelection(query, Entity.TestPrefix);
-
-                    query.Filter = GetScopeFilter(workitemType);
-
-                    query.OrderBy.MajorSort(primaryWorkitemType.DefaultOrderBy, OrderBy.Order.Ascending);
-                    query.OrderBy.MinorSort(workitemType.DefaultOrderBy, OrderBy.Order.Ascending);
-
-                    var assetList = connector.Services.Retrieve(query);
-                    allAssets = assetList.Assets;
-
-                    var allowedTypeTokens = new List<string> {
-                        StoryType.Token, DefectType.Token, TaskType.Token, TestType.Token                                                      
-				    };
-
-                    allAssets.RemoveAll(asset => !allowedTypeTokens.Contains(asset.AssetType.Token));
-                } catch(MetaException ex) {
-                    Logger.Error("Unable to get workitems.", ex);
-                } catch(WebException ex) {
-                    connector.IsConnected = false;
-                    Logger.Error("Unable to get workitems.", ex);
-                } catch(Exception ex) {
-                    Logger.Error("Unable to get workitems.", ex);
-                }
+            if(assetCache.IsSet) {
+                return;
             }
+            
+            try {
+                var parentDef = workitemType.GetAttributeDefinition("Parent");
 
-            return allAssets.Where(asset => ShowAllTasks || AssetPassesShowMyTasksFilter(asset))
-                            .Select(asset => WorkitemFactory.CreateWorkitem(asset, null)).ToList();
+                var query = new Query(workitemType, parentDef);
+                AddSelection(query, Entity.TaskType);
+                AddSelection(query, Entity.StoryType);
+                AddSelection(query, Entity.DefectType);
+                AddSelection(query, Entity.TestType);
+
+                query.Filter = GetScopeFilter(workitemType);
+
+                query.OrderBy.MajorSort(primaryWorkitemType.DefaultOrderBy, OrderBy.Order.Ascending);
+                query.OrderBy.MinorSort(workitemType.DefaultOrderBy, OrderBy.Order.Ascending);
+
+                var assetList = connector.Services.Retrieve(query);
+                assetCache.ToInternalCache().Set(assetList.Assets);
+            } catch(MetaException ex) {
+                Logger.Error("Unable to get workitems.", ex);
+            } catch(WebException ex) {
+                connector.IsConnected = false;
+                Logger.Error("Unable to get workitems.", ex);
+            } catch(Exception ex) {
+                Logger.Error("Unable to get workitems.", ex);
+            }
         }
 
         /// <summary>
@@ -323,7 +303,7 @@ namespace VersionOne.VisualStudio.DataLayer {
                 var stateTerm = new FilterTerm(ProjectType.GetAttributeDefinition("AssetState"));
                 stateTerm.NotEqual(AssetState.Closed);
                 scopeQuery.Filter = stateTerm;
-                AddSelection(scopeQuery, Entity.ProjectPrefix);
+                AddSelection(scopeQuery, Entity.ProjectType);
                 var result = connector.Services.Retrieve(scopeQuery);
                 
                 var roots = result.Assets.Select(asset => WorkitemFactory.CreateProject(asset, null)).ToList();
@@ -338,6 +318,10 @@ namespace VersionOne.VisualStudio.DataLayer {
             }
         }
 
+        public IAssetCache CreateAssetCache() {
+            return new AssetCache(this);
+        }
+
         public void CheckConnection(VersionOneSettings settings) {
             try {
                 connector.CheckConnection(settings);
@@ -348,22 +332,20 @@ namespace VersionOne.VisualStudio.DataLayer {
 
         public bool Connect(VersionOneSettings settings) {
             connector.IsConnected = false;
-            DropWorkitemCache();
 
             try {
                 connector.Connect(settings);
 
                 Types = new Dictionary<string, IAssetType>(5);
-                ProjectType = GetAssetType(Entity.ProjectPrefix);
-                TaskType = GetAssetType(Entity.TaskPrefix);
-                TestType = GetAssetType(Entity.TestPrefix);
-                DefectType = GetAssetType(Entity.DefectPrefix);
-                StoryType = GetAssetType(Entity.StoryPrefix);
+                ProjectType = GetAssetType(Entity.ProjectType);
+                TaskType = GetAssetType(Entity.TaskType);
+                TestType = GetAssetType(Entity.TestType);
+                DefectType = GetAssetType(Entity.DefectType);
+                StoryType = GetAssetType(Entity.StoryType);
                 workitemType = connector.MetaModel.GetAssetType("Workitem");
                 primaryWorkitemType = connector.MetaModel.GetAssetType("PrimaryWorkitem");
 
                 TrackEffort = connector.V1Configuration.EffortTracking;
-                efforts.Clear();
 
                 if(TrackEffort) {
                     effortType = connector.MetaModel.GetAssetType("Actual");
@@ -512,17 +494,7 @@ namespace VersionOne.VisualStudio.DataLayer {
         }
 
         public bool IsConnected {
-            get {
-                if(!connector.IsConnected) {
-                    try {
-                        Reconnect();
-                    } catch(DataLayerException ex) {
-                        Logger.Warn("Unable to reconnect to VersionOne", ex);
-                    }
-                }
-
-                return connector.IsConnected;
-            }
+            get { return connector.IsConnected; }
         }
 
         /// <exception cref="KeyNotFoundException">If there are no values for this property.</exception>
@@ -531,7 +503,7 @@ namespace VersionOne.VisualStudio.DataLayer {
             return listPropertyValues.ContainsKey(propertyName) ? listPropertyValues[propertyKey] : null;
         }
 
-        internal void CommitAsset(Asset asset) {
+        public void CommitAsset(IDictionary<Asset, double> efforts, Asset asset) {
             try {
                 var requiredData = requiredFieldsValidator.Validate(asset);
 
@@ -544,99 +516,44 @@ namespace VersionOne.VisualStudio.DataLayer {
             }
 
             connector.Services.Save(asset);
-            CommitEfforts(asset);
-        }
-
-        internal void RevertAsset(Asset asset) {
-            asset.RejectChanges();
-            efforts.Remove(asset);
-        }
-
-        /// <summary>
-        /// Reconnect with settings, used in last Connect() call.
-        /// </summary>
-        public void Reconnect() {
-            Connect(connector.VersionOneSettings);
-            // TODO figure out why using the next line instead of Connect() call breaks. @see VersionOne.SDK.APIClient.Services.TreeAssetListByAttribute(..) - NullReferenceEx.
-            // connector.Reconnect();
-        }
-
-        public double? GetEffort(Asset asset) {
-            double res;
-            
-            if(efforts.TryGetValue(asset, out res)) {
-                return res;
-            }
-            
-            return null;
-        }
-
-        public void AddEffort(Asset asset, double newValue) {
-            if(efforts.ContainsKey(asset)) {
-                if(newValue == 0) {
-                    efforts.Remove(asset);
-                } else {
-                    efforts[asset] = newValue;
-                }
-            } else {
-                if(newValue != 0) {
-                    efforts.Add(asset, newValue);
-                }
-            }
+            CommitEffort(efforts, asset);
         }
 
         /// <summary>
         /// Commit efforts.
         /// </summary>
-        /// <param name="exactAsset">Specific asset to commit related efforts. If all efforts are to be committed, pass null.</param>
-        // TODO refactor this
-        private void CommitEfforts(Asset exactAsset) {
-            var toRemove = new List<Asset>();
-
-            foreach(var pair in efforts) {
-                if(exactAsset != null && !exactAsset.Equals(pair.Key)) {
-                    continue;
-                }
-
-                var effort = connector.Services.New(effortType, pair.Key.Oid);
-                effort.SetAttributeValue(effortType.GetAttributeDefinition("Value"), pair.Value);
-                effort.SetAttributeValue(effortType.GetAttributeDefinition("Date"), DateTime.Now);
-                connector.Services.Save(effort);
-
-                toRemove.Add(pair.Key);
+        /// <param name="efforts">Recorded Effort collection</param>
+        /// <param name="asset">Specific asset to commit related effort value.</param>
+        private void CommitEffort(IDictionary<Asset, double> efforts, Asset asset) {
+            if(!efforts.ContainsKey(asset)) {
+                return;
             }
 
-            foreach(var asset in toRemove) {
-                efforts.Remove(asset);
-            }
+            var effortValue = efforts[asset];
+            CreateEffort(asset, effortValue);
+            efforts.Remove(asset);
+        }
+
+        private void CreateEffort(Asset asset, double effortValue) {
+            var effort = connector.Services.New(effortType, asset.Oid);
+            effort.SetAttributeValue(effortType.GetAttributeDefinition("Value"), effortValue);
+            effort.SetAttributeValue(effortType.GetAttributeDefinition("Date"), DateTime.Now);
+            connector.Services.Save(effort);
         }
 
         public void AddProperty(string attr, string prefix, bool isList) {
-            AttributesToQuery.AddLast(new AttributeInfo(attr, prefix, isList));
+            AttributesToQuery.Add(new AttributeInfo(attr, prefix, isList));
         }
 
-        internal void ExecuteOperation(Asset asset, IOperation operation) {
+        public void ExecuteOperation(Asset asset, IOperation operation) {
             connector.Services.ExecuteOperation(operation, asset.Oid);
-        }
-
-        internal void CleanupWorkitem(Workitem item) {
-            if(item.Parent != null && allAssets.Contains(item.Parent.Asset)) {
-                item.Parent.Asset.Children.Remove(item.Asset);
-            }
-
-            allAssets.Remove(item.Asset);
-            efforts.Remove(item.Asset);
-            
-            foreach(var child in item.Asset.Children) {
-                efforts.Remove(child);
-            }
         }
 
         /// <summary>
         /// Refreshes data for Asset wrapped by specified Workitem.
         /// </summary>
         // TODO refactor
-        internal void RefreshAsset(Workitem workitem) {
+        public void RefreshAsset(Workitem workitem, IList<Asset> containingAssetCollection) {
             try {
                 var stateDef = workitem.Asset.AssetType.GetAttributeDefinition("AssetState");
                 
@@ -646,7 +563,7 @@ namespace VersionOne.VisualStudio.DataLayer {
                 
                 var newAssets = connector.Services.Retrieve(query);
 
-                var containedIn = workitem.Parent == null ? allAssets : workitem.Parent.Asset.Children;
+                var containedIn = workitem.Parent == null ? containingAssetCollection : workitem.Parent.Asset.Children;
 
                 if(newAssets.TotalAvaliable != 1) {
                     containedIn.Remove(workitem.Asset);
@@ -654,7 +571,7 @@ namespace VersionOne.VisualStudio.DataLayer {
                 }
 
                 var newAsset = newAssets.Assets[0];
-                var newAssetState = (AssetState)newAsset.GetAttribute(stateDef).Value;
+                var newAssetState = (AssetState) newAsset.GetAttribute(stateDef).Value;
                 
                 if(newAssetState == AssetState.Closed) {
                     containedIn.Remove(workitem.Asset);
@@ -673,15 +590,9 @@ namespace VersionOne.VisualStudio.DataLayer {
             }
         }
 
-        public Workitem CreateWorkitem(string assetType, Workitem parent) {
+        public Workitem CreateWorkitem(string assetType, Workitem parent, IEntityContainer entityContainer) {
             var assetFactory = new AssetFactory(this, CurrentProject, LoggerFactory, AttributesToQuery);
-            var item = WorkitemFactory.CreateWorkitem(assetFactory, assetType, parent);
-
-            if(item.IsPrimary) {
-                allAssets.Add(item.Asset);
-            }
-
-            return item;
+            return WorkitemFactory.CreateWorkitem(assetFactory, assetType, parent, entityContainer);
         }
     }
 }

@@ -111,6 +111,7 @@ namespace VersionOne.VisualStudio.Tests {
             Expect.Call(settingsMock.SelectedProjectId).PropertyBehavior().Repeat.Twice();
             Expect.Call(settingsMock.StoreSettings);
             Expect.Call(dataLayerMock.CurrentProject).PropertyBehavior().IgnoreArguments();
+            Expect.Call(() => eventDispatcherMock.Notify(controller, new ModelChangedArgs(EventReceiver.WorkitemView, EventContext.WorkitemCacheInvalidated)));
             Expect.Call(viewMock.RefreshProperties);
             Expect.Call(() => eventDispatcherMock.Notify(null, null)).IgnoreArguments();
 

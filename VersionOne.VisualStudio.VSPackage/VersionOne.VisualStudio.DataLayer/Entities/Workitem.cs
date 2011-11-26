@@ -5,23 +5,12 @@ using VersionOne.SDK.APIClient;
 
 namespace VersionOne.VisualStudio.DataLayer.Entities {
     public class Workitem : Entity {
+        private static readonly string[] SupportedTypes = {StoryType, DefectType, TaskType, TestType};
+
         public Workitem Parent { get; private set; }
 
-        // TODO move exception off the property, convert to switch using const strings
         public override string TypePrefix {
-            get {
-                if (Asset.AssetType.Token == DataLayer.TaskType.Token) {
-                    return TaskPrefix;
-                } else if (Asset.AssetType.Token == DataLayer.StoryType.Token) {
-                    return StoryPrefix;
-                } else if (Asset.AssetType.Token == DataLayer.TestType.Token) {
-                    return TestPrefix;
-                } else if (Asset.AssetType.Token == DataLayer.DefectType.Token) {
-                    return DefectPrefix;
-                } else {
-                    throw new ArgumentException("Illegal asset.");
-                }
-            }
+            get { return Asset.AssetType.Token; }
         }
 
         /// <summary>
@@ -30,12 +19,12 @@ namespace VersionOne.VisualStudio.DataLayer.Entities {
         public readonly List<Workitem> Children = new List<Workitem>();
 
         public bool HasChanges {
-            get { return Asset.HasChanged || DataLayer.GetEffort(Asset) != 0; }
+            get { return Asset.HasChanged || EntityContainer.GetEffort(this) != 0; }
         }
 
         public virtual bool IsPrimary {
             get {
-                return TypePrefix == StoryPrefix || TypePrefix == DefectPrefix;
+                return TypePrefix == StoryType || TypePrefix == DefectType;
             }
         }
 
@@ -43,19 +32,21 @@ namespace VersionOne.VisualStudio.DataLayer.Entities {
             get { return false; }
         }
 
-        internal Workitem(Asset asset, Workitem parent) : this(asset) {
+        internal Workitem(Asset asset, Workitem parent, IEntityContainer entityContainer) : base(asset, entityContainer) {
             Parent = parent;
-        }
 
-        private Workitem(Asset asset) : base(asset) {
             // the following check is for unit tests
             if(asset == null || asset.Children == null) {
                 return;
             }
 
+            if(!SupportedTypes.Contains(asset.AssetType.Token)) {
+                throw new ArgumentException(string.Format("Illegal asset type, '{0}' is not supported.", asset.AssetType.Token));
+            }
+
             foreach (var childAsset in asset.Children.Where(childAsset => DataLayer.ShowAllTasks || DataLayer.AssetPassesShowMyTasksFilter(childAsset))) {
-                Children.Add(WorkitemFactory.CreateWorkitem(childAsset, this));
-                Children.Sort(new WorkitemComparer(DataLayer.TestType.Token, DataLayer.TaskType.Token));
+                Children.Add(WorkitemFactory.CreateWorkitem(childAsset, this, entityContainer));
+                Children.Sort(new WorkitemComparer(TestType, TaskType));
             }
 
             Children.TrimExcess();
@@ -77,19 +68,19 @@ namespace VersionOne.VisualStudio.DataLayer.Entities {
             var defectLevel = DataLayer.DefectTrackingLevel;
 
             switch (TypePrefix) {
-                case StoryPrefix:
+                case StoryType:
                     return storyLevel != EffortTrackingLevel.PrimaryWorkitem && storyLevel != EffortTrackingLevel.Both;
-                case DefectPrefix:
+                case DefectType:
                     return defectLevel != EffortTrackingLevel.PrimaryWorkitem && defectLevel != EffortTrackingLevel.Both;
-                case TaskPrefix:
-                case TestPrefix:
+                case TaskType:
+                case TestType:
                     EffortTrackingLevel parentLevel;
 
                     switch(Parent.TypePrefix) {
-                        case StoryPrefix:
+                        case StoryType:
                             parentLevel = storyLevel;
                             break;
-                        case DefectPrefix:
+                        case DefectType:
                             parentLevel = defectLevel;
                             break;
                         default:
@@ -104,7 +95,7 @@ namespace VersionOne.VisualStudio.DataLayer.Entities {
 
         public virtual void CommitChanges() {
             try {
-                DataLayer.CommitAsset(Asset);
+                EntityContainer.Commit(this);
             } catch (APIException ex) {
                 Logger.Error("Failed to commit changes.", ex);
             }
@@ -134,7 +125,7 @@ namespace VersionOne.VisualStudio.DataLayer.Entities {
 
             try {
                 DataLayer.ExecuteOperation(Asset, Asset.AssetType.GetOperation("QuickClose"));
-                DataLayer.CleanupWorkitem(this);
+                EntityContainer.Cleanup(this);
             } catch (APIException ex) {
                Logger.Error("Failed to QuickClose.", ex);
             }
@@ -143,7 +134,7 @@ namespace VersionOne.VisualStudio.DataLayer.Entities {
         public virtual bool CanSignup {
             get {
                 try {
-                    return (bool)GetProperty("CheckQuickSignup");
+                    return (bool) GetProperty("CheckQuickSignup");
                 } catch (KeyNotFoundException ex) {
                     Logger.Error("QuickSignup not supported.", ex);
                     return false;
@@ -157,7 +148,7 @@ namespace VersionOne.VisualStudio.DataLayer.Entities {
         public virtual void Signup() {
             try {
                 DataLayer.ExecuteOperation(Asset, Asset.AssetType.GetOperation("QuickSignup"));
-                DataLayer.RefreshAsset(this);
+                EntityContainer.Refresh(this);
             } catch (APIException ex) {
                Logger.Error("Failed to QuickSignup.", ex);
             }
@@ -168,11 +159,11 @@ namespace VersionOne.VisualStudio.DataLayer.Entities {
         /// </summary>
         public virtual void Close() {
             DataLayer.ExecuteOperation(Asset, Asset.AssetType.GetOperation("Inactivate"));
-            DataLayer.CleanupWorkitem(this);
+            EntityContainer.Cleanup(this);
         }
 
         public virtual void RevertChanges() {
-            DataLayer.RevertAsset(Asset);
+            EntityContainer.Revert(this);
         }
     }
 }

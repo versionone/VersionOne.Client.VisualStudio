@@ -9,11 +9,11 @@ namespace VersionOne.VisualStudio.DataLayer.Entities {
     public abstract class Entity {
         #region Constants
 
-        public const string TaskPrefix = "Task";
-        public const string StoryPrefix = "Story";
-        public const string DefectPrefix = "Defect";
-        public const string TestPrefix = "Test";
-        public const string ProjectPrefix = "Scope";
+        public const string TaskType = "Task";
+        public const string StoryType = "Story";
+        public const string DefectType = "Defect";
+        public const string TestType = "Test";
+        public const string ProjectType = "Scope";
 
         public const string NameProperty = "Name";
         public const string StatusProperty = "Status";
@@ -26,8 +26,8 @@ namespace VersionOne.VisualStudio.DataLayer.Entities {
 
         #endregion
 
-        // TODO use IDataLayerInternal
-        protected readonly ApiDataLayer DataLayer;
+        protected readonly IDataLayerInternal DataLayer;
+        protected readonly IEntityContainer EntityContainer;
         protected readonly ILogger Logger;
 
         protected internal readonly Asset Asset;
@@ -42,9 +42,9 @@ namespace VersionOne.VisualStudio.DataLayer.Entities {
             return DataLayer.GetListPropertyValues(TypePrefix + propertyName);
         }
 
-        protected Entity(Asset asset) {
-            // TODO use IDataLayerInternal or even refactor further
-            DataLayer = (ApiDataLayer) ApiDataLayer.Instance;
+        protected Entity(Asset asset, IEntityContainer entityContainer) {
+            DataLayer = ApiDataLayer.InternalInstance;
+            EntityContainer = entityContainer;
             Logger = DataLayer.Logger;
             Asset = asset;
         }
@@ -57,7 +57,7 @@ namespace VersionOne.VisualStudio.DataLayer.Entities {
         /// <exception cref="KeyNotFoundException">If no property found.</exception>
         public virtual object GetProperty(string propertyName) {
             if (propertyName == EffortProperty) {
-                return DataLayer.GetEffort(Asset);
+                return EntityContainer.GetEffort(this);
             }
 
             var attribute = Asset.Attributes[TypePrefix + '.' + propertyName];
@@ -113,7 +113,7 @@ namespace VersionOne.VisualStudio.DataLayer.Entities {
             var doubleValue = Convert.ToDouble(newValue, CultureInfo.CurrentCulture);
 
             if (propertyName == EffortProperty) {
-                DataLayer.AddEffort(Asset, doubleValue);
+                EntityContainer.AddEffort(this, doubleValue);
             } else if (newValue != null || doubleValue >= 0) {
                 SetPropertyInternal(propertyName, doubleValue);
             }

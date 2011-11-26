@@ -9,5 +9,18 @@ namespace VersionOne.VisualStudio.VSPackage.Events {
             Receiver = receiver;
             Context = context;
         }
+
+        public override bool Equals(object obj) {
+            if(obj == null || obj.GetType() != GetType()) {
+                return false;
+            }
+
+            var other = (ModelChangedArgs) obj;
+            return other.Receiver == Receiver && other.Context == Context;
+        }
+
+        public override int GetHashCode() {
+            return Receiver.GetHashCode() + Context.GetHashCode();
+        }
     }
 }

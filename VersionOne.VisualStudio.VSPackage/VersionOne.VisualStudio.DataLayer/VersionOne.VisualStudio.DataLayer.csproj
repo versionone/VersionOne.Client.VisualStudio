@@ -50,14 +50,17 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="ApiDataLayer.cs" />
+    <Compile Include="AssetCache.cs" />
     <Compile Include="AssetFactory.cs" />
     <Compile Include="AttributeInfo.cs" />
     <Compile Include="DataLayerException.cs" />
     <Compile Include="EffortTrackingLevel.cs" />
     <Compile Include="Entities\Entity.cs" />
+    <Compile Include="IAssetCache.cs" />
     <Compile Include="IDataLayer.cs" />
     <Compile Include="Entities\Project.cs" />
     <Compile Include="IDataLayerInternal.cs" />
+    <Compile Include="IEntityContainer.cs" />
     <Compile Include="Logging\BlackholeLogger.cs" />
     <Compile Include="Logging\ILogger.cs" />
     <Compile Include="Logging\ILoggerFactory.cs" />

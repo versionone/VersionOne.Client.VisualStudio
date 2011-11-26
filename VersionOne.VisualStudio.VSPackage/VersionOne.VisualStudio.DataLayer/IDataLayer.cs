@@ -29,12 +29,7 @@ namespace VersionOne.VisualStudio.DataLayer {
         /// <summary>
         /// Commit all pending changes to V1.
         /// </summary>
-        void CommitChanges();
-
-        /// <summary>
-        /// Remove assets stored in allAssets collection so that subsequent requests world re-download them. In perspective, Data Layer should not manage caches.
-        /// </summary>
-        void DropWorkitemCache();
+        void CommitChanges(IAssetCache assetCache);
 
         /// <summary>
         /// Using this property makes query to V1 server. Use CurrentProject if it is posible.
@@ -70,12 +65,17 @@ namespace VersionOne.VisualStudio.DataLayer {
         IList<Project> GetProjectTree();
 
         /// <summary>
+        /// Create empty asset cache that stores workitems between data requests.
+        /// </summary>
+        IAssetCache CreateAssetCache();
+
+        /// <summary>
         /// Gets lists of stories, defects, tasks and tests from V1 server.   
         /// </summary>
         /// <returns>
         ///     List of Stories and Defects. Tasks and tests can be accessed through Children property of stories and defects.
         /// </returns>
-        List<Workitem> GetWorkitems();
+        void GetWorkitems(IAssetCache assetCache);
 
         /// <summary>
         /// Get collection of available values of list property.
@@ -107,11 +107,6 @@ namespace VersionOne.VisualStudio.DataLayer {
         bool TryLocalizerResolve(string key, out string result);
 
         /// <summary>
-        /// Recreate connection to VersionOne
-        /// </summary>
-        void Reconnect();
-
-        /// <summary>
         /// Adds attribute to be queried for workitems of specified type. 
         /// All attributes must be added before Connect() method call.
         /// </summary>
@@ -125,8 +120,9 @@ namespace VersionOne.VisualStudio.DataLayer {
         /// </summary>
         /// <param name="workitemType">Workitem type token, ex. Entity.TaskPrefix</param>
         /// <param name="parent">Parent workitem, if exists</param>
+        /// <param name="entityContainer">Entity container</param>
         /// <returns>Newly created workitem</returns>
-        Workitem CreateWorkitem(string workitemType, Workitem parent);
+        Workitem CreateWorkitem(string workitemType, Workitem parent, IEntityContainer entityContainer);
 
         /// <summary>
         /// Non-existing project token.

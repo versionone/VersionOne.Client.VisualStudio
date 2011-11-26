@@ -1,6 +1,5 @@
 using System;
 using System.Collections.Generic;
-using System.Diagnostics;
 using System.Linq;
 using VersionOne.SDK.APIClient;
 using VersionOne.VisualStudio.DataLayer.Entities;
@@ -9,23 +8,23 @@ using VersionOne.VisualStudio.DataLayer.Logging;
 namespace VersionOne.VisualStudio.DataLayer {
     internal class AssetFactory {
         private readonly Project currentProject;
-        private readonly ApiDataLayer dataLayer;
+        private readonly IDataLayerInternal dataLayer;
         private readonly IEnumerable<AttributeInfo> attributesToQuery;
 
         private readonly IDictionary<string, IAssetType> typeMappings = new Dictionary<string, IAssetType>();
 
         private readonly ILogger logger;
 
-        internal AssetFactory(ApiDataLayer dataLayer, Project currentProject, ILoggerFactory loggerFactory, IEnumerable<AttributeInfo> attributesToQuery) {
+        internal AssetFactory(IDataLayerInternal dataLayer, Project currentProject, ILoggerFactory loggerFactory, IEnumerable<AttributeInfo> attributesToQuery) {
             this.dataLayer = dataLayer;
             this.currentProject = currentProject;
             this.attributesToQuery = attributesToQuery;
 
             logger = loggerFactory.GetLogger("AssetFactory");
 
-            typeMappings.Add(Entity.DefectPrefix, dataLayer.DefectType);
-            typeMappings.Add(Entity.TaskPrefix, dataLayer.TaskType);
-            typeMappings.Add(Entity.TestPrefix, dataLayer.TestType);
+            typeMappings.Add(Entity.DefectType, dataLayer.DefectType);
+            typeMappings.Add(Entity.TaskType, dataLayer.TaskType);
+            typeMappings.Add(Entity.TestType, dataLayer.TestType);
         }
 
         internal Asset CreateAssetForPrimaryWorkitem(string typeToken) {

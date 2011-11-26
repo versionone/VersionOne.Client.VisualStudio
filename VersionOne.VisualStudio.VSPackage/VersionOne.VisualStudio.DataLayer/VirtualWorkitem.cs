@@ -4,7 +4,7 @@ using VersionOne.VisualStudio.DataLayer.Entities;
 
 namespace VersionOne.VisualStudio.DataLayer {
     public class VirtualWorkitem : Workitem {
-        internal VirtualWorkitem(Asset asset, Workitem parent) : base(asset, parent) { }
+        internal VirtualWorkitem(Asset asset, Workitem parent, IEntityContainer entityContainer) : base(asset, parent, entityContainer) { }
 
         public override bool IsVirtual {
             get { return true; }
@@ -32,20 +32,20 @@ namespace VersionOne.VisualStudio.DataLayer {
 
         public override void CommitChanges() {
             try {
-                DataLayer.CommitAsset(Asset);
+                EntityContainer.Commit(this);
                 
                 foreach (var child in Children) {
                     child.SetProperty("Parent", Asset.Oid);
                 }
 
-                DataLayer.RefreshAsset(this);
+                EntityContainer.Refresh(this);
             } catch (APIException ex) {
                 Logger.Error("Failed to commit changes.", ex);
             }
         }
 
         public override void RevertChanges() {
-            DataLayer.CleanupWorkitem(this);
+            EntityContainer.Cleanup(this);
         }
 
         public override bool Equals(object obj) {

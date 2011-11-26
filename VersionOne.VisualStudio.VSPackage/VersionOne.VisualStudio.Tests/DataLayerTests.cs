@@ -6,6 +6,7 @@ using VersionOne.SDK.ObjectModel;
 using VersionOne.SDK.ObjectModel.Filters;
 using VersionOne.VisualStudio.DataLayer;
 using VersionOne.VisualStudio.DataLayer.Settings;
+
 using Entity = VersionOne.VisualStudio.DataLayer.Entities.Entity;
 using Project = VersionOne.VisualStudio.DataLayer.Entities.Project;
 using Workitem = VersionOne.VisualStudio.DataLayer.Entities.Workitem;
@@ -46,6 +47,7 @@ namespace VersionOne.VisualStudio.Tests {
             if(owner != null) {
                 story.Owners.Add(owner);
             }
+
             story.Iteration = iteration;
             story.Save();
 
@@ -62,8 +64,7 @@ namespace VersionOne.VisualStudio.Tests {
         }
 
         private void CreateTestData() {
-            schedule = instance.Create.Schedule(TestScheduleName, new Duration(7, Duration.Unit.Days),
-                                                new Duration(0, Duration.Unit.Days));
+            schedule = instance.Create.Schedule(TestScheduleName, new Duration(7, Duration.Unit.Days), new Duration(0, Duration.Unit.Days));
 
             member = instance.Create.Member("test user", "test");
             member.Save();
@@ -102,22 +103,22 @@ namespace VersionOne.VisualStudio.Tests {
         public void Before() {
             instance = new V1Instance(V1Url, Username, Password, false, null);
 
-            dataLayer.AddProperty("Name", Entity.StoryPrefix, false);
-            dataLayer.AddProperty("Name", Entity.ProjectPrefix, false);
-            dataLayer.AddProperty("BuildProjects", Entity.ProjectPrefix, true);
-            dataLayer.AddProperty("BuildProjects", Entity.ProjectPrefix, false);
-            dataLayer.AddProperty(Entity.ScheduleNameProperty, Entity.ProjectPrefix, false);
-            dataLayer.AddProperty("Owners", Entity.StoryPrefix, false);
-            dataLayer.AddProperty("Owners", Entity.TaskPrefix, false);
-            dataLayer.AddProperty("Owners", Entity.TestPrefix, false);
-            dataLayer.AddProperty("Owners", Entity.DefectPrefix, false);
-            dataLayer.AddProperty("Name", Entity.DefectPrefix, false);
-            dataLayer.AddProperty("Owners", Entity.StoryPrefix, true);
-            dataLayer.AddProperty("Owners.Nickname", Entity.StoryPrefix, false);
-            dataLayer.AddProperty(Entity.DoneProperty, Entity.StoryPrefix, false);
-            dataLayer.AddProperty(Entity.DoneProperty, Entity.TaskPrefix, false);
-            dataLayer.AddProperty(Entity.StatusProperty, Entity.StoryPrefix, false);
-            dataLayer.AddProperty(Entity.StatusProperty, Entity.StoryPrefix, true);
+            dataLayer.AddProperty("Name", Entity.StoryType, false);
+            dataLayer.AddProperty("Name", Entity.ProjectType, false);
+            dataLayer.AddProperty("BuildProjects", Entity.ProjectType, true);
+            dataLayer.AddProperty("BuildProjects", Entity.ProjectType, false);
+            dataLayer.AddProperty(Entity.ScheduleNameProperty, Entity.ProjectType, false);
+            dataLayer.AddProperty("Owners", Entity.StoryType, false);
+            dataLayer.AddProperty("Owners", Entity.TaskType, false);
+            dataLayer.AddProperty("Owners", Entity.TestType, false);
+            dataLayer.AddProperty("Owners", Entity.DefectType, false);
+            dataLayer.AddProperty("Name", Entity.DefectType, false);
+            dataLayer.AddProperty("Owners", Entity.StoryType, true);
+            dataLayer.AddProperty("Owners.Nickname", Entity.StoryType, false);
+            dataLayer.AddProperty(Entity.DoneProperty, Entity.StoryType, false);
+            dataLayer.AddProperty(Entity.DoneProperty, Entity.TaskType, false);
+            dataLayer.AddProperty(Entity.StatusProperty, Entity.StoryType, false);
+            dataLayer.AddProperty(Entity.StatusProperty, Entity.StoryType, true);
 
             Assert.IsTrue(dataLayer.Connect(GetSettings()), "Connection validation");
             dataLayer.ShowAllTasks = true;
@@ -183,7 +184,9 @@ namespace VersionOne.VisualStudio.Tests {
             var testProject = FindTestProject(projects[0], TestProjectName);
             dataLayer.CurrentProject = testProject;
 
-            var stories = dataLayer.GetWorkitems();
+            var cache = dataLayer.CreateAssetCache();
+            dataLayer.GetWorkitems(cache);
+            var stories = cache.GetWorkitems(dataLayer.ShowAllTasks);
             Assert.AreEqual(2, stories.Count);
             Assert.AreEqual(story1.ID.Token, stories[0].Id, "First story ID");
             Assert.AreEqual("Story 1", stories[0].GetProperty(Entity.NameProperty), "Story name");
@@ -201,7 +204,9 @@ namespace VersionOne.VisualStudio.Tests {
             var testProject = FindTestProject(projects[0], TestProjectName);
             dataLayer.CurrentProject = testProject;
 
-            var stories = dataLayer.GetWorkitems();
+            var cache = dataLayer.CreateAssetCache();
+            dataLayer.GetWorkitems(cache);
+            var stories = cache.GetWorkitems(dataLayer.ShowAllTasks);
             Assert.IsTrue(stories.Count > 0);
 
             var status = stories[0].GetProperty(Entity.StatusProperty);
@@ -214,7 +219,9 @@ namespace VersionOne.VisualStudio.Tests {
             var testProject = FindTestProject(projects[0], TestProjectName);
             dataLayer.CurrentProject = testProject;
             
-            var stories = dataLayer.GetWorkitems();
+            var cache = dataLayer.CreateAssetCache();
+            dataLayer.GetWorkitems(cache);
+            var stories = cache.GetWorkitems(dataLayer.ShowAllTasks);
             Assert.IsTrue(stories.Count > 0, "Stories exist");
 
             if(dataLayer.StoryTrackingLevel != EffortTrackingLevel.SecondaryWorkitem) {
@@ -237,8 +244,10 @@ namespace VersionOne.VisualStudio.Tests {
             var projects = dataLayer.GetProjectTree();
             var testProject = FindTestProject(projects[0], TestProjectName);
             dataLayer.CurrentProject = testProject;
+            var cache = dataLayer.CreateAssetCache();
+            dataLayer.GetWorkitems(cache);
 
-            var stories = dataLayer.GetWorkitems();
+            var stories = cache.GetWorkitems(dataLayer.ShowAllTasks);
             Assert.AreEqual(null, stories[0].GetProperty(Entity.EffortProperty), "Story effort");
 
             stories[0].SetProperty(Entity.EffortProperty, 5.25);
@@ -256,7 +265,9 @@ namespace VersionOne.VisualStudio.Tests {
             var projects = dataLayer.GetProjectTree();
             var testProject = FindTestProject(projects[0], TestProjectName);
             dataLayer.CurrentProject = testProject;
-            var stories = dataLayer.GetWorkitems();
+            var cache = dataLayer.CreateAssetCache();
+            dataLayer.GetWorkitems(cache);
+            var stories = cache.GetWorkitems(dataLayer.ShowAllTasks);
 
             if(dataLayer.StoryTrackingLevel != EffortTrackingLevel.SecondaryWorkitem) {
                 var story = stories[1];
@@ -277,12 +288,13 @@ namespace VersionOne.VisualStudio.Tests {
             var storyDone = Convert.ToDouble(stories[1].GetProperty(Entity.DoneProperty));
             var taskDone = Convert.ToDouble(stories[1].Children[0].GetProperty(Entity.DoneProperty));
 
-            dataLayer.CommitChanges();
+            dataLayer.CommitChanges(cache);
 
             projects = dataLayer.GetProjectTree();
             testProject = FindTestProject(projects[0], TestProjectName);
             dataLayer.CurrentProject = testProject;
-            stories = dataLayer.GetWorkitems();
+            dataLayer.GetWorkitems(cache);
+            stories = cache.GetWorkitems(dataLayer.ShowAllTasks);
 
             if(dataLayer.StoryTrackingLevel != EffortTrackingLevel.SecondaryWorkitem) {
                 Assert.AreEqual(storyDone + 5.25, (double) stories[1].GetProperty(Entity.DoneProperty), FloatingPointComparisonDelta);
@@ -301,7 +313,10 @@ namespace VersionOne.VisualStudio.Tests {
             
             dataLayer.ShowAllTasks = false;
 
-            Assert.AreEqual(1, dataLayer.GetWorkitems().Count);
+            var cache = dataLayer.CreateAssetCache();
+            dataLayer.GetWorkitems(cache);
+            var workitems = cache.GetWorkitems(dataLayer.ShowAllTasks);
+            Assert.AreEqual(1, workitems.Count);
 
             var workitem = GetWorkitemByName("Story 1");
 
@@ -313,7 +328,7 @@ namespace VersionOne.VisualStudio.Tests {
 
             // show all tasks, stories, defects and tests
             dataLayer.ShowAllTasks = true;
-            Assert.AreEqual(2, dataLayer.GetWorkitems().Count);
+            Assert.AreEqual(2, cache.GetWorkitems(dataLayer.ShowAllTasks).Count);
 
             workitem = GetWorkitemByName("Story 1");
             Assert.IsNotNull(workitem);
@@ -341,21 +356,24 @@ namespace VersionOne.VisualStudio.Tests {
             RankAboveAll(thirdTask, firstTask);
             RankAboveAll(secondTask, firstTask, thirdTask);
 
-            dataLayer.CommitChanges();
-            dataLayer.Reconnect();
+            dataLayer.Connect(GetSettings());
 
-            var primaryWorkitems = dataLayer.GetWorkitems();
+            var cache = dataLayer.CreateAssetCache();
+            dataLayer.GetWorkitems(cache);
+            var primaryWorkitems = cache.GetWorkitems(dataLayer.ShowAllTasks);
             var foundStory = primaryWorkitems.FirstOrDefault(workitem => workitem.GetProperty(Entity.NameProperty).Equals(story.Name) && workitem.GetProperty("Number").Equals(story.DisplayID));
 
             Assert.IsNotNull(foundStory);
 
-            AssertWorkitemMatch(foundStory.Children[0], secondTask.Name, Entity.TaskPrefix);
-            AssertWorkitemMatch(foundStory.Children[1], thirdTask.Name, Entity.TaskPrefix);
-            AssertWorkitemMatch(foundStory.Children[2], firstTask.Name, Entity.TaskPrefix);
+            AssertWorkitemMatch(foundStory.Children[0], secondTask.Name, Entity.TaskType);
+            AssertWorkitemMatch(foundStory.Children[1], thirdTask.Name, Entity.TaskType);
+            AssertWorkitemMatch(foundStory.Children[2], firstTask.Name, Entity.TaskType);
         }
 
         private Workitem GetWorkitemByName(string name) {
-            var workitems = dataLayer.GetWorkitems();
+            var cache = dataLayer.CreateAssetCache();
+            dataLayer.GetWorkitems(cache);
+            var workitems = cache.GetWorkitems(dataLayer.ShowAllTasks);
             return workitems.FirstOrDefault(item => item.GetProperty("Name").ToString() == name);
         }
 
@@ -373,7 +391,7 @@ namespace VersionOne.VisualStudio.Tests {
             }
         }
 
-        private void AssertWorkitemMatch(Workitem item, string name, string type) {
+        private static void AssertWorkitemMatch(Workitem item, string name, string type) {
             Assert.AreEqual(item.GetProperty(Entity.NameProperty), name);
             Assert.AreEqual(item.TypePrefix, type);
         }

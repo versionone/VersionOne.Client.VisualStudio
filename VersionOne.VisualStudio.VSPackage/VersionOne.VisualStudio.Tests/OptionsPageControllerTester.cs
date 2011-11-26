@@ -37,6 +37,7 @@ namespace VersionOne.VisualStudio.Tests {
             Expect.Call(() => eventDispatcherMock.ModelChanged += null).IgnoreArguments();
             var eventRaiser = LastCall.GetEventRaiser();
             Expect.Call(dataLayerMock.Connect(null)).Return(true).IgnoreArguments();
+            Expect.Call(() => eventDispatcherMock.Notify(controller, new ModelChangedArgs(EventReceiver.WorkitemView, EventContext.WorkitemCacheInvalidated)));
             Expect.Call(() => eventDispatcherMock.Notify(controller, new ModelChangedArgs(EventReceiver.ProjectView, EventContext.ProjectsRequested))).IgnoreArguments();
 
             mockRepository.ReplayAll();

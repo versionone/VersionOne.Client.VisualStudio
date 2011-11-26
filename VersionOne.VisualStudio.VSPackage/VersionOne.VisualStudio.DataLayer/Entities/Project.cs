@@ -4,19 +4,19 @@ using VersionOne.SDK.APIClient;
 
 namespace VersionOne.VisualStudio.DataLayer.Entities {
     public class Project : Entity {
-        private Project Parent;
+        private readonly Project parent;
 
         public override string TypePrefix {
-            get { return ProjectPrefix; }
+            get { return ProjectType; }
         }
 
         public readonly List<Project> Children = new List<Project>();
 
         internal Project(Asset asset, Project parent) : this(asset) {
-            Parent = parent;
+            this.parent = parent;
         }
 
-        private Project(Asset asset) : base(asset) {
+        private Project(Asset asset) : base(asset, null) {
             // the following check is for unit tests
             if(asset == null || asset.Children == null) {
                 return;

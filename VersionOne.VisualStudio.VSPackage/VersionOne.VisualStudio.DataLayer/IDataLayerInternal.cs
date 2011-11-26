@@ -1,14 +1,26 @@
-﻿using VersionOne.SDK.APIClient;
+﻿using System.Collections.Generic;
+using VersionOne.SDK.APIClient;
+using VersionOne.VisualStudio.DataLayer.Entities;
 using VersionOne.VisualStudio.DataLayer.Logging;
 
 namespace VersionOne.VisualStudio.DataLayer {
-    internal interface IDataLayerInternal : IDataLayer {
-        double? GetEffort(Asset asset);
-        void AddEffort(Asset asset, double effort);
-
+    public interface IDataLayerInternal : IDataLayer {
         bool IsEffortTrackingRelated(string propertyName);
 
         bool AssetPassesShowMyTasksFilter(Asset asset);
+
+        Oid MemberOid { get; }
+
+        void ExecuteOperation(Asset asset, IOperation operation);
+        void CommitAsset(IDictionary<Asset, double> efforts, Asset asset);
+        void RefreshAsset(Workitem workitem, IList<Asset> containingAssetCollection);
+
+        IAssetType ProjectType { get; }
+        IAssetType TaskType { get; }
+        IAssetType TestType { get; }
+        IAssetType DefectType { get; }
+        IAssetType StoryType { get; }
+        IDictionary<string, IAssetType> Types { get; }
 
         /// <summary>
         /// Get logger currently used in DataLayer

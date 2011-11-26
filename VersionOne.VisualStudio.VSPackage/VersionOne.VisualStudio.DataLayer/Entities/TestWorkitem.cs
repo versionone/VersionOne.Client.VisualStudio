@@ -6,7 +6,7 @@ namespace VersionOne.VisualStudio.DataLayer.Entities {
         private readonly string id;
         private bool isPrimary;
 
-        public TestWorkitem(string id, bool isPrimary) : base(null, null) {
+        public TestWorkitem(string id, bool isPrimary, IEntityContainer entityContainer) : base(null, null, entityContainer) {
             this.id = id;
             this.isPrimary = isPrimary;
         }

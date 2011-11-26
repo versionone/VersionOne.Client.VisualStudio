@@ -16,13 +16,13 @@ namespace VersionOne.VisualStudio.VSPackage.Descriptors {
             Workitem item = component as Workitem;
             if (item != null) {
                 switch (item.TypePrefix) {
-                    case Entity.TaskPrefix:
+                    case Entity.TaskType:
                         return Resources.Task_Icon;
-                    case Entity.StoryPrefix:
+                    case Entity.StoryType:
                         return Resources.Story_Icon;
-                    case Entity.TestPrefix:
+                    case Entity.TestType:
                         return Resources.Test_Icon;
-                    case Entity.DefectPrefix:
+                    case Entity.DefectType:
                         return Resources.Defect_Icon;
                 }
             }
