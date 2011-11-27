@@ -114,7 +114,7 @@ namespace VersionOne.VisualStudio.VSPackage.Controllers {
             if(descriptor != null) {
                 RunTaskAsync(view.GetWaitCursor(),
                              () => descriptor.Workitem.CommitChanges(),
-                             () => EventDispatcher.Notify(null, new ModelChangedArgs(EventReceiver.WorkitemView, EventContext.WorkitemsChanged)),
+                             () => EventDispatcher.Notify(null, new ModelChangedArgs(EventReceiver.WorkitemView, EventContext.WorkitemsRequested)),
                              ex => {
                                  if(ex is ValidatorException) {
                                      view.ShowErrorMessage("Workitem cannot be saved because the following required fields are empty:" + ex.Message);
@@ -146,7 +146,7 @@ namespace VersionOne.VisualStudio.VSPackage.Controllers {
             if(descriptor != null) {
                 RunTaskAsync(view.GetWaitCursor(),
                     () => descriptor.Workitem.Signup(),
-                    () => EventDispatcher.Notify(null, new ModelChangedArgs(EventReceiver.WorkitemView, EventContext.WorkitemsChanged)));
+                    () => EventDispatcher.Notify(null, new ModelChangedArgs(EventReceiver.WorkitemView, EventContext.WorkitemsRequested)));
             }
         }
         

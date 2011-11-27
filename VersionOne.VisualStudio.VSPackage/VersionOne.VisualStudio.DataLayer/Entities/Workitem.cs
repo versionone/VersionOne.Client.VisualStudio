@@ -96,6 +96,7 @@ namespace VersionOne.VisualStudio.DataLayer.Entities {
         public virtual void CommitChanges() {
             try {
                 EntityContainer.Commit(this);
+                EntityContainer.Refresh(this);
             } catch (APIException ex) {
                 Logger.Error("Failed to commit changes.", ex);
             }
