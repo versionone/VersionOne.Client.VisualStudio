@@ -1,18 +1,45 @@
 ﻿using System;
+using System.Linq;
+using System.Collections.Generic;
 using NLog;
 using NLog.Config;
 using NLog.Targets;
 using VersionOne.VisualStudio.DataLayer.Logging;
 
+using LogLevel = VersionOne.VisualStudio.DataLayer.Logging.LogLevel;
+using NLogLevel = NLog.LogLevel;
+
 namespace VersionOne.VisualStudio.VSPackage.Logging {
     internal class LoggerFactory : ILoggerFactory {
+        private readonly IDictionary<LogLevel, NLogLevel> levelMap = new Dictionary<LogLevel, NLogLevel> {
+                                                                             {LogLevel.Debug, NLogLevel.Debug},
+                                                                             {LogLevel.Info, NLogLevel.Info},
+                                                                             {LogLevel.Warn, NLogLevel.Warn},
+                                                                             {LogLevel.Error, NLogLevel.Error},
+                                                                         };
+
         private static ILoggerFactory instance;
+        private LogLevel minLogLevel;
 
         internal static ILoggerFactory Instance {
             get { return instance ?? (instance = new LoggerFactory()); }
         }
 
-        static LoggerFactory() {
+        public LogLevel MinLogLevel {
+            get { return minLogLevel; } 
+            set {
+                minLogLevel = value;
+                RecreateConfiguration();
+            }
+        }
+
+        private LoggerFactory() {
+            minLogLevel = LogLevel.Debug;
+            RecreateConfiguration();
+        }
+
+        private void RecreateConfiguration() {
+            var minimumLogLevel = TranslateLogLevel(MinLogLevel);
             var loggingConfiguration = new LoggingConfiguration();
             var fileTarget = new FileTarget {
                                  ArchiveAboveSize = 10485760,
@@ -21,7 +48,7 @@ namespace VersionOne.VisualStudio.VSPackage.Logging {
                                  Layout = "${longdate} | ${level:uppercase=true} | ${logger} | ${message} | ${exception:format=ToString}",
                              };
             loggingConfiguration.AddTarget("file", fileTarget);
-            loggingConfiguration.LoggingRules.Add(new LoggingRule("*", LogLevel.Debug, fileTarget));
+            loggingConfiguration.LoggingRules.Add(new LoggingRule("*", minimumLogLevel, fileTarget));
             LogManager.Configuration = loggingConfiguration;
         }
 
@@ -31,6 +58,9 @@ namespace VersionOne.VisualStudio.VSPackage.Logging {
 
         public ILogger GetLogger(string name) {
             return new Logger(LogManager.GetLogger(name));
+        }
+        private NLogLevel TranslateLogLevel(LogLevel level) {
+            return levelMap.ContainsKey(level) ? levelMap[level] : NLogLevel.Debug;
         }
     }
 }

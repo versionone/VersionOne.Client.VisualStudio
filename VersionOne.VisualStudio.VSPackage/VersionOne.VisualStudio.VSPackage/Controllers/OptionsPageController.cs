@@ -43,6 +43,7 @@ namespace VersionOne.VisualStudio.VSPackage.Controllers {
             Logger.Debug("Saving settings");
             view.UpdateModel();
             view.Model.StoreSettings();
+            LoggerFactory.MinLogLevel = view.Model.MinLogLevel;
 
             try {
                 EventDispatcher.Notify(this, new ModelChangedArgs(EventReceiver.OptionsView, EventContext.V1SettingsChanged));

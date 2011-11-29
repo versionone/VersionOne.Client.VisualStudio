@@ -2,6 +2,7 @@ using System;
 using System.IO;
 using System.Xml.Serialization;
 using VersionOne.VisualStudio.DataLayer;
+using VersionOne.VisualStudio.DataLayer.Logging;
 
 namespace VersionOne.VisualStudio.VSPackage.Settings {
     [XmlRoot("Settings")]
@@ -22,6 +23,8 @@ namespace VersionOne.VisualStudio.VSPackage.Settings {
         public string ProxyDomain { get; set; }
 
         public bool ShowMyTasks { get; set; }
+
+        public LogLevel MinLogLevel { get; set; }
 
         public string ApplicationUrl {
             get {
@@ -78,8 +81,7 @@ namespace VersionOne.VisualStudio.VSPackage.Settings {
                 using(var fileStream = File.OpenRead(file)) {
                     return Load(fileStream);
                 }
-            }
-            catch(Exception) {
+            } catch(Exception) {
                 return new SettingsImpl();
             }
         }
@@ -91,7 +93,7 @@ namespace VersionOne.VisualStudio.VSPackage.Settings {
 
         public static string SettingsFile {
             get {
-                return Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData), "VersionOne.VSPackage\\settings.xml");
+                return Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData), "VersionOne.VSPackage", "settings.xml");
             }
         }
 

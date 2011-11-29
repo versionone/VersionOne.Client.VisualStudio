@@ -1,3 +1,5 @@
+using VersionOne.VisualStudio.DataLayer.Logging;
+
 namespace VersionOne.VisualStudio.VSPackage.Settings {
     public interface ISettings {
         string Username { get; set; }
@@ -11,6 +13,7 @@ namespace VersionOne.VisualStudio.VSPackage.Settings {
         string ProxyDomain { get; set; }
         string SelectedProjectId { get; set; }
         bool ShowMyTasks { get; set; }
+        LogLevel MinLogLevel { get; set; }
         void StoreSettings();
     }
 }

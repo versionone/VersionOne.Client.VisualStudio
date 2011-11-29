@@ -14,11 +14,11 @@ namespace VersionOne.VisualStudio.VSPackage.Controllers {
 
         protected abstract EventReceiver ReceiverType { get; }
 
-        private readonly ILoggerFactory loggerFactory;
-        protected ILogger Logger { get { return logger ?? (logger = loggerFactory.GetLogger(GetType().Name)); } }
+        protected readonly ILoggerFactory LoggerFactory;
+        protected ILogger Logger { get { return logger ?? (logger = LoggerFactory.GetLogger(GetType().Name)); } }
 
         protected BaseController(ILoggerFactory loggerFactory, IDataLayer dataLayer, ISettings settings, IEventDispatcher eventDispatcher) {
-            this.loggerFactory = loggerFactory;
+            LoggerFactory = loggerFactory;
             Settings = settings;
             DataLayer = dataLayer;
             EventDispatcher = eventDispatcher;

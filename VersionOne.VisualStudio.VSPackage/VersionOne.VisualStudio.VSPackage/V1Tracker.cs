@@ -56,10 +56,15 @@ namespace VersionOne.VisualStudio.VSPackage {
             var settings = SettingsImpl.Instance;
             var dataLayer = ApiDataLayer.Instance;
             var eventDispatcher = EventDispatcher.Instance;
+            var loggerFactory = LoggerFactory.Instance;
+
+            loggerFactory.MinLogLevel = settings.MinLogLevel;
+
+            var logger = loggerFactory.GetLogger("V1Tracker");
 
             try {
                 //Setup DataLayer
-                dataLayer.LoggerFactory = LoggerFactory.Instance;
+                dataLayer.LoggerFactory = loggerFactory;
                 dataLayer.ApiVersion = cfg.APIVersion;
                 AddProperties(cfg);
 
@@ -83,11 +88,10 @@ namespace VersionOne.VisualStudio.VSPackage {
                 dataLayer.Connect(versionOneSettings);
                 eventDispatcher.Notify(this, new ModelChangedArgs(EventReceiver.OptionsView, EventContext.V1SettingsChanged));
             } catch(DataLayerException ex) {
-                Debug.WriteLine("Error while loading V1Package: " + ex.Message);
-                Debug.WriteLine("\t" + ex.StackTrace);
+                logger.Error("Error while loading V1Package: " + ex.Message, ex);
             }
 
-            Trace.WriteLine(string.Format(CultureInfo.CurrentCulture, "Entering constructor for: {0}", ToString()));
+            logger.Debug("Completed constructor execution.");
         }
 
         private static void AddProperties(Configuration cfg) {
@@ -153,11 +157,6 @@ namespace VersionOne.VisualStudio.VSPackage {
             ErrorHandler.ThrowOnFailure(windowFrame.Show());
         }
 
-
-        /////////////////////////////////////////////////////////////////////////////
-        // Overriden Package Implementation
-        #region Package Members
-
         /// <summary>
         /// Initialization of the package; this method is called right after the package is sited, so this is the place
         /// where you can put all the initilaization code that rely on services provided by VisualStudio.
@@ -179,8 +178,5 @@ namespace VersionOne.VisualStudio.VSPackage {
                 mcs.AddCommand(menuToolWin);
             }
         }
-
-        #endregion
-
     }
 }

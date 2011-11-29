@@ -3,6 +3,8 @@ using System.Windows.Forms;
 using VersionOne.VisualStudio.VSPackage.Controllers;
 using VersionOne.VisualStudio.VSPackage.Settings;
 
+using LogLevel = VersionOne.VisualStudio.DataLayer.Logging.LogLevel;
+
 namespace VersionOne.VisualStudio.VSPackage.Controls {
     public partial class OptionsPageControl : UserControl, IOptionsPageView {
         public ISettings Model { get; set; }
@@ -26,6 +28,8 @@ namespace VersionOne.VisualStudio.VSPackage.Controls {
             txtProxyUsername.Text = Model.ProxyUsername;
             txtProxyPassword.Text = Model.ProxyPassword;
             txtProxyDomain.Text = Model.ProxyDomain;
+            cboMinLogLevel.DataSource = Enum.GetValues(typeof (LogLevel));
+            cboMinLogLevel.SelectedItem = Model.MinLogLevel;
 
             SetProxyRelatedFieldsEnabled(Model.UseProxy);
         }
@@ -44,6 +48,12 @@ namespace VersionOne.VisualStudio.VSPackage.Controls {
             model.ProxyUsername = txtProxyUsername.Text;
             model.ProxyPassword = txtProxyPassword.Text;
             model.ProxyDomain = txtProxyDomain.Text;
+
+            LogLevel selectedLogLevel;
+
+            model.MinLogLevel = Enum.TryParse(cboMinLogLevel.SelectedItem.ToString(), out selectedLogLevel)
+                                    ? selectedLogLevel
+                                    : LogLevel.Debug;
         }
 
         private static string GetUrl(string text) {

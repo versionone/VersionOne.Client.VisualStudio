@@ -1,5 +1,4 @@
 using System;
-using System.Diagnostics;
 using VersionOne.VisualStudio.DataLayer.Entities;
 using VersionOne.VisualStudio.DataLayer.Logging;
 using VersionOne.VisualStudio.VSPackage.Controls;
