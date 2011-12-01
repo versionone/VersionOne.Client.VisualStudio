@@ -27,10 +27,10 @@ namespace VersionOne.VisualStudio.VSPackage.Controls {
             this.lblUrl = new System.Windows.Forms.Label();
             this.chkUseProxy = new System.Windows.Forms.CheckBox();
             this.btnTestConnection = new System.Windows.Forms.Button();
-            this.lblProxyUrl = new System.Windows.Forms.Label();
             this.cboMinLogLevel = new System.Windows.Forms.ComboBox();
             this.chkIntegrated = new System.Windows.Forms.CheckBox();
             this.grpProxySettings = new System.Windows.Forms.GroupBox();
+            this.lblProxyUrl = new System.Windows.Forms.Label();
             this.txtProxyUrl = new System.Windows.Forms.TextBox();
             this.lblProxyUsername = new System.Windows.Forms.Label();
             this.txtProxyUsername = new System.Windows.Forms.TextBox();
@@ -55,19 +55,19 @@ namespace VersionOne.VisualStudio.VSPackage.Controls {
             | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
             this.pnlContent.AutoScroll = true;
-            this.pnlContent.Controls.Add(this.lblUrl);
-            this.pnlContent.Controls.Add(this.chkUseProxy);
-            this.pnlContent.Controls.Add(this.btnTestConnection);
+            this.pnlContent.Controls.Add(this.lblMinLogLevel);
             this.pnlContent.Controls.Add(this.cboMinLogLevel);
+            this.pnlContent.Controls.Add(this.lblUrl);
+            this.pnlContent.Controls.Add(this.txtUrl);
+            this.pnlContent.Controls.Add(this.lblSampleUrl);
             this.pnlContent.Controls.Add(this.chkIntegrated);
-            this.pnlContent.Controls.Add(this.grpProxySettings);
             this.pnlContent.Controls.Add(this.lblUser);
+            this.pnlContent.Controls.Add(this.txtUserName);
             this.pnlContent.Controls.Add(this.lblPassword);
             this.pnlContent.Controls.Add(this.txtPassword);
-            this.pnlContent.Controls.Add(this.txtUrl);
-            this.pnlContent.Controls.Add(this.txtUserName);
-            this.pnlContent.Controls.Add(this.lblSampleUrl);
-            this.pnlContent.Controls.Add(this.lblMinLogLevel);
+            this.pnlContent.Controls.Add(this.chkUseProxy);
+            this.pnlContent.Controls.Add(this.grpProxySettings);
+            this.pnlContent.Controls.Add(this.btnTestConnection);
             this.pnlContent.Location = new System.Drawing.Point(0, 0);
             this.pnlContent.Name = "pnlContent";
             this.pnlContent.Size = new System.Drawing.Size(339, 329);
@@ -101,15 +101,6 @@ namespace VersionOne.VisualStudio.VSPackage.Controls {
             this.btnTestConnection.TabIndex = 12;
             this.btnTestConnection.Text = "&Test Connection";
             this.btnTestConnection.UseVisualStyleBackColor = true;
-            // 
-            // lblProxyUrl
-            // 
-            this.lblProxyUrl.AutoSize = true;
-            this.lblProxyUrl.Location = new System.Drawing.Point(6, 22);
-            this.lblProxyUrl.Name = "lblProxyUrl";
-            this.lblProxyUrl.Size = new System.Drawing.Size(93, 13);
-            this.lblProxyUrl.TabIndex = 0;
-            this.lblProxyUrl.Text = "Proxy server URL:";
             // 
             // cboMinLogLevel
             // 
@@ -150,6 +141,15 @@ namespace VersionOne.VisualStudio.VSPackage.Controls {
             this.grpProxySettings.TabIndex = 11;
             this.grpProxySettings.TabStop = false;
             this.grpProxySettings.Text = "Proxy settings";
+            // 
+            // lblProxyUrl
+            // 
+            this.lblProxyUrl.AutoSize = true;
+            this.lblProxyUrl.Location = new System.Drawing.Point(6, 22);
+            this.lblProxyUrl.Name = "lblProxyUrl";
+            this.lblProxyUrl.Size = new System.Drawing.Size(93, 13);
+            this.lblProxyUrl.TabIndex = 0;
+            this.lblProxyUrl.Text = "Proxy server URL:";
             // 
             // txtProxyUrl
             // 
