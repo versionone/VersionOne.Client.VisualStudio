@@ -155,7 +155,7 @@ namespace VersionOne.VisualStudio.VSPackage.Controllers {
 
             if(descriptor != null) {
                 RunTaskAsync(view.GetWaitCursor(),
-                             () => descriptor.Workitem.QuickClose(),
+                             descriptor.Workitem.QuickClose,
                              () => EventDispatcher.Notify(null, new ModelChangedArgs(EventReceiver.WorkitemView, EventContext.WorkitemsRequested)),
                              ex => {
                                  if(ex is ValidatorException) {
@@ -168,10 +168,7 @@ namespace VersionOne.VisualStudio.VSPackage.Controllers {
 
         public void CloseItem(Workitem workitem) {
             RunTaskAsync(view.GetWaitCursor(),
-                         () => {
-                             workitem.CommitChanges();
-                             workitem.Close();
-                         },
+                         workitem.Close,
                          () => EventDispatcher.Notify(null, new ModelChangedArgs(EventReceiver.WorkitemView, EventContext.WorkitemsRequested)),
                          ex => {
                              if(ex.GetType() == typeof(ValidatorException)) {

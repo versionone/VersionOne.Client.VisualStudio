@@ -94,9 +94,17 @@ namespace VersionOne.VisualStudio.DataLayer.Entities {
         }
 
         public virtual void CommitChanges() {
+            CommitChanges(true);
+        }
+
+        // TODO apply refreshInCache = false when refreshed assets are immediately discarded, like ApiDataLayer.CommitChanges(IAssetCache)
+        private void CommitChanges(bool refreshInCache) {
             try {
                 EntityContainer.Commit(this);
-                EntityContainer.Refresh(this);
+
+                if(refreshInCache) {
+                    EntityContainer.Refresh(this);
+                }
             } catch (APIException ex) {
                 Logger.Error("Failed to commit changes.", ex);
             }
@@ -122,7 +130,7 @@ namespace VersionOne.VisualStudio.DataLayer.Entities {
         /// Performs QuickClose operation.
         /// </summary>
         public virtual void QuickClose() {
-            CommitChanges();
+            CommitChanges(false);
 
             try {
                 DataLayer.ExecuteOperation(Asset, Asset.AssetType.GetOperation("QuickClose"));
@@ -159,8 +167,14 @@ namespace VersionOne.VisualStudio.DataLayer.Entities {
         /// Performs Inactivate operation.
         /// </summary>
         public virtual void Close() {
-            DataLayer.ExecuteOperation(Asset, Asset.AssetType.GetOperation("Inactivate"));
-            EntityContainer.Cleanup(this);
+            CommitChanges(false);
+
+            try {
+                DataLayer.ExecuteOperation(Asset, Asset.AssetType.GetOperation("Inactivate"));
+                EntityContainer.Cleanup(this);
+            } catch(APIException ex) {
+                Logger.Error("Failed to inactivate item.", ex);
+            }
         }
 
         public virtual void RevertChanges() {

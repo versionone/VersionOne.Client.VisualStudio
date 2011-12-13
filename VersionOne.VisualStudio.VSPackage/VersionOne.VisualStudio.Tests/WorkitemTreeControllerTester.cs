@@ -197,7 +197,6 @@ namespace VersionOne.VisualStudio.Tests {
 
             ExpectRegisterAndPrepareView();
             Expect.Call(viewMock.GetWaitCursor()).Return(waitCursorStub);
-            Expect.Call(workitemMock.CommitChanges);
             Expect.Call(workitemMock.Close);
             Expect.Call(() => eventDispatcherMock.Notify(null, new ModelChangedArgs(EventReceiver.WorkitemView, EventContext.WorkitemsChanged)));
 
@@ -217,8 +216,7 @@ namespace VersionOne.VisualStudio.Tests {
 
             ExpectRegisterAndPrepareView();
             Expect.Call(viewMock.GetWaitCursor()).Return(waitCursorStub);
-            Expect.Call(workitemMock.CommitChanges).Throw(new ValidatorException(null));
-            Expect.Call(workitemMock.Close).Repeat.Never();
+            Expect.Call(workitemMock.Close).Throw(new ValidatorException(null));
             Expect.Call(() => viewMock.ShowValidationInformationDialog(null)).IgnoreArguments();
             Expect.Call(() => eventDispatcherMock.Notify(null, new ModelChangedArgs(EventReceiver.WorkitemView, EventContext.WorkitemsChanged)));
 
@@ -238,7 +236,6 @@ namespace VersionOne.VisualStudio.Tests {
 
             ExpectRegisterAndPrepareView();
             Expect.Call(viewMock.GetWaitCursor()).Return(waitCursorStub);
-            Expect.Call(workitemMock.CommitChanges);
             Expect.Call(workitemMock.Close).Throw(new DataLayerException(null));
             Expect.Call(() => viewMock.ShowErrorMessage(null)).IgnoreArguments();
             Expect.Call(() => eventDispatcherMock.Notify(null, new ModelChangedArgs(EventReceiver.WorkitemView, EventContext.WorkitemsChanged)));
