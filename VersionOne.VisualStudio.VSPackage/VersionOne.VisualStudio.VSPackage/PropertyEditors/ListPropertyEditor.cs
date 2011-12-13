@@ -25,13 +25,13 @@ namespace VersionOne.VisualStudio.VSPackage.PropertyEditors {
                 service.DropDownControl(ListBox);
                 return GetSelection();
             }
-            
+
             return value;
         }
 
         protected virtual void ConfigureListBox() {
             ListBox.SelectionMode = SelectionMode.One;
-            ListBox.MouseUp += listBox_MouseUp;
+            ListBox.MouseUp += ListBoxMouseUp;
         }
 
         /// <summary>
@@ -41,7 +41,7 @@ namespace VersionOne.VisualStudio.VSPackage.PropertyEditors {
         /// <param name="valueId">Value of the Workitem property.</param>
         protected virtual void SetSelection(WorkitemPropertyDescriptor descriptor, object valueId) {
             var dataSource = DataLayer.GetListPropertyValues(descriptor.Workitem.TypePrefix + descriptor.Attribute);
-            
+
             foreach (var item in dataSource) {
                 ListBox.Items.Add(item);
             }
@@ -57,10 +57,16 @@ namespace VersionOne.VisualStudio.VSPackage.PropertyEditors {
             return ListBox.SelectedItem;
         }
 
-        private void listBox_MouseUp(object sender, MouseEventArgs e) {
+        private void ListBoxMouseUp(object sender, MouseEventArgs e) {
             var selectedIndex = ListBox.IndexFromPoint(e.X, e.Y);
-            
+
             if (selectedIndex != -1) {
+                CloseDropDown();
+            }
+        }
+
+        protected void CloseDropDown() {
+            if (service != null) {
                 service.CloseDropDown();
             }
         }

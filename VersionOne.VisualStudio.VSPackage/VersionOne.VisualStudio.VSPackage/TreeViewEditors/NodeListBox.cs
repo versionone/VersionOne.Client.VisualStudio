@@ -22,12 +22,8 @@ namespace VersionOne.VisualStudio.VSPackage.TreeViewEditors {
             set { editorWidth = value; }
         }
 
-        private List<ValueId> dropDownItems;
         [Editor(typeof(StringCollectionEditor), typeof(UITypeEditor)), DesignerSerializationVisibility(DesignerSerializationVisibility.Content)]
-        public List<ValueId> DropDownItems {
-            get { return dropDownItems; }
-            set { dropDownItems = value; }
-        }
+        public List<ValueId> DropDownItems { get; set; }
 
         private Control parentTree;
         public Control ParentTree {
@@ -37,38 +33,40 @@ namespace VersionOne.VisualStudio.VSPackage.TreeViewEditors {
         #endregion
 
         public NodeListBox() {
-            dropDownItems = new List<ValueId>();
+            DropDownItems = new List<ValueId>();
         }
 
         protected override Size CalculateEditorSize(EditorContext context) {
-            if (Parent.UseColumns) {
-                return context.Bounds.Size;
-            }
-            return new Size(EditorWidth, context.Bounds.Height);
+            return Parent.UseColumns ? context.Bounds.Size : new Size(EditorWidth, context.Bounds.Height);
         }
 
         protected override Control CreateEditor(TreeNodeAdv node) {
-            ListBox listBox = new ListBox();
-            listBox.SelectionMode = SelectionMode.MultiExtended;
+            var listBox = new ListBox {SelectionMode = SelectionMode.MultiExtended};
 
             if (DropDownItems != null) {
                 listBox.Items.AddRange(DropDownItems.ToArray());
             }
 
-            object value = GetValue(node);
-            PropertyValues propertyValues = value as PropertyValues;
+            var value = GetValue(node);
+            var propertyValues = value as PropertyValues;
 
-            if (propertyValues != null) {
-                foreach (ValueId item in propertyValues) {
-                    listBox.SelectedItems.Add(item);
-                }
-            }
+            SetSelectionItems(listBox, propertyValues);
 
             listBox.LostFocus += EditorDropDownClosed;
+            listBox.Click += ListBoxClick;
             SetEditControlProperties(listBox, node);
             listBox.IntegralHeight = false;
-            listBox.ScrollAlwaysVisible = true;
+            listBox.ScrollAlwaysVisible = true;            
             return listBox;
+        }
+
+        private static void SetSelectionItems(ListBox listBox, PropertyValues propertyValues) {
+            if (propertyValues == null) {
+                return;
+            }
+            foreach (var item in propertyValues) {
+                listBox.SelectedItems.Add(item);
+            }
         }
 
         private void EditorDropDownClosed(object sender, EventArgs e) {
@@ -76,29 +74,37 @@ namespace VersionOne.VisualStudio.VSPackage.TreeViewEditors {
         }
 
         public override void UpdateEditor(Control control) {
-            ListBox editor = control as ListBox;
+            var editor = control as ListBox;
             EnsureControlVisibility(editor);
             editor.Refresh();
         }
 
         private void EnsureControlVisibility(ListBox editor) {
-            int preferredHeight = editor.ItemHeight * Math.Min(editor.Items.Count, ListBoxItemsNumber);
+            var preferredHeight = editor.ItemHeight * Math.Min(editor.Items.Count, ListBoxItemsNumber);
             editor.Height = Math.Min(preferredHeight, parentTree.Height);
+
             if(parentTree.Height - editor.Bounds.Top < editor.Height) {
                 editor.Bounds = new Rectangle(editor.Bounds.Left, parentTree.Height - editor.Height, editor.Bounds.Width, editor.Bounds.Height);
             }
+
             editor.BringToFront();
         }
 
         protected override void DoApplyChanges(TreeNodeAdv node, Control editor) {
-            ListBox lstEditor = (ListBox) editor; 
-            PropertyValues values = new PropertyValues(lstEditor.SelectedItems);
+            var lstEditor = (ListBox) editor; 
+            var values = new PropertyValues(lstEditor.SelectedItems);
             SetValue(node, values);
         }
 
         public override void MouseUp(TreeNodeAdvMouseEventArgs args) {
             if (args.Node != null && args.Node.IsSelected) {
                 base.MouseUp(args);
+            }
+        }
+
+        private void ListBoxClick(object sender, EventArgs e) {
+            if (Control.ModifierKeys != Keys.Control) {
+                EndEdit(true);
             }
         }
     }

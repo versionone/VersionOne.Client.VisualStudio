@@ -1,3 +1,4 @@
+using System;
 using System.Windows.Forms;
 using VersionOne.VisualStudio.DataLayer;
 using VersionOne.VisualStudio.VSPackage.Descriptors;
@@ -6,6 +7,7 @@ namespace VersionOne.VisualStudio.VSPackage.PropertyEditors {
     public class MultiValueEditor : ListPropertyEditor {
         protected override void ConfigureListBox() {
             ListBox.SelectionMode = SelectionMode.MultiExtended;
+            ListBox.Click += ListBoxClick;
         }
 
         protected override void SetSelection(WorkitemPropertyDescriptor descriptor, object propertyValues) {
@@ -22,6 +24,12 @@ namespace VersionOne.VisualStudio.VSPackage.PropertyEditors {
 
         protected override object GetSelection() {
             return new PropertyValues(ListBox.SelectedItems);
+        }
+
+        private void ListBoxClick(object sender, EventArgs e) {
+            if (Control.ModifierKeys != Keys.Control) {
+                CloseDropDown();
+            }
         }
     }
 }
