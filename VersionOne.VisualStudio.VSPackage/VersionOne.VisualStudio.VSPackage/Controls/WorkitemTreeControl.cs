@@ -153,7 +153,7 @@ namespace VersionOne.VisualStudio.VSPackage.Controls {
             columnToAttributeMappings.Clear();
 
 			foreach (var column in Configuration.Instance.GridSettings.Columns) {
-                if (column.EffortTracking && !ApiDataLayer.Instance.TrackEffort) {
+                if (column.EffortTracking && !ApiDataLayer.Instance.EffortTracking.TrackEffort) {
 					continue;
 				}
 

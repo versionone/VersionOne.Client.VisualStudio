@@ -56,7 +56,7 @@ namespace VersionOne.VisualStudio.DataLayer.Entities {
             var fullName = TypePrefix + '.' + propertyName;
             
             try {
-                return DataLayer.IsEffortTrackingRelated(propertyName) && AreEffortTrackingPropertiesReadOnly();
+                return EffortTracking.IsEffortTrackingRelated(propertyName) && AreEffortTrackingPropertiesReadOnly();
             } catch (Exception ex) {
                 Logger.Warn("Cannot get property: " + fullName, ex);
                 return true;
@@ -64,8 +64,8 @@ namespace VersionOne.VisualStudio.DataLayer.Entities {
         }
 
         private bool AreEffortTrackingPropertiesReadOnly() {
-            var storyLevel = DataLayer.StoryTrackingLevel;
-            var defectLevel = DataLayer.DefectTrackingLevel;
+            var storyLevel = DataLayer.EffortTracking.StoryTrackingLevel;
+            var defectLevel = DataLayer.EffortTracking.DefectTrackingLevel;
 
             switch (TypePrefix) {
                 case StoryType:

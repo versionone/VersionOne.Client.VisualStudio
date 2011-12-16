@@ -5,8 +5,6 @@ using VersionOne.VisualStudio.DataLayer.Logging;
 
 namespace VersionOne.VisualStudio.DataLayer {
     public interface IDataLayerInternal : IDataLayer {
-        bool IsEffortTrackingRelated(string propertyName);
-
         bool AssetPassesShowMyTasksFilter(Asset asset);
 
         Oid MemberOid { get; }

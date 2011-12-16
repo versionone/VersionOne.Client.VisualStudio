@@ -193,6 +193,7 @@ namespace VersionOne.VisualStudio.VSPackage.Controllers {
         public void HandleRefreshCommand() {
             try {
                 assetCache.Drop();
+                DataLayer.EffortTracking.Drop();
                 EventDispatcher.Notify(null, new ModelChangedArgs(EventReceiver.WorkitemView, EventContext.WorkitemsRequested));
             } catch(DataLayerException ex) {
                 view.ResetPropertyView();

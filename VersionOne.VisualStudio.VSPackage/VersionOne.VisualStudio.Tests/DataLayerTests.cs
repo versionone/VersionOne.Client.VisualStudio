@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using NUnit.Framework;
 using VersionOne.SDK.APIClient;
@@ -18,13 +19,13 @@ namespace VersionOne.VisualStudio.Tests {
     public class DataLayerTests {
         private readonly IDataLayer dataLayer = ApiDataLayer.Instance;
 
-        private const string V1Url = "http://integsrv01/VersionOne/";
+        private const string V1Url = "http://integsrv01/VersionOneTest/";
         private const string Username = "admin";
         private const string Password = "admin";
         private const bool Integrated = false;
 
-        private const string TestProjectName = "Integrational tests project";
-        private const string TestScheduleName = "Integrational tests schedule";
+        private const string TestProjectName = "VS Integrational tests project";
+        private const string TestScheduleName = "VS Integrational tests schedule";
 
         private const double EffortAmount = 3;
         private const double FloatingPointComparisonDelta = 0.001;
@@ -68,11 +69,8 @@ namespace VersionOne.VisualStudio.Tests {
 
             member = instance.Create.Member("test user", "test");
             member.Save();
-
-            var projects = instance.Get.Projects(new ProjectFilter());
-            var enumerator = projects.GetEnumerator();
-            enumerator.MoveNext();
-            project = instance.Create.Project(TestProjectName, enumerator.Current, DateTime.Now.Date, schedule);
+            
+            project = instance.Create.Project(TestProjectName, AssetID.FromToken("Scope:0"), DateTime.Now.Date, schedule);
 
             iteration = instance.Create.Iteration(project);
             iteration.Activate();
@@ -81,7 +79,7 @@ namespace VersionOne.VisualStudio.Tests {
             story1.Status.CurrentValue = "Future";
             story1.Save();
 
-            if(dataLayer.StoryTrackingLevel != EffortTrackingLevel.SecondaryWorkitem) {
+            if (dataLayer.EffortTracking.StoryTrackingLevel != EffortTrackingLevel.SecondaryWorkitem) {
                 var story1Effort = story1.CreateEffort(EffortAmount);
                 story1Effort.Save();
             }
@@ -90,7 +88,7 @@ namespace VersionOne.VisualStudio.Tests {
 
             task1 = CreateTask(instance, "Task 1", story1, instance.LoggedInMember);
 
-            if(dataLayer.StoryTrackingLevel != EffortTrackingLevel.PrimaryWorkitem) {
+            if (dataLayer.EffortTracking.StoryTrackingLevel != EffortTrackingLevel.PrimaryWorkitem) {
                 var task1Effort = task1.CreateEffort(EffortAmount);
                 task1Effort.Save();
             }
@@ -101,7 +99,7 @@ namespace VersionOne.VisualStudio.Tests {
 
         [TestFixtureSetUp]
         public void Before() {
-            instance = new V1Instance(V1Url, Username, Password, false, null);
+            instance = new V1Instance(V1Url, Username, Password, false);
 
             dataLayer.AddProperty("Name", Entity.StoryType, false);
             dataLayer.AddProperty("Name", Entity.ProjectType, false);
@@ -119,6 +117,14 @@ namespace VersionOne.VisualStudio.Tests {
             dataLayer.AddProperty(Entity.DoneProperty, Entity.TaskType, false);
             dataLayer.AddProperty(Entity.StatusProperty, Entity.StoryType, false);
             dataLayer.AddProperty(Entity.StatusProperty, Entity.StoryType, true);
+            dataLayer.AddProperty(Entity.OrderProperty, Entity.StoryType, false);
+            dataLayer.AddProperty(Entity.OrderProperty, Entity.TaskType, false);
+            dataLayer.AddProperty(Entity.OrderProperty, Entity.TestType, false);
+            dataLayer.AddProperty(Entity.OrderProperty, Entity.DefectType, false);
+            dataLayer.AddProperty("Number", Entity.StoryType, false);
+            dataLayer.AddProperty("Number", Entity.TaskType, false);
+            dataLayer.AddProperty("Number", Entity.TestType, false);
+            dataLayer.AddProperty("Number", Entity.DefectType, false);
 
             Assert.IsTrue(dataLayer.Connect(GetSettings()), "Connection validation");
             dataLayer.ShowAllTasks = true;
@@ -179,6 +185,7 @@ namespace VersionOne.VisualStudio.Tests {
         }
 
         [Test]
+        //TODO doesn't work at suite run
         public void GetStories() {
             var projects = dataLayer.GetProjectTree();
             var testProject = FindTestProject(projects[0], TestProjectName);
@@ -224,7 +231,7 @@ namespace VersionOne.VisualStudio.Tests {
             var stories = cache.GetWorkitems(dataLayer.ShowAllTasks);
             Assert.IsTrue(stories.Count > 0, "Stories exist");
 
-            if(dataLayer.StoryTrackingLevel != EffortTrackingLevel.SecondaryWorkitem) {
+            if (dataLayer.EffortTracking.StoryTrackingLevel != EffortTrackingLevel.SecondaryWorkitem) {
                 Assert.AreEqual(EffortAmount, (double) stories[0].GetProperty(Entity.DoneProperty),
                                 FloatingPointComparisonDelta);
                 Assert.AreEqual(stories[0].GetProperty(Entity.EffortProperty), null);
@@ -232,8 +239,8 @@ namespace VersionOne.VisualStudio.Tests {
 
             Assert.IsTrue(stories[0].Children.Count > 0, "Tasks exist");
 
-            if(dataLayer.StoryTrackingLevel != EffortTrackingLevel.PrimaryWorkitem) {
-                Assert.AreEqual(EffortAmount, (double) stories[0].Children[0].GetProperty(Entity.DoneProperty),
+            if (dataLayer.EffortTracking.StoryTrackingLevel != EffortTrackingLevel.PrimaryWorkitem) {
+                Assert.AreEqual(EffortAmount, (double)stories[0].Children[0].GetProperty(Entity.DoneProperty),
                                 FloatingPointComparisonDelta);
                 Assert.AreEqual(stories[0].Children[0].GetProperty(Entity.EffortProperty), null);
             }
@@ -268,44 +275,48 @@ namespace VersionOne.VisualStudio.Tests {
             var cache = dataLayer.CreateAssetCache();
             dataLayer.GetWorkitems(cache);
             var stories = cache.GetWorkitems(dataLayer.ShowAllTasks);
+            var workitemForRefresh = new List<Workitem>();
 
-            if(dataLayer.StoryTrackingLevel != EffortTrackingLevel.SecondaryWorkitem) {
+            if (dataLayer.EffortTracking.StoryTrackingLevel != EffortTrackingLevel.SecondaryWorkitem) {
                 var story = stories[1];
                 Assert.AreEqual(null, story.GetProperty(Entity.EffortProperty), "Story effort");
 
                 story.SetProperty(Entity.EffortProperty, 5.25);
                 Assert.AreEqual(5.25, (double)story.GetProperty(Entity.EffortProperty), FloatingPointComparisonDelta);
+                workitemForRefresh.Add(story);
             }
 
-            if(dataLayer.StoryTrackingLevel != EffortTrackingLevel.PrimaryWorkitem) {
+            if (dataLayer.EffortTracking.StoryTrackingLevel != EffortTrackingLevel.PrimaryWorkitem) {
                 var task = stories[1].Children[0];
                 Assert.AreEqual(null, task.GetProperty(Entity.EffortProperty), "Task effort");
 
                 task.SetProperty(Entity.EffortProperty, 1.75);
                 Assert.AreEqual(1.75, task.GetProperty(Entity.EffortProperty), "Task new effort");
+                workitemForRefresh.Add(task);
             }
 
             var storyDone = Convert.ToDouble(stories[1].GetProperty(Entity.DoneProperty));
             var taskDone = Convert.ToDouble(stories[1].Children[0].GetProperty(Entity.DoneProperty));
 
             dataLayer.CommitChanges(cache);
-
+            cache.Drop();// look at WorkitemTreeController.HandleSaveCommand
             projects = dataLayer.GetProjectTree();
             testProject = FindTestProject(projects[0], TestProjectName);
             dataLayer.CurrentProject = testProject;
             dataLayer.GetWorkitems(cache);
             stories = cache.GetWorkitems(dataLayer.ShowAllTasks);
 
-            if(dataLayer.StoryTrackingLevel != EffortTrackingLevel.SecondaryWorkitem) {
+            if (dataLayer.EffortTracking.StoryTrackingLevel != EffortTrackingLevel.SecondaryWorkitem) {
                 Assert.AreEqual(storyDone + 5.25, (double) stories[1].GetProperty(Entity.DoneProperty), FloatingPointComparisonDelta);
             }
 
-            if(dataLayer.StoryTrackingLevel != EffortTrackingLevel.PrimaryWorkitem) {
-                Assert.AreEqual(taskDone + 1.75, (double) stories[1].Children[0].GetProperty(Entity.DoneProperty), FloatingPointComparisonDelta);
+            if (dataLayer.EffortTracking.StoryTrackingLevel != EffortTrackingLevel.PrimaryWorkitem) {
+                Assert.AreEqual(taskDone + 1.75, (double)stories[1].Children[0].GetProperty(Entity.DoneProperty), FloatingPointComparisonDelta);
             }
         }
 
         [Test]
+        //TODO doesn't work at suite run
         public void ReadOnlyAssetsForCurrentUser() {
             var projects = dataLayer.GetProjectTree();
             var testProject = FindTestProject(projects[0], TestProjectName);

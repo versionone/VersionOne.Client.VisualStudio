@@ -28,16 +28,9 @@ namespace VersionOne.VisualStudio.DataLayer {
         private IAssetType workitemType;
         private IAssetType primaryWorkitemType;
         private IAssetType effortType;
+        private IEffortTracking effortTracking;
 
         private IDictionary<string, PropertyValues> listPropertyValues;
-
-        private readonly IList<string> effortTrackingAttributes = new List<string> {
-            "DetailEstimate",
-            "ToDo",
-            "Done",
-            "Effort",
-            "Actuals",
-        };
 
         private ILogger logger;
 
@@ -47,10 +40,12 @@ namespace VersionOne.VisualStudio.DataLayer {
 
         public ILoggerFactory LoggerFactory { get; set; }
 
-        public ILogger Logger {
-            get {
-                return logger ?? (logger = LoggerFactory == null ? new BlackholeLogger() : LoggerFactory.GetLogger("DataLayer"));
-            }
+        public static IDataLayer Instance {
+            get { return dataLayer ?? (dataLayer = new ApiDataLayer()); }
+        }
+
+        internal static IDataLayerInternal InternalInstance {
+            get { return dataLayer ?? (dataLayer = new ApiDataLayer()); }
         }
 
         private ApiDataLayer() {
@@ -67,6 +62,12 @@ namespace VersionOne.VisualStudio.DataLayer {
             }
 
             AttributesToQuery.Add(new AttributeInfo("Schedule.EarliestActiveTimebox", Entity.ProjectType, false));
+        }
+
+        public ILogger Logger {
+            get {
+                return logger ?? (logger = LoggerFactory == null ? new BlackholeLogger() : LoggerFactory.GetLogger("DataLayer"));
+            }
         }
 
         public string ApiVersion {
@@ -130,6 +131,7 @@ namespace VersionOne.VisualStudio.DataLayer {
 
             if(itemValidationResult.Count == 0) {
                 item.CommitChanges();
+                //TODO do we really need 2 commits effort? in item.ComitChanges() effort already commited
                 CommitEffort(efforts, item.Asset);
                 return true;
             }
@@ -161,28 +163,31 @@ namespace VersionOne.VisualStudio.DataLayer {
         }
 
         #region Effort tracking
-
-        public EffortTrackingLevel DefectTrackingLevel { get; private set; }
-        public EffortTrackingLevel StoryTrackingLevel { get; private set; }
-        public bool TrackEffort { get; private set; }
-
-        private static EffortTrackingLevel TranslateEffortTrackingLevel(TrackingLevel level) {
-            switch(level) {
-                case TrackingLevel.On:
-                    return EffortTrackingLevel.PrimaryWorkitem;
-                case TrackingLevel.Off:
-                    return EffortTrackingLevel.SecondaryWorkitem;
-                case TrackingLevel.Mix:
-                    return EffortTrackingLevel.Both;
-                default:
-                    throw new NotSupportedException("Unknown tracking level");
+        public IEffortTracking EffortTracking {
+            get {
+                if (effortTracking.RequiredReload) {
+                    RefreshEffortTracking();
+                }
+                return effortTracking;
+            }
+            private set {
+                effortTracking = value;
             }
         }
 
-        public bool IsEffortTrackingRelated(string attributeName) {
-            return effortTrackingAttributes.Contains(attributeName);
+        private void InitEffortTracking() {
+            EffortTracking = new EffortTracking(connector.V1Configuration);
+            EffortTracking.Init();
+
+            if (EffortTracking.TrackEffort) {
+                effortType = connector.MetaModel.GetAssetType("Actual");
+            }
         }
 
+        private void RefreshEffortTracking() {
+            connector.LoadV1Configuration();
+            InitEffortTracking();
+        }
         #endregion
 
         private void AddSelection(Query query, string typePrefix) {
@@ -327,6 +332,7 @@ namespace VersionOne.VisualStudio.DataLayer {
                 connector.CheckConnection(settings);
             } catch(Exception ex) {
                 logger.Error("Cannot connect to V1 server.", ex);
+                throw new DataLayerException("Connection check fails.", ex);
             }
         }
 
@@ -345,14 +351,7 @@ namespace VersionOne.VisualStudio.DataLayer {
                 workitemType = connector.MetaModel.GetAssetType("Workitem");
                 primaryWorkitemType = connector.MetaModel.GetAssetType("PrimaryWorkitem");
 
-                TrackEffort = connector.V1Configuration.EffortTracking;
-
-                if(TrackEffort) {
-                    effortType = connector.MetaModel.GetAssetType("Actual");
-                }
-
-                StoryTrackingLevel = TranslateEffortTrackingLevel(connector.V1Configuration.StoryTrackingLevel);
-                DefectTrackingLevel = TranslateEffortTrackingLevel(connector.V1Configuration.DefectTrackingLevel);
+                InitEffortTracking();
 
                 MemberOid = connector.Services.LoggedIn;
                 listPropertyValues = GetListPropertyValues();
@@ -372,6 +371,7 @@ namespace VersionOne.VisualStudio.DataLayer {
                 return false;
             }
         }
+
 
         // TODO try to find out why SecurityException might occur here
         private IAssetType GetAssetType(string token) {
@@ -484,14 +484,6 @@ namespace VersionOne.VisualStudio.DataLayer {
         }
 
         #endregion
-
-        public static IDataLayer Instance {
-            get { return dataLayer ?? (dataLayer = new ApiDataLayer()); }
-        }
-
-        internal static IDataLayerInternal InternalInstance {
-            get { return dataLayer ?? (dataLayer = new ApiDataLayer()); }
-        }
 
         public bool IsConnected {
             get { return connector.IsConnected; }

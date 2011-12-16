@@ -30,6 +30,7 @@ namespace VersionOne.VisualStudio.DataLayer {
             var password = settings.Password;
             var integrated = settings.Integrated;
             var proxy = GetProxy(settings.ProxySettings);
+            VersionOneSettings = settings;
 
             var metaConnector = new V1APIConnector(path + MetaUrlSuffix, username, password, integrated, proxy);
             MetaModel = new MetaModel(metaConnector);
@@ -38,11 +39,21 @@ namespace VersionOne.VisualStudio.DataLayer {
             Localizer = new Localizer(localizerConnector);
 
             var dataConnector = new V1APIConnector(path + DataUrlSuffix, username, password, integrated, proxy);
-            Services = new Services(MetaModel, dataConnector);
+            Services = new Services(MetaModel, dataConnector);                        
+
+            LoadV1Configuration();
+        }
+
+        public void LoadV1Configuration() {
+            if (VersionOneSettings == null) {
+                throw new InvalidOperationException("Connection is needed for configuration loading.");
+            }
+
+            var path = VersionOneSettings.Path;
+            var integrated = VersionOneSettings.Integrated;
+            var proxy = GetProxy(VersionOneSettings.ProxySettings);
 
             V1Configuration = new V1Configuration(new V1APIConnector(path + ConfigUrlSuffix, null, null, integrated, proxy));
-
-            VersionOneSettings = settings;
         }
 
         private static ProxyProvider GetProxy(ProxyConnectionSettings settings) {

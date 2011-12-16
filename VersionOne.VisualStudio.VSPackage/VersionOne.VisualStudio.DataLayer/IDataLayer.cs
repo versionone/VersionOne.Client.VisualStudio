@@ -42,21 +42,6 @@ namespace VersionOne.VisualStudio.DataLayer {
         Project CurrentProject { get; set;}
 
         /// <summary>
-        /// Effort tracking enabled state.
-        /// </summary>
-        bool TrackEffort { get; }
-
-        /// <summary>
-        /// Current Story effort tracking level.
-        /// </summary>
-        EffortTrackingLevel StoryTrackingLevel { get; }
-
-        /// <summary>
-        /// Current Defect effort tracking level.
-        /// </summary>
-        EffortTrackingLevel DefectTrackingLevel { get; }
-
-        /// <summary>
         /// Gets tree of projects from V1 server. In most cases there is only one (Scope:0) root project, but may be more.  
         /// </summary>
         /// <returns>
@@ -128,5 +113,10 @@ namespace VersionOne.VisualStudio.DataLayer {
         /// Non-existing project token.
         /// </summary>
         string NullProjectToken { get; }
+
+        /// <summary>
+        /// Effort tracking information.
+        /// </summary>
+        IEffortTracking EffortTracking { get; }
     }
 }

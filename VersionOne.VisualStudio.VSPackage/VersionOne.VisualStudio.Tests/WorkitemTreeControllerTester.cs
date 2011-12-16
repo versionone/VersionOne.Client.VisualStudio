@@ -23,6 +23,7 @@ namespace VersionOne.VisualStudio.Tests {
         private IWorkitemTreeView viewMock;
         private IWaitCursor waitCursorStub;
         private ILoggerFactory loggerFactoryMock;
+        private IEffortTracking effortTrackingMock;
 
         private readonly MockRepository mockRepository = new MockRepository();
 
@@ -35,6 +36,7 @@ namespace VersionOne.VisualStudio.Tests {
             waitCursorStub = mockRepository.Stub<IWaitCursor>();
             eventDispatcherMock = mockRepository.Stub<IEventDispatcher>();
             loggerFactoryMock = mockRepository.DynamicMock<ILoggerFactory>();
+            effortTrackingMock = mockRepository.StrictMock<IEffortTracking>();
             loggerFactoryMock.Stub(x => x.GetLogger(null)).IgnoreArguments().Return(mockRepository.Stub<ILogger>());
 
             controller = new WorkitemTreeController(loggerFactoryMock, dataLayerMock, settingsMock, eventDispatcherMock);
@@ -75,6 +77,8 @@ namespace VersionOne.VisualStudio.Tests {
         public void HandleRefresh() {
             ExpectRegisterAndPrepareView();
             Expect.Call(assetCacheMock.Drop);
+            Expect.Call(dataLayerMock.EffortTracking).Return(effortTrackingMock);
+            Expect.Call(effortTrackingMock.Drop);
             Expect.Call(() => eventDispatcherMock.Notify(null, new ModelChangedArgs(EventReceiver.WorkitemView, EventContext.WorkitemsRequested)));
 
             mockRepository.ReplayAll();

@@ -83,7 +83,7 @@ namespace VersionOne.VisualStudio.VSPackage.Descriptors {
         }
 
         private static bool ShouldSkipColumnDueToEffortTracking(ColumnSetting column) {
-            return column.EffortTracking && !ApiDataLayer.Instance.TrackEffort;
+            return column.EffortTracking && !ApiDataLayer.Instance.EffortTracking.TrackEffort;
         }
 
         private void ConfigurePropertyDescriptors(IEnumerable<ColumnSetting> columns) {
