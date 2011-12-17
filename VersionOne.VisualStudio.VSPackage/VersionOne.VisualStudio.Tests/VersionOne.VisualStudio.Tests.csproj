@@ -74,6 +74,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="DataLayerTests.cs" />
+    <Compile Include="EffortTrackingTester.cs" />
     <Compile Include="OptionsPageControllerTester.cs" />
     <Compile Include="ProjectTreeControllerTester.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />

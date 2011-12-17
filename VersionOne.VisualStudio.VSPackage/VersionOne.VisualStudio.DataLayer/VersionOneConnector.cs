@@ -3,7 +3,7 @@ using VersionOne.SDK.APIClient;
 using VersionOne.VisualStudio.DataLayer.Settings;
 
 namespace VersionOne.VisualStudio.DataLayer {
-    internal class VersionOneConnector {
+    internal class VersionOneConnector : IVersionOneConnector {
         private const string MetaUrlSuffix = "meta.v1/";
         private const string LocalizerUrlSuffix = "loc.v1/";
         private const string DataUrlSuffix = "rest-1.v1/";
@@ -19,7 +19,7 @@ namespace VersionOne.VisualStudio.DataLayer {
         public IMetaModel MetaModel { get; private set; }
         public IServices Services { get; private set; }
         public ILocalizer Localizer { get; private set; }
-        public V1Configuration V1Configuration { get; private set; }
+        public IV1Configuration V1Configuration { get; private set; }
         public bool IsConnected { get; set; }
 
         public VersionOneSettings VersionOneSettings { get; private set; }
@@ -39,12 +39,12 @@ namespace VersionOne.VisualStudio.DataLayer {
             Localizer = new Localizer(localizerConnector);
 
             var dataConnector = new V1APIConnector(path + DataUrlSuffix, username, password, integrated, proxy);
-            Services = new Services(MetaModel, dataConnector);                        
+            Services = new Services(MetaModel, dataConnector);
 
-            LoadV1Configuration();
+            V1Configuration = LoadV1Configuration();
         }
 
-        public void LoadV1Configuration() {
+        public IV1Configuration LoadV1Configuration() {
             if (VersionOneSettings == null) {
                 throw new InvalidOperationException("Connection is needed for configuration loading.");
             }
@@ -53,7 +53,7 @@ namespace VersionOne.VisualStudio.DataLayer {
             var integrated = VersionOneSettings.Integrated;
             var proxy = GetProxy(VersionOneSettings.ProxySettings);
 
-            V1Configuration = new V1Configuration(new V1APIConnector(path + ConfigUrlSuffix, null, null, integrated, proxy));
+            return new V1Configuration(new V1APIConnector(path + ConfigUrlSuffix, null, null, integrated, proxy));
         }
 
         private static ProxyProvider GetProxy(ProxyConnectionSettings settings) {

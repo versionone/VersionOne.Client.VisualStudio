@@ -56,40 +56,10 @@ namespace VersionOne.VisualStudio.DataLayer.Entities {
             var fullName = TypePrefix + '.' + propertyName;
             
             try {
-                return EffortTracking.IsEffortTrackingRelated(propertyName) && AreEffortTrackingPropertiesReadOnly();
+                return EffortTracking.IsEffortTrackingRelated(propertyName) && DataLayer.EffortTracking.AreEffortTrackingPropertiesReadOnly(this);
             } catch (Exception ex) {
-                Logger.Warn("Cannot get property: " + fullName, ex);
+                Logger.Warn("Cannot get effort data for " + fullName + " property.", ex);
                 return true;
-            }
-        }
-
-        private bool AreEffortTrackingPropertiesReadOnly() {
-            var storyLevel = DataLayer.EffortTracking.StoryTrackingLevel;
-            var defectLevel = DataLayer.EffortTracking.DefectTrackingLevel;
-
-            switch (TypePrefix) {
-                case StoryType:
-                    return storyLevel != EffortTrackingLevel.PrimaryWorkitem && storyLevel != EffortTrackingLevel.Both;
-                case DefectType:
-                    return defectLevel != EffortTrackingLevel.PrimaryWorkitem && defectLevel != EffortTrackingLevel.Both;
-                case TaskType:
-                case TestType:
-                    EffortTrackingLevel parentLevel;
-
-                    switch(Parent.TypePrefix) {
-                        case StoryType:
-                            parentLevel = storyLevel;
-                            break;
-                        case DefectType:
-                            parentLevel = defectLevel;
-                            break;
-                        default:
-                            throw new InvalidOperationException("Unexpected parent asset type.");
-                    }
-
-                    return parentLevel != EffortTrackingLevel.SecondaryWorkitem && parentLevel != EffortTrackingLevel.Both;
-                default:
-                    throw new NotSupportedException("Unexpected asset type.");
             }
         }
 

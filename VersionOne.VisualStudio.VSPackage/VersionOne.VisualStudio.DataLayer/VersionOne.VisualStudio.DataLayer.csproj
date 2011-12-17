@@ -63,6 +63,7 @@
     <Compile Include="IDataLayerInternal.cs" />
     <Compile Include="IEffortTracking.cs" />
     <Compile Include="IEntityContainer.cs" />
+    <Compile Include="IVersionOneConnector.cs" />
     <Compile Include="Logging\BlackholeLogger.cs" />
     <Compile Include="Logging\ILogger.cs" />
     <Compile Include="Logging\ILoggerFactory.cs" />

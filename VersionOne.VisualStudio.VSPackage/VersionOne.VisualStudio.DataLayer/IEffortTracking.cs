@@ -1,10 +1,12 @@
-﻿namespace VersionOne.VisualStudio.DataLayer {
+﻿using VersionOne.VisualStudio.DataLayer.Entities;
+
+namespace VersionOne.VisualStudio.DataLayer {
     public interface IEffortTracking {
-        bool RequiredReload { get; }
         EffortTrackingLevel DefectTrackingLevel { get; }
         EffortTrackingLevel StoryTrackingLevel { get; }
         bool TrackEffort { get; }
+        bool AreEffortTrackingPropertiesReadOnly(Workitem workitem);
         void Init();
-        void Drop();
+        void Refresh();
     }
 }

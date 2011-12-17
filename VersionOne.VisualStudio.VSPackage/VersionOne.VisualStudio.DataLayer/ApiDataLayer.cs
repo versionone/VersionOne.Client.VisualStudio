@@ -28,7 +28,6 @@ namespace VersionOne.VisualStudio.DataLayer {
         private IAssetType workitemType;
         private IAssetType primaryWorkitemType;
         private IAssetType effortType;
-        private IEffortTracking effortTracking;
 
         private IDictionary<string, PropertyValues> listPropertyValues;
 
@@ -163,30 +162,11 @@ namespace VersionOne.VisualStudio.DataLayer {
         }
 
         #region Effort tracking
-        public IEffortTracking EffortTracking {
-            get {
-                if (effortTracking.RequiredReload) {
-                    RefreshEffortTracking();
-                }
-                return effortTracking;
-            }
-            private set {
-                effortTracking = value;
-            }
-        }
+        public IEffortTracking EffortTracking { get; private set; }
 
         private void InitEffortTracking() {
-            EffortTracking = new EffortTracking(connector.V1Configuration);
+            EffortTracking = new EffortTracking(connector);
             EffortTracking.Init();
-
-            if (EffortTracking.TrackEffort) {
-                effortType = connector.MetaModel.GetAssetType("Actual");
-            }
-        }
-
-        private void RefreshEffortTracking() {
-            connector.LoadV1Configuration();
-            InitEffortTracking();
         }
         #endregion
 
@@ -332,7 +312,7 @@ namespace VersionOne.VisualStudio.DataLayer {
                 connector.CheckConnection(settings);
             } catch(Exception ex) {
                 logger.Error("Cannot connect to V1 server.", ex);
-                throw new DataLayerException("Connection check fails.", ex);
+                throw new DataLayerException("Cannot connect to VersionOne server.", ex);
             }
         }
 
@@ -527,6 +507,7 @@ namespace VersionOne.VisualStudio.DataLayer {
         }
 
         private void CreateEffort(Asset asset, double effortValue) {
+            effortType = connector.MetaModel.GetAssetType("Actual");
             var effort = connector.Services.New(effortType, asset.Oid);
             effort.SetAttributeValue(effortType.GetAttributeDefinition("Value"), effortValue);
             effort.SetAttributeValue(effortType.GetAttributeDefinition("Date"), DateTime.Now);
