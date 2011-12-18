@@ -20,10 +20,7 @@ namespace VersionOne.VisualStudio.DataLayer {
             if (ReferenceEquals(null, obj)) {
                 return false;
             }
-            if (ReferenceEquals(this, obj)) {
-                return true;
-            }
-            return Equals(obj.Oid, Oid);
+            return ReferenceEquals(this, obj) || Equals(obj.Oid, Oid);
         }
 
         public override bool Equals(object obj) {
@@ -33,11 +30,7 @@ namespace VersionOne.VisualStudio.DataLayer {
             if (ReferenceEquals(this, obj)) {
                 return true;
             }
-            if (obj.GetType() != typeof (ValueId)) {
-                return false;
-            }
-
-            return Equals((ValueId) obj);
+            return obj.GetType() == typeof (ValueId) && Equals((ValueId) obj);
         }
 
         public override int GetHashCode() {
