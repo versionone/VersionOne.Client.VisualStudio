@@ -131,5 +131,24 @@ namespace VersionOne.VisualStudio.Tests {
 
             mockRepository.VerifyAll();
         }
+
+        [Test]
+        public void ValidateTaskEffortTrackingPropertyTest() {
+            var parent = mockRepository.StrictMock<TestWorkitem>(null, null, null);
+            var workitem = mockRepository.StrictMock<TestWorkitem>(null, null, null);
+
+            InitEffortExpectations();
+            SetupResult.For(workitem.TypePrefix).Return(Entity.TaskType);
+            SetupResult.For(workitem.Parent).Return(parent);
+            SetupResult.For(parent.TypePrefix).Return(Entity.StoryType);            
+
+            mockRepository.ReplayAll();
+
+            var effortTracking = new EffortTracking(connectorMock);
+            effortTracking.Init();
+            Assert.IsFalse(effortTracking.AreEffortTrackingPropertiesReadOnly(workitem));
+
+            mockRepository.VerifyAll();
+        }
     }
 }

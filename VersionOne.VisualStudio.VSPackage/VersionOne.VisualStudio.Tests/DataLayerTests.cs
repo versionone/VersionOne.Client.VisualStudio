@@ -15,7 +15,7 @@ using OmProject = VersionOne.SDK.ObjectModel.Project;
 
 namespace VersionOne.VisualStudio.Tests {
     [TestFixture]
-    [Ignore("These tests need instance of VersionOne server and user with Admin permissions.")]
+    [Ignore("These tests need instance of VersionOne server and user with Admin permissions. Required enabled Effort Tracking.")]
     public class DataLayerTests {
         private readonly IDataLayer dataLayer = ApiDataLayer.Instance;
 
@@ -358,27 +358,34 @@ namespace VersionOne.VisualStudio.Tests {
             dataLayer.CurrentProject = testProject;
 
             var v1Instance = new V1Instance(V1Url, Username, Password, false);
+            Story story = null;
 
-            var story = CreateStory(v1Instance, "New Story with ordered children", omProject, iteration, v1Instance.LoggedInMember);
-            var firstTask = story.CreateTask("Task1");
-            var secondTask = story.CreateTask("Task2");
-            var thirdTask = story.CreateTask("Task3");
+            try {
+                story = CreateStory(v1Instance, "New Story with ordered children", omProject, iteration, v1Instance.LoggedInMember);
+                var firstTask = story.CreateTask("Task1");
+                var secondTask = story.CreateTask("Task2");
+                var thirdTask = story.CreateTask("Task3");
 
-            RankAboveAll(thirdTask, firstTask);
-            RankAboveAll(secondTask, firstTask, thirdTask);
+                RankAboveAll(thirdTask, firstTask);
+                RankAboveAll(secondTask, firstTask, thirdTask);
 
-            dataLayer.Connect(GetSettings());
+                dataLayer.Connect(GetSettings());
 
-            var cache = dataLayer.CreateAssetCache();
-            dataLayer.GetWorkitems(cache);
-            var primaryWorkitems = cache.GetWorkitems(dataLayer.ShowAllTasks);
-            var foundStory = primaryWorkitems.FirstOrDefault(workitem => workitem.GetProperty(Entity.NameProperty).Equals(story.Name) && workitem.GetProperty("Number").Equals(story.DisplayID));
+                var cache = dataLayer.CreateAssetCache();
+                dataLayer.GetWorkitems(cache);
+                var primaryWorkitems = cache.GetWorkitems(dataLayer.ShowAllTasks);
+                var foundStory = primaryWorkitems.FirstOrDefault(workitem => workitem.GetProperty(Entity.NameProperty).Equals(story.Name) && workitem.GetProperty("Number").Equals(story.DisplayID));
 
-            Assert.IsNotNull(foundStory);
+                Assert.IsNotNull(foundStory);
 
-            AssertWorkitemMatch(foundStory.Children[0], secondTask.Name, Entity.TaskType);
-            AssertWorkitemMatch(foundStory.Children[1], thirdTask.Name, Entity.TaskType);
-            AssertWorkitemMatch(foundStory.Children[2], firstTask.Name, Entity.TaskType);
+                AssertWorkitemMatch(foundStory.Children[0], secondTask.Name, Entity.TaskType);
+                AssertWorkitemMatch(foundStory.Children[1], thirdTask.Name, Entity.TaskType);
+                AssertWorkitemMatch(foundStory.Children[2], firstTask.Name, Entity.TaskType);
+            } finally {
+                if (story != null) {
+                    story.Delete();
+                }
+            }
         }
 
         private Workitem GetWorkitemByName(string name) {

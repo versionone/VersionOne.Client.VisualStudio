@@ -4,7 +4,7 @@ namespace VersionOne.VisualStudio.DataLayer.Entities {
     /// </summary>
     public class TestWorkitem : Workitem {
         private readonly string id;
-        private bool isPrimary;
+        private readonly bool isPrimary;
 
         public TestWorkitem(string id, bool isPrimary, IEntityContainer entityContainer) : base(null, null, entityContainer) {
             this.id = id;

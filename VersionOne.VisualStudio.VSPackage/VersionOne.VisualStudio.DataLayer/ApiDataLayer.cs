@@ -275,11 +275,7 @@ namespace VersionOne.VisualStudio.DataLayer {
                 return true;
             }
 
-            if(asset.Children != null) {
-                return asset.Children.Any(AssetPassesShowMyTasksFilter);
-            }
-
-            return false;
+            return asset.Children != null && asset.Children.Any(AssetPassesShowMyTasksFilter);
         }
 
         public IList<Project> GetProjectTree() {

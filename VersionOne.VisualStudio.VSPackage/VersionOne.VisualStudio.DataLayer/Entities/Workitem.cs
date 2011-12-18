@@ -7,7 +7,7 @@ namespace VersionOne.VisualStudio.DataLayer.Entities {
     public class Workitem : Entity {
         private static readonly string[] SupportedTypes = {StoryType, DefectType, TaskType, TestType};
 
-        public Workitem Parent { get; private set; }
+        public virtual Workitem Parent { get; private set; }
 
         public override string TypePrefix {
             get { return Asset.AssetType.Token; }
@@ -35,7 +35,8 @@ namespace VersionOne.VisualStudio.DataLayer.Entities {
         internal Workitem(Asset asset, Workitem parent, IEntityContainer entityContainer) : base(asset, entityContainer) {
             Parent = parent;
 
-            // the following check is for unit tests
+            //TODO maybe make one more constructor for tests instead of this?
+            // the following check is for unit tests            
             if(asset == null || asset.Children == null) {
                 return;
             }

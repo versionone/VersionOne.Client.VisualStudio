@@ -13,22 +13,22 @@ namespace VersionOne.VisualStudio.DataLayer {
             "Effort",
             "Actuals",
         };
-        private readonly IVersionOneConnector connector;
-        private IV1Configuration configuration;
+        private readonly IVersionOneConnector v1Connector;
+        private IV1Configuration v1Configuration;
 
         public EffortTrackingLevel DefectTrackingLevel { get; private set; }
         public EffortTrackingLevel StoryTrackingLevel { get; private set; }
         public bool TrackEffort { get; private set; }
 
         public EffortTracking(IVersionOneConnector connector) {
-            this.connector = connector;
-            this.configuration = connector.V1Configuration;
+            v1Connector = connector;
+            v1Configuration = connector.V1Configuration;
         }
 
         public void Init() {
-            TrackEffort = configuration.EffortTracking;
-            StoryTrackingLevel = TranslateEffortTrackingLevel(configuration.StoryTrackingLevel);
-            DefectTrackingLevel = TranslateEffortTrackingLevel(configuration.DefectTrackingLevel);
+            TrackEffort = v1Configuration.EffortTracking;
+            StoryTrackingLevel = TranslateEffortTrackingLevel(v1Configuration.StoryTrackingLevel);
+            DefectTrackingLevel = TranslateEffortTrackingLevel(v1Configuration.DefectTrackingLevel);
         }
 
         private static EffortTrackingLevel TranslateEffortTrackingLevel(TrackingLevel level) {
@@ -49,23 +49,31 @@ namespace VersionOne.VisualStudio.DataLayer {
         }
 
         public void Refresh() {
-            configuration = connector.LoadV1Configuration();
+            v1Configuration = v1Connector.LoadV1Configuration();
             Init();
         }
 
         public bool AreEffortTrackingPropertiesReadOnly(Workitem workitem) {
             switch (workitem.TypePrefix) {
                 case Entity.StoryType:
-                    return StoryTrackingLevel != EffortTrackingLevel.PrimaryWorkitem && StoryTrackingLevel != EffortTrackingLevel.Both;
+                    return AreEffortTrackingPropertiesForPrimaryWorkitemReadOnly(StoryTrackingLevel);
                 case Entity.DefectType:
-                    return DefectTrackingLevel != EffortTrackingLevel.PrimaryWorkitem && DefectTrackingLevel != EffortTrackingLevel.Both;
+                    return AreEffortTrackingPropertiesForPrimaryWorkitemReadOnly(DefectTrackingLevel);
                 case Entity.TaskType:
                 case Entity.TestType:
                     var parentLevel = GetParentLevel(workitem);
-                    return parentLevel != EffortTrackingLevel.SecondaryWorkitem && parentLevel != EffortTrackingLevel.Both;
+                    return AreEffortTrackingPropertiesForSecondaryWorkitemReadOnly(parentLevel);
                 default:
                     throw new NotSupportedException("Unexpected asset type.");
             }
+        }
+
+        private static bool AreEffortTrackingPropertiesForPrimaryWorkitemReadOnly(EffortTrackingLevel effortTrackingLevel) {
+            return effortTrackingLevel != EffortTrackingLevel.PrimaryWorkitem && effortTrackingLevel != EffortTrackingLevel.Both;
+        }
+
+        private static bool AreEffortTrackingPropertiesForSecondaryWorkitemReadOnly(EffortTrackingLevel parentEffortTrackingLevel) {
+            return parentEffortTrackingLevel != EffortTrackingLevel.SecondaryWorkitem && parentEffortTrackingLevel != EffortTrackingLevel.Both;
         }
 
         private EffortTrackingLevel GetParentLevel(Workitem workitem) {
