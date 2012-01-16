@@ -84,8 +84,15 @@ namespace VersionOne.VisualStudio.VSPackage.Controls {
                 node = tvProjects.Nodes[0];
             }
 
+            var project = node != null ? (Project) node.Tag : null;
+
             tvProjects.SelectedNode = node;
             tvProjects.EndUpdate();
+
+            if(!parentWindowResolver.CanResolve && project != null) {
+                Controller.HandleProjectSelected(project);
+            }
+
             updating = false;
         }
 
