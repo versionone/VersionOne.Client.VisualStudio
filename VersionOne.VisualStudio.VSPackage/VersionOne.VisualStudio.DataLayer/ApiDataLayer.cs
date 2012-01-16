@@ -13,7 +13,6 @@ namespace VersionOne.VisualStudio.DataLayer {
 
         private readonly VersionOneConnector connector = new VersionOneConnector();
 
-        private static ApiDataLayer dataLayer;
         private readonly static IList<AttributeInfo> AttributesToQuery = new List<AttributeInfo>();
 
         private RequiredFieldsValidator requiredFieldsValidator;
@@ -39,15 +38,7 @@ namespace VersionOne.VisualStudio.DataLayer {
 
         public ILoggerFactory LoggerFactory { get; set; }
 
-        public static IDataLayer Instance {
-            get { return dataLayer ?? (dataLayer = new ApiDataLayer()); }
-        }
-
-        internal static IDataLayerInternal InternalInstance {
-            get { return dataLayer ?? (dataLayer = new ApiDataLayer()); }
-        }
-
-        private ApiDataLayer() {
+        public ApiDataLayer() {
             var prefixes = new[] {
                 Entity.TaskType, 
                 Entity.DefectType, 
@@ -158,7 +149,7 @@ namespace VersionOne.VisualStudio.DataLayer {
             term.NotEqual(AssetState.Closed);
             terms.Add(term);
 
-            return new AndFilterTerm(terms.ToArray());
+            return new AndFilterTerm(terms.Cast<IFilterTerm>().ToArray());
         }
 
         #region Effort tracking
@@ -331,7 +322,7 @@ namespace VersionOne.VisualStudio.DataLayer {
 
                 MemberOid = connector.Services.LoggedIn;
                 listPropertyValues = GetListPropertyValues();
-                requiredFieldsValidator = new RequiredFieldsValidator(connector.MetaModel, connector.Services, InternalInstance);
+                requiredFieldsValidator = new RequiredFieldsValidator(connector.MetaModel, connector.Services, this);
                 connector.IsConnected = true;
 
                 return true;

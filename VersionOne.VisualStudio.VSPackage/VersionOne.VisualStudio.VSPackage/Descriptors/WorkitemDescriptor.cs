@@ -15,11 +15,15 @@ namespace VersionOne.VisualStudio.VSPackage.Descriptors {
         private readonly bool iconless;
         private readonly PropertyDescriptorCollection propertyDescriptors = new PropertyDescriptorCollection(new PropertyDescriptor[] {});
 
+        private readonly IDataLayer dataLayer;
+
         public WorkitemDescriptor(Entity entity, IEnumerable<ColumnSetting> columns, PropertyUpdateSource updateSource, bool iconless) {
             this.entity = entity;
             this.updateSource = updateSource;
             this.iconless = iconless;
-            ConfigurePropertyDescriptors(columns); 
+            
+            dataLayer = ServiceLocator.Instance.Get<IDataLayer>();
+            ConfigurePropertyDescriptors(columns);
         }
 
         public Entity Entity {
@@ -82,8 +86,8 @@ namespace VersionOne.VisualStudio.VSPackage.Descriptors {
             return new WorkitemDescriptor(entity, settings, requiredUpdateSource, true);
         }
 
-        private static bool ShouldSkipColumnDueToEffortTracking(ColumnSetting column) {
-            return column.EffortTracking && !ApiDataLayer.Instance.EffortTracking.TrackEffort;
+        private bool ShouldSkipColumnDueToEffortTracking(ColumnSetting column) {
+            return column.EffortTracking && !dataLayer.EffortTracking.TrackEffort;
         }
 
         private void ConfigurePropertyDescriptors(IEnumerable<ColumnSetting> columns) {
@@ -94,7 +98,7 @@ namespace VersionOne.VisualStudio.VSPackage.Descriptors {
 
                 var attrs = new List<Attribute> {new CategoryAttribute(column.Category)};
 
-                var name = ApiDataLayer.Instance.LocalizerResolve(column.Name);
+                var name = dataLayer.LocalizerResolve(column.Name);
 
                 switch (column.Type) {
                     case "String":

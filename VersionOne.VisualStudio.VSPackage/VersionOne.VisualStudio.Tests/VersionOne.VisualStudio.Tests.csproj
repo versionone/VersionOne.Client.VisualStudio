@@ -50,6 +50,10 @@
     </Reference>
     <Reference Include="Microsoft.VisualStudio.Shell.Interop.9.0, Version=9.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a" />
     <Reference Include="Microsoft.VSSDK.UnitTestLibrary, Version=10.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL" />
+    <Reference Include="Ninject, Version=2.2.0.0, Culture=neutral, PublicKeyToken=c7192dc5380945e7, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\Common\Ninject-2.2.1.0-net-4.0\Ninject.dll</HintPath>
+    </Reference>
     <Reference Include="nunit.framework, Version=2.5.7.10213, Culture=neutral, PublicKeyToken=96d09a1eb7f44a77, processorArchitecture=MSIL">
       <HintPath>..\Common\NUnit-2.5.7-net-2.0\nunit.framework.dll</HintPath>
     </Reference>
@@ -73,7 +77,8 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="DataLayerTests.cs" />
+    <Compile Include="BaseTester.cs" />
+    <Compile Include="DataLayerTester.cs" />
     <Compile Include="EffortTrackingTester.cs" />
     <Compile Include="OptionsPageControllerTester.cs" />
     <Compile Include="ProjectTreeControllerTester.cs" />

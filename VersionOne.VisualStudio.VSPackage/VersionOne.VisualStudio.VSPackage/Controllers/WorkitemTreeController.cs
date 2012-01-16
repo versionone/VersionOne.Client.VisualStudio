@@ -11,6 +11,8 @@ namespace VersionOne.VisualStudio.VSPackage.Controllers {
     public class WorkitemTreeController : BaseController {
         private IWorkitemTreeView view;
         private StoryTreeModel model;
+        private IAssetCache assetCache;
+        private readonly Configuration configuration;
 
         public bool CanRetrieveData { get { return DataLayer.IsConnected; } }
 
@@ -18,9 +20,10 @@ namespace VersionOne.VisualStudio.VSPackage.Controllers {
             get { return EventReceiver.WorkitemView; }
         }
 
-        private IAssetCache assetCache;
-
-        public WorkitemTreeController(ILoggerFactory loggerFactory, IDataLayer dataLayer, ISettings settings, IEventDispatcher eventDispatcher) : base(loggerFactory, dataLayer, settings, eventDispatcher) { }
+        public WorkitemTreeController(ILoggerFactory loggerFactory, IDataLayer dataLayer, Configuration configuration, ISettings settings, IEventDispatcher eventDispatcher) 
+                : base(loggerFactory, dataLayer, settings, eventDispatcher) {
+            this.configuration = configuration;
+        }
 
         protected override void HandleModelChanged(object sender, ModelChangedArgs e) {
             switch (e.Context) {
@@ -95,7 +98,7 @@ namespace VersionOne.VisualStudio.VSPackage.Controllers {
 
         public void PrepareView() {
             UpdateViewTitle();
-            model = new StoryTreeModel(this);
+            model = new StoryTreeModel(this, configuration);
             view.Model = model;
             view.ReconfigureTreeColumns();
             UpdateViewData();

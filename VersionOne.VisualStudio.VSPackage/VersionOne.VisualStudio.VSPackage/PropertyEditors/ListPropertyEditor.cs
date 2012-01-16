@@ -9,7 +9,7 @@ using VersionOne.VisualStudio.VSPackage.Descriptors;
 namespace VersionOne.VisualStudio.VSPackage.PropertyEditors {
     public class ListPropertyEditor : UITypeEditor {
         protected readonly PropertyGridListBox ListBox = new PropertyGridListBox();
-        protected readonly IDataLayer DataLayer = ApiDataLayer.Instance;
+        protected readonly IDataLayer DataLayer = ServiceLocator.Instance.Get<IDataLayer>();
         private IWindowsFormsEditorService service;
 
         public override UITypeEditorEditStyle GetEditStyle(ITypeDescriptorContext context) {

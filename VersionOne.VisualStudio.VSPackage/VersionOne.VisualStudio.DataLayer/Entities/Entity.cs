@@ -43,7 +43,7 @@ namespace VersionOne.VisualStudio.DataLayer.Entities {
         }
 
         protected Entity(Asset asset, IEntityContainer entityContainer) {
-            DataLayer = ApiDataLayer.InternalInstance;
+            DataLayer = ServiceLocator.Instance.Get<IDataLayerInternal>();
             EntityContainer = entityContainer;
             Logger = DataLayer.Logger;
             Asset = asset;

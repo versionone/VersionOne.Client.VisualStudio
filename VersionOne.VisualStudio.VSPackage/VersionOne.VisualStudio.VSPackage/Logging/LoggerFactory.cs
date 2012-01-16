@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Linq;
 using System.Collections.Generic;
 using NLog;
 using NLog.Config;
@@ -18,12 +17,7 @@ namespace VersionOne.VisualStudio.VSPackage.Logging {
                                                                              {LogLevel.Error, NLogLevel.Error},
                                                                          };
 
-        private static ILoggerFactory instance;
         private LogLevel minLogLevel;
-
-        internal static ILoggerFactory Instance {
-            get { return instance ?? (instance = new LoggerFactory()); }
-        }
 
         public LogLevel MinLogLevel {
             get { return minLogLevel; } 
@@ -33,7 +27,7 @@ namespace VersionOne.VisualStudio.VSPackage.Logging {
             }
         }
 
-        private LoggerFactory() {
+        public LoggerFactory() {
             minLogLevel = LogLevel.Debug;
             RecreateConfiguration();
         }
@@ -59,6 +53,7 @@ namespace VersionOne.VisualStudio.VSPackage.Logging {
         public ILogger GetLogger(string name) {
             return new Logger(LogManager.GetLogger(name));
         }
+
         private NLogLevel TranslateLogLevel(LogLevel level) {
             return levelMap.ContainsKey(level) ? levelMap[level] : NLogLevel.Debug;
         }

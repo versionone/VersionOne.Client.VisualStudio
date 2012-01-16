@@ -3,14 +3,15 @@ using System.ComponentModel;
 using System.Windows.Forms;
 using Microsoft.VisualStudio.Shell.Interop;
 using VersionOne.VisualStudio.DataLayer;
+using VersionOne.VisualStudio.VSPackage.Dependencies;
 using VersionOne.VisualStudio.VSPackage.Descriptors;
 using Microsoft.VisualStudio.Shell;
 
 namespace VersionOne.VisualStudio.VSPackage.Controls {
     // TODO move IDataLayer reference to controllers
     public partial class V1UserControl : UserControl, IWaitCursorProvider {
-        protected readonly IDataLayer dataLayer;
-        protected readonly IParentWindow ParentWindow;
+        protected readonly IDataLayer DataLayer;
+        protected readonly ComponentResolver<IParentWindow> ParentWindowResolver;
 
         private IContainer components;
         private readonly ErrorMessageControl errorMessage;
@@ -20,18 +21,18 @@ namespace VersionOne.VisualStudio.VSPackage.Controls {
         public V1UserControl() {
             InitializeComponent();
             errorMessage = new ErrorMessageControl();
-            dataLayer = ApiDataLayer.Instance;
+            DataLayer = ServiceLocator.Instance.Get<IDataLayer>();
         }
 
-        protected V1UserControl(IParentWindow parent) {
-            ParentWindow = parent;
+        protected V1UserControl(ComponentResolver<IParentWindow> parentResolver, IDataLayer dataLayer) {
+            ParentWindowResolver = parentResolver;
             InitializeComponent();
             errorMessage = new ErrorMessageControl();
-            dataLayer = ApiDataLayer.Instance;
+            DataLayer = dataLayer;
         }
 
         /// <summary>
-        /// We cannot just disable the control because spinner won't be animated then.
+        /// Disable accessible controls. We cannot just disable the whole control because spinner won't be animated then.
         /// </summary>
         public virtual void SetAccessibleControlsEnabled(bool enabled) { }
 
@@ -44,7 +45,7 @@ namespace VersionOne.VisualStudio.VSPackage.Controls {
                 Controls.Remove(errorMessage);
             }
 
-            if(!dataLayer.IsConnected) {
+            if(!DataLayer.IsConnected) {
                 DisplayErrors();
                 return false;
             }
@@ -71,9 +72,11 @@ namespace VersionOne.VisualStudio.VSPackage.Controls {
 
         protected override object GetService(Type service) {
             object obj = null;
-            
-            if (ParentWindow != null) {
-                obj = ParentWindow.GetVsService(service);
+
+            var parentWindow = ParentWindowResolver.Resolve();
+
+            if (parentWindow != null) {
+                obj = parentWindow.GetVsService(service);
             }
 
             return obj ?? base.GetService(service);

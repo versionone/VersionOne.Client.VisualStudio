@@ -11,7 +11,7 @@ using VersionOne.VisualStudio.VSPackage.Settings;
 
 namespace VersionOne.VisualStudio.Tests {
     [TestFixture]
-    public class ProjectTreeControllerTester {
+    public class ProjectTreeControllerTester : BaseTester {
         private ProjectTreeController controller;
         private IProjectTreeView viewMock;
         private IDataLayer dataLayerMock;
@@ -19,16 +19,14 @@ namespace VersionOne.VisualStudio.Tests {
         private ISettings settingsMock;
         private ILoggerFactory loggerFactoryMock;
         
-        private readonly MockRepository mockRepository = new MockRepository();
-
         [SetUp]
         public void SetUp() {
-            viewMock = mockRepository.StrictMock<IProjectTreeView>();
-            dataLayerMock = mockRepository.StrictMock<IDataLayer>();
-            eventDispatcherMock = mockRepository.StrictMock<IEventDispatcher>();
-            settingsMock = mockRepository.StrictMock<ISettings>();
-            loggerFactoryMock = mockRepository.DynamicMock<ILoggerFactory>();
-            loggerFactoryMock.Stub(x => x.GetLogger(null)).IgnoreArguments().Return(mockRepository.Stub<ILogger>());
+            viewMock = MockRepository.StrictMock<IProjectTreeView>();
+            dataLayerMock = MockRepository.StrictMock<IDataLayer>();
+            eventDispatcherMock = MockRepository.StrictMock<IEventDispatcher>();
+            settingsMock = MockRepository.StrictMock<ISettings>();
+            loggerFactoryMock = MockRepository.DynamicMock<ILoggerFactory>();
+            loggerFactoryMock.Stub(x => x.GetLogger(null)).IgnoreArguments().Return(MockRepository.Stub<ILogger>());
 
             controller = new ProjectTreeController(loggerFactoryMock, dataLayerMock, settingsMock, eventDispatcherMock);
         }
@@ -39,7 +37,7 @@ namespace VersionOne.VisualStudio.Tests {
             Expect.Call(viewMock.Controller).PropertyBehavior();
             Expect.Call(viewMock.UpdateData);
 
-            mockRepository.ReplayAll();
+            MockRepository.ReplayAll();
 
             controller.RegisterView(viewMock);
             controller.PrepareView();
@@ -47,7 +45,7 @@ namespace VersionOne.VisualStudio.Tests {
             Assert.AreEqual(viewMock.Controller, controller);
             Assert.AreEqual(controller.View, viewMock);
 
-            mockRepository.VerifyAll();
+            MockRepository.VerifyAll();
         }
 
         [Test]
@@ -56,13 +54,13 @@ namespace VersionOne.VisualStudio.Tests {
             Expect.Call(viewMock.Controller).PropertyBehavior();
             Expect.Call(viewMock.UpdateData);
 
-            mockRepository.ReplayAll();
+            MockRepository.ReplayAll();
 
             controller.RegisterView(viewMock);
             controller.Prepare();
             controller.HandleRefreshAction();
 
-            mockRepository.VerifyAll();
+            MockRepository.VerifyAll();
         }
 
         [Test]
@@ -71,13 +69,13 @@ namespace VersionOne.VisualStudio.Tests {
             var modelChangedRaiser = LastCall.GetEventRaiser();
             Expect.Call(viewMock.Controller).PropertyBehavior();
 
-            mockRepository.ReplayAll();
+            MockRepository.ReplayAll();
 
             controller.RegisterView(viewMock);
             controller.Prepare();
             modelChangedRaiser.Raise(null, new ModelChangedArgs(EventReceiver.WorkitemView, EventContext.WorkitemsChanged));
 
-            mockRepository.VerifyAll();
+            MockRepository.VerifyAll();
         }
 
         [Test]
@@ -87,14 +85,14 @@ namespace VersionOne.VisualStudio.Tests {
             Expect.Call(viewMock.Controller).PropertyBehavior();
             Expect.Call(viewMock.UpdateData);
 
-            mockRepository.ReplayAll();
+            MockRepository.ReplayAll();
 
             controller = new ProjectTreeController(loggerFactoryMock, dataLayerMock, settingsMock, eventDispatcherMock);
             controller.RegisterView(viewMock);
             controller.Prepare();
             modelChangedRaiser.Raise(null, new ModelChangedArgs(EventReceiver.ProjectView, EventContext.ProjectsRequested));
 
-            mockRepository.VerifyAll();
+            MockRepository.VerifyAll();
         }
 
         [Test]
@@ -103,7 +101,7 @@ namespace VersionOne.VisualStudio.Tests {
             const string newProject = "new project";
             
             SetupResult.For(settingsMock.SelectedProjectId).Return(oldProject);
-            Project project = mockRepository.Stub<TestProject>();
+            Project project = MockRepository.Stub<TestProject>();
             SetupResult.For(project.Id).Return(newProject);
 
             Expect.Call(() => eventDispatcherMock.ModelChanged += null).IgnoreArguments();
@@ -115,18 +113,18 @@ namespace VersionOne.VisualStudio.Tests {
             Expect.Call(viewMock.RefreshProperties);
             Expect.Call(() => eventDispatcherMock.Notify(null, null)).IgnoreArguments();
 
-            mockRepository.ReplayAll();
+            MockRepository.ReplayAll();
 
             controller.RegisterView(viewMock);
             controller.Prepare();
             controller.HandleProjectSelected(project);
 
-            mockRepository.VerifyAll();
+            MockRepository.VerifyAll();
         }
 
         [Test]
         public void GetProjects() {
-            var waitCursorStub = mockRepository.Stub<IWaitCursor>();
+            var waitCursorStub = MockRepository.Stub<IWaitCursor>();
 
             Expect.Call(() => eventDispatcherMock.ModelChanged += null).IgnoreArguments();
             Expect.Call(viewMock.Controller).PropertyBehavior();
@@ -136,7 +134,7 @@ namespace VersionOne.VisualStudio.Tests {
             Expect.Call(viewMock.Projects).PropertyBehavior();
             Expect.Call(viewMock.CompleteProjectsRequest);
 
-            mockRepository.ReplayAll();
+            MockRepository.ReplayAll();
             
             controller = new TestProjectTreeController(loggerFactoryMock, dataLayerMock, settingsMock, eventDispatcherMock);
             controller.RegisterView(viewMock);
@@ -144,7 +142,7 @@ namespace VersionOne.VisualStudio.Tests {
             controller.Prepare();
             controller.HandleProjectsRequest();
 
-            mockRepository.VerifyAll();
+            MockRepository.VerifyAll();
         }
 
         private class TestProjectTreeController : ProjectTreeController {

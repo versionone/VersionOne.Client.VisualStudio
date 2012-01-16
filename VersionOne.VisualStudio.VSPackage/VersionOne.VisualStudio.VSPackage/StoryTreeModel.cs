@@ -12,9 +12,11 @@ using VersionOne.VisualStudio.VSPackage.Settings;
 namespace VersionOne.VisualStudio.VSPackage {
     public class StoryTreeModel : ITreeModel {
         private readonly WorkitemTreeController controller;
+        private readonly Configuration configuration;
 
-        public StoryTreeModel(WorkitemTreeController controller) {
+        public StoryTreeModel(WorkitemTreeController controller, Configuration configuration) {
             this.controller = controller;
+            this.configuration = configuration;
         }
 
         public IEnumerable GetChildren(TreePath treePath) {
@@ -32,11 +34,8 @@ namespace VersionOne.VisualStudio.VSPackage {
         }
 
         // TODO support primary items
-        private static IEnumerable<WorkitemDescriptor> WrapWorkitems(ICollection<Workitem> workitems) {
-            var items = new List<WorkitemDescriptor>(workitems.Count);
-            items.AddRange(workitems.Select(workitem => new WorkitemDescriptor(workitem, Configuration.Instance.GridSettings.Columns, PropertyUpdateSource.WorkitemView, false)));
-
-            return items;
+        private IEnumerable<WorkitemDescriptor> WrapWorkitems(IEnumerable<Workitem> workitems) {
+            return workitems.Select(workitem => new WorkitemDescriptor(workitem, configuration.GridSettings.Columns, PropertyUpdateSource.WorkitemView, false)).ToList();
         }
         
         public bool IsLeaf(TreePath treePath) {

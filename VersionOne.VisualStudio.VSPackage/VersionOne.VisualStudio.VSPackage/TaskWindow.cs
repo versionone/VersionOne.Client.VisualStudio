@@ -6,6 +6,7 @@ using Microsoft.VisualStudio.Shell;
 using VersionOne.VisualStudio.VSPackage.Controllers;
 using VersionOne.VisualStudio.VSPackage.Controls;
 using VersionOne.VisualStudio.DataLayer;
+using VersionOne.VisualStudio.VSPackage.Dependencies;
 using VersionOne.VisualStudio.VSPackage.Events;
 using VersionOne.VisualStudio.VSPackage.Logging;
 using VersionOne.VisualStudio.VSPackage.Settings;
@@ -26,8 +27,6 @@ namespace VersionOne.VisualStudio.VSPackage {
         // using the Window property. Note that, even if this class implements IDispose, we are
         // not calling Dispose on this object. This is because ToolWindowPane calls Dispose on 
         // the object returned by the Window property.
-        private readonly WorkitemTreeControl control;
-        private readonly WorkitemTreeController controller;
 
         /// <summary>
         /// Standard constructor for the tool window.
@@ -43,20 +42,14 @@ namespace VersionOne.VisualStudio.VSPackage {
             BitmapResourceID = 300;
             BitmapIndex = 1;
 
-            controller = new WorkitemTreeController(LoggerFactory.Instance, ApiDataLayer.Instance, SettingsImpl.Instance, EventDispatcher.Instance);
-            control = new WorkitemTreeControl(this);
-            controller.Register(control);
-            controller.PrepareView();
-            controller.Prepare();
+            ServiceLocator.Instance.Container.Bind<IParentWindow>().ToConstant(this).Named("Workitems");
         }
 
         /// <summary>
         /// This property returns the handle to the user control that should be hosted in the Tool Window.
         /// </summary>
         override public IWin32Window Window {
-            get {
-                return control;
-            }
+            get { return ServiceLocator.Instance.Get<IUIComponentFactory>().GetWorkitemView(); }
         }
 
         public object GetVsService(Type serviceType) {

@@ -2,11 +2,11 @@ using System.ComponentModel;
 using Microsoft.VisualStudio.Shell;
 using System.Windows.Forms;
 using VersionOne.VisualStudio.DataLayer;
+using VersionOne.VisualStudio.DataLayer.Logging;
 using VersionOne.VisualStudio.VSPackage.Controllers;
 using VersionOne.VisualStudio.VSPackage.Controls;
 using System.Runtime.InteropServices;
 using VersionOne.VisualStudio.VSPackage.Events;
-using VersionOne.VisualStudio.VSPackage.Logging;
 using VersionOne.VisualStudio.VSPackage.Settings;
 
 namespace VersionOne.VisualStudio.VSPackage {
@@ -18,7 +18,12 @@ namespace VersionOne.VisualStudio.VSPackage {
 	    private readonly OptionsPageController controller;
 
 	    public OptionsPage() {
-            controller = new OptionsPageController(LoggerFactory.Instance, ApiDataLayer.Instance, SettingsImpl.Instance, EventDispatcher.Instance);
+	        var loggerFactory = ServiceLocator.Instance.Get<ILoggerFactory>();
+            var dataLayer  = ServiceLocator.Instance.Get<IDataLayer>();
+	        var settings = ServiceLocator.Instance.Get<ISettings>();
+	        var eventDispatcher = ServiceLocator.Instance.Get<IEventDispatcher>();
+
+            controller = new OptionsPageController(loggerFactory, dataLayer, settings, eventDispatcher);
             optionsControl = new OptionsPageControl();
             controller.RegisterView(optionsControl);
             controller.PrepareView();

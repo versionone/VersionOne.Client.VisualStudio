@@ -44,6 +44,9 @@
       <Private>false</Private>
     </Reference>
     <Reference Include="Microsoft.VisualStudio.Shell.Immutable.10.0" />
+    <Reference Include="Ninject">
+      <HintPath>..\Common\Ninject-2.2.1.0-net-4.0\Ninject.dll</HintPath>
+    </Reference>
     <Reference Include="NLog, Version=2.0.0.0, Culture=neutral, PublicKeyToken=5120e14c03d0593c, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
       <HintPath>..\Common\NLog-2.0\netfx40\NLog.dll</HintPath>
@@ -173,9 +176,11 @@
     <Compile Include="Controls\WorkitemTreeControl.Designer.cs">
       <DependentUpon>WorkitemTreeControl.cs</DependentUpon>
     </Compile>
+    <Compile Include="Dependencies\ComponentResolver.cs" />
     <Compile Include="Events\EventContext.cs" />
     <Compile Include="Events\EventReceiver.cs" />
     <Compile Include="ITaskRunner.cs" />
+    <Compile Include="Dependencies\IUIComponentFactory.cs" />
     <Compile Include="Logging\Logger.cs" />
     <Compile Include="Logging\LoggerFactory.cs" />
     <Compile Include="SynchronousTaskRunner.cs">
@@ -256,6 +261,7 @@
     <Compile Include="TreeViewEditors\NodeListBox.cs">
       <SubType>Component</SubType>
     </Compile>
+    <Compile Include="Dependencies\UIComponentFactory.cs" />
     <Compile Include="V1Tracker.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="PkgCmdID.cs" />

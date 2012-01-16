@@ -5,6 +5,7 @@ using System.ComponentModel;
 using System.Diagnostics;
 using System.Drawing.Design;
 using System.Globalization;
+using VersionOne.VisualStudio.DataLayer;
 using VersionOne.VisualStudio.DataLayer.Entities;
 using VersionOne.VisualStudio.VSPackage.Events;
 using VersionOne.VisualStudio.VSPackage.Settings;
@@ -14,14 +15,14 @@ namespace VersionOne.VisualStudio.VSPackage.Descriptors {
         private readonly string attribute;
         private readonly PropertyUpdateSource updateSource;
 
-        private static readonly IDictionary<PropertyUpdateSource, EventContext> ContextMappings = new Dictionary<PropertyUpdateSource, EventContext>() {
+        private static readonly IDictionary<PropertyUpdateSource, EventContext> ContextMappings = new Dictionary<PropertyUpdateSource, EventContext> {
                                           { PropertyUpdateSource.ProjectPropertyView, EventContext.ProjectPropertiesUpdated },
                                           { PropertyUpdateSource.ProjectView, EventContext.ProjectPropertiesUpdated },
                                           { PropertyUpdateSource.WorkitemPropertyView, EventContext.WorkitemPropertiesUpdatedFromPropertyView },
                                           { PropertyUpdateSource.WorkitemView, EventContext.WorkitemPropertiesUpdatedFromView },
                                       };
 
-        private readonly IEventDispatcher eventDispatcher = EventDispatcher.Instance;
+        private readonly IEventDispatcher eventDispatcher = ServiceLocator.Instance.Get<IEventDispatcher>();
 
         private readonly bool readOnly;
         private readonly Entity entity;

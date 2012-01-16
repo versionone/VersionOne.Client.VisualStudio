@@ -2,8 +2,10 @@
 using System.Collections.Generic;
 using System.Drawing;
 using Aga.Controls.Tree.NodeControls;
+using Ninject;
 using VersionOne.VisualStudio.DataLayer.Entities;
 using VersionOne.VisualStudio.VSPackage.Controllers;
+using VersionOne.VisualStudio.VSPackage.Dependencies;
 using VersionOne.VisualStudio.VSPackage.Descriptors;
 using Aga.Controls.Tree;
 using VersionOne.VisualStudio.DataLayer;
@@ -29,11 +31,23 @@ namespace VersionOne.VisualStudio.VSPackage.Controls {
         private bool addDefectEnabled;
         private bool addTestEnabled;
 
+        private readonly Configuration configuration;
+        private readonly ISettings settings;
+
         public WorkitemTreeController Controller { get; set; }
 
         public string Title {
-            get { return ParentWindow.Caption; }
-            set { ParentWindow.Caption = value; }
+            get {
+                var parentWindow = ParentWindowResolver.Resolve();
+                return parentWindow != null ? parentWindow.Caption : null;
+            }
+            set {
+                var parentWindow = ParentWindowResolver.Resolve();
+
+                if(parentWindow != null) {
+                    parentWindow.Caption = value;
+                }
+            }
         }
 
         public WorkitemDescriptor CurrentWorkitemDescriptor {
@@ -77,10 +91,14 @@ namespace VersionOne.VisualStudio.VSPackage.Controls {
 
         private readonly IWaitCursor waitCursor;
 
-        public WorkitemTreeControl(TaskWindow parent) : base(parent) {
+        public WorkitemTreeControl(Configuration configuration, ISettings settings, IDataLayer dataLayer, [Named("Workitems")] ComponentResolver<IParentWindow> parentWindowResolver) 
+                : base(parentWindowResolver, dataLayer) {
             InitializeComponent();
 
-            btnOnlyMyTasks.Checked = SettingsImpl.Instance.ShowMyTasks;
+            this.configuration = configuration;
+            this.settings = settings;
+
+            btnOnlyMyTasks.Checked = settings.ShowMyTasks;
 
             tvWorkitems.SelectionChanged += tvWorkitems_SelectionChanged;
             btnSave.Click += toolBtnSave_Click;
@@ -143,7 +161,7 @@ namespace VersionOne.VisualStudio.VSPackage.Controls {
         }
 
         public void ReconfigureTreeColumns() {
-			if (!dataLayer.IsConnected) {
+			if (!DataLayer.IsConnected) {
 				return;
 			}
 
@@ -152,12 +170,12 @@ namespace VersionOne.VisualStudio.VSPackage.Controls {
             tvWorkitems.NodeControls.Clear();
             columnToAttributeMappings.Clear();
 
-			foreach (var column in Configuration.Instance.GridSettings.Columns) {
-                if (column.EffortTracking && !ApiDataLayer.Instance.EffortTracking.TrackEffort) {
+			foreach (var column in configuration.GridSettings.Columns) {
+                if (column.EffortTracking && !DataLayer.EffortTracking.TrackEffort) {
 					continue;
 				}
 
-			    var dataPropertyName = dataLayer.LocalizerResolve(column.Name);
+			    var dataPropertyName = DataLayer.LocalizerResolve(column.Name);
 
                 columnToAttributeMappings.Add(dataPropertyName, column.Attribute);
 
@@ -321,14 +339,14 @@ namespace VersionOne.VisualStudio.VSPackage.Controls {
 
             if(sender is NodeComboBox) {
                 var editor = (NodeComboBox) sender;
-                var dataSource = dataLayer.GetListPropertyValues(item.TypePrefix + propertyName);
+                var dataSource = DataLayer.GetListPropertyValues(item.TypePrefix + propertyName);
                 editor.DropDownItems.Clear();
                 editor.DropDownItems.AddRange(dataSource);
             }
 
             if(sender is NodeListBox) {
                 var editor = (NodeListBox) sender;
-                var dataSource = dataLayer.GetListPropertyValues(item.TypePrefix + propertyName);
+                var dataSource = DataLayer.GetListPropertyValues(item.TypePrefix + propertyName);
                 editor.DropDownItems.Clear();
                 editor.DropDownItems.AddRange(dataSource);
             }
@@ -352,7 +370,7 @@ namespace VersionOne.VisualStudio.VSPackage.Controls {
             if (node != null) {
                 var oldDescriptor = (WorkitemDescriptor) node.Tag;
                 descriptor = oldDescriptor.GetDetailedDescriptor(
-                    Configuration.Instance.AssetDetail.GetColumns(oldDescriptor.Workitem.TypePrefix), 
+                    configuration.AssetDetail.GetColumns(oldDescriptor.Workitem.TypePrefix), 
                     PropertyUpdateSource.WorkitemPropertyView);
             }
 

@@ -2,8 +2,11 @@ using System;
 using System.Collections.Generic;
 using System.Runtime.InteropServices;
 using System.Windows.Forms;
+using Ninject;
+using VersionOne.VisualStudio.DataLayer;
 using VersionOne.VisualStudio.DataLayer.Entities;
 using VersionOne.VisualStudio.VSPackage.Controllers;
+using VersionOne.VisualStudio.VSPackage.Dependencies;
 using VersionOne.VisualStudio.VSPackage.Descriptors;
 using VersionOne.VisualStudio.VSPackage.Events;
 using VersionOne.VisualStudio.VSPackage.Settings;
@@ -13,15 +16,25 @@ namespace VersionOne.VisualStudio.VSPackage.Controls {
     public partial class ProjectTreeControl : V1UserControl, IProjectTreeView {        
         private TreeView tvProjects;
         private Label lblLoading;
-        
+
+        private readonly Configuration configuration;
+        private readonly ISettings settings;
+        private readonly ComponentResolver<IParentWindow> parentWindowResolver; 
+
         private bool updating;
 
         public IEnumerable<Project> Projects { get; set; } 
 
         public ProjectTreeController Controller { get; set; }
 
-        public ProjectTreeControl(ProjectsWindow parent) : base(parent) {
+        public ProjectTreeControl(Configuration configuration, ISettings settings, IDataLayer dataLayer, [Named("Projects")] ComponentResolver<IParentWindow> parentWindowResolver) 
+                : base(parentWindowResolver, dataLayer) {
             InitializeComponent();
+
+            this.configuration = configuration;
+            this.settings = settings;
+            this.parentWindowResolver = parentWindowResolver;
+
             tvProjects.AfterSelect += tvProjects_AfterSelect;
             btnRefresh.Click += btnRefresh_Click;
             
@@ -76,7 +89,7 @@ namespace VersionOne.VisualStudio.VSPackage.Controls {
             updating = false;
         }
 
-        private static TreeNode AddNodesRecursively(TreeNodeCollection rootNodes, IEnumerable<Project> v1Roots) {
+        private TreeNode AddNodesRecursively(TreeNodeCollection rootNodes, IEnumerable<Project> v1Roots) {
             TreeNode res = null;
 
             foreach (var v1Root in v1Roots) {
@@ -86,7 +99,7 @@ namespace VersionOne.VisualStudio.VSPackage.Controls {
                 
                 if (res2 != null) {
                     res = res2;
-                } else if (v1Root.Id == SettingsImpl.Instance.SelectedProjectId) {
+                } else if (v1Root.Id == settings.SelectedProjectId) {
                     res = node;
                 }
             }
@@ -98,7 +111,7 @@ namespace VersionOne.VisualStudio.VSPackage.Controls {
             var node = tvProjects.SelectedNode;
             
             if (node != null) {
-                UpdatePropertyView(new WorkitemDescriptor((Entity) node.Tag, Configuration.Instance.ProjectTree.Columns, PropertyUpdateSource.ProjectPropertyView, true));
+                UpdatePropertyView(new WorkitemDescriptor((Entity) node.Tag, configuration.ProjectTree.Columns, PropertyUpdateSource.ProjectPropertyView, true));
             }
         }
     }

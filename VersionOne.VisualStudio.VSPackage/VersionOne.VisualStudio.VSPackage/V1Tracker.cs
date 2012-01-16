@@ -6,9 +6,14 @@ using System.ComponentModel.Design;
 using Microsoft.VisualStudio;
 using Microsoft.VisualStudio.Shell.Interop;
 using Microsoft.VisualStudio.Shell;
+using Ninject;
 using VersionOne.VisualStudio.DataLayer;
 using VersionOne.VisualStudio.DataLayer.Entities;
+using VersionOne.VisualStudio.DataLayer.Logging;
 using VersionOne.VisualStudio.DataLayer.Settings;
+using VersionOne.VisualStudio.VSPackage.Controllers;
+using VersionOne.VisualStudio.VSPackage.Controls;
+using VersionOne.VisualStudio.VSPackage.Dependencies;
 using VersionOne.VisualStudio.VSPackage.Events;
 using VersionOne.VisualStudio.VSPackage.Logging;
 using VersionOne.VisualStudio.VSPackage.Settings;
@@ -44,6 +49,8 @@ namespace VersionOne.VisualStudio.VSPackage {
     [ProvideToolWindow(typeof(TaskWindow))]
     [Guid(GuidList.guidVersionOnTrackerPkgString)]
     public sealed class V1Tracker : Package {
+        private readonly ApiDataLayer dataLayer;
+
         /// <summary>
         /// Default constructor of the package.
         /// Inside this method you can place any initialization code that does not require 
@@ -52,11 +59,15 @@ namespace VersionOne.VisualStudio.VSPackage {
         /// initialization is the Initialize method.
         /// </summary>
         public V1Tracker() {
-            var cfg = Configuration.Instance;
-            var settings = SettingsImpl.Instance;
-            var dataLayer = ApiDataLayer.Instance;
-            var eventDispatcher = EventDispatcher.Instance;
-            var loggerFactory = LoggerFactory.Instance;
+            ServiceLocator.Instance.SetContainer(new StandardKernel());
+
+            dataLayer = new ApiDataLayer();            
+            RegisterComponents();
+
+            var cfg = ServiceLocator.Instance.Get<Configuration>();
+            var settings = ServiceLocator.Instance.Get<ISettings>();
+            var eventDispatcher = ServiceLocator.Instance.Get<IEventDispatcher>();
+            var loggerFactory = ServiceLocator.Instance.Get<ILoggerFactory>();
 
             loggerFactory.MinLogLevel = settings.MinLogLevel;
 
@@ -94,7 +105,28 @@ namespace VersionOne.VisualStudio.VSPackage {
             logger.Debug("Completed constructor execution.");
         }
 
-        private static void AddProperties(Configuration cfg) {
+        private void RegisterComponents() {
+            var container = ServiceLocator.Instance.Container;
+            
+            container.Bind<IDataLayer>().ToConstant(dataLayer);
+            container.Bind<IDataLayerInternal>().ToConstant(dataLayer);
+
+            container.Bind<Configuration>().ToMethod(context => Configuration.Load()).InSingletonScope();
+            container.Bind<ISettings>().ToMethod(context => SettingsImpl.Load()).InSingletonScope();
+            container.Bind<ILoggerFactory>().To<LoggerFactory>().InSingletonScope();
+            container.Bind<IEventDispatcher>().To<EventDispatcher>().InSingletonScope();
+            
+            container.Bind<IUIComponentFactory>().ToMethod(context => new UIComponentFactory(container, ServiceLocator.Instance.Get<ILoggerFactory>())).InSingletonScope();
+            container.Bind<ComponentResolver<IParentWindow>>().ToConstant(new ComponentResolver<IParentWindow>(container, "Projects")).Named("Projects");
+            container.Bind<ComponentResolver<IParentWindow>>().ToConstant(new ComponentResolver<IParentWindow>(container, "Workitems")).Named("Workitems");
+            
+            container.Bind<ProjectTreeController>().ToSelf().InSingletonScope();
+            container.Bind<WorkitemTreeController>().ToSelf().InSingletonScope();
+            container.Bind<ProjectTreeControl>().ToSelf().InSingletonScope();
+            container.Bind<WorkitemTreeControl>().ToSelf().InSingletonScope();
+        }
+
+        private void AddProperties(Configuration cfg) {
             LoadOrderProperties();
 
             foreach(var column in cfg.AssetDetail.TaskColumns) {
@@ -129,13 +161,13 @@ namespace VersionOne.VisualStudio.VSPackage {
         /// We do not support Order property on UI. That's why configuration.xml is not used.
         /// Order property has special type, it currently can not be set properly.
         /// </summary>
-        private static void LoadOrderProperties() {
-            ApiDataLayer.Instance.AddProperty(Entity.OrderProperty, Entity.TestType, false);
-            ApiDataLayer.Instance.AddProperty(Entity.OrderProperty, Entity.TaskType, false);
+        private void LoadOrderProperties() {
+            dataLayer.AddProperty(Entity.OrderProperty, Entity.TestType, false);
+            dataLayer.AddProperty(Entity.OrderProperty, Entity.TaskType, false);
         }
 
-        private static void AddProperty(ColumnSetting column, string prefix) {
-            ApiDataLayer.Instance.AddProperty(column.Attribute, prefix, column.Type == "List" || column.Type == "Multi");
+        private void AddProperty(ColumnSetting column, string prefix) {
+            dataLayer.AddProperty(column.Attribute, prefix, column.Type == "List" || column.Type == "Multi");
         }
 
         /// <summary>

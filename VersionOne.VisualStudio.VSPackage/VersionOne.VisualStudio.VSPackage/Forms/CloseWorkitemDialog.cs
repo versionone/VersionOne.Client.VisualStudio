@@ -7,7 +7,7 @@ using VersionOne.VisualStudio.DataLayer.Entities;
 namespace VersionOne.VisualStudio.VSPackage.Forms {
     public partial class CloseWorkitemDialog : Form {
         private readonly Workitem workitem;
-        private readonly IDataLayer dataLayer = ApiDataLayer.Instance;
+        private readonly IDataLayer dataLayer = ServiceLocator.Instance.Get<IDataLayer>();
         
         public CloseWorkitemDialog(Workitem workitem) {
             this.workitem = workitem;

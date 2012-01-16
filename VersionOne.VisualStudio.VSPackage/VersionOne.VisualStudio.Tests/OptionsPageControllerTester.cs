@@ -9,9 +9,7 @@ using VersionOne.VisualStudio.VSPackage.Settings;
 
 namespace VersionOne.VisualStudio.Tests {
     [TestFixture]
-    public class OptionsPageControllerTester {
-        private readonly MockRepository mockRepository = new MockRepository();
-
+    public class OptionsPageControllerTester : BaseTester {
         private OptionsPageController controller;
         private IOptionsPageView viewMock;
         private IDataLayer dataLayerMock;
@@ -21,12 +19,12 @@ namespace VersionOne.VisualStudio.Tests {
 
         [SetUp]
         public void SetUp() {
-            dataLayerMock = mockRepository.StrictMock<IDataLayer>();
-            settingsStub = mockRepository.Stub<ISettings>();
-            eventDispatcherMock = mockRepository.StrictMock<IEventDispatcher>();
-            viewMock = mockRepository.StrictMock<IOptionsPageView>();
-            loggerFactoryMock = mockRepository.DynamicMock<ILoggerFactory>();
-            loggerFactoryMock.Stub(x => x.GetLogger(null)).IgnoreArguments().Return(mockRepository.Stub<ILogger>());
+            dataLayerMock = MockRepository.StrictMock<IDataLayer>();
+            settingsStub = MockRepository.Stub<ISettings>();
+            eventDispatcherMock = MockRepository.StrictMock<IEventDispatcher>();
+            viewMock = MockRepository.StrictMock<IOptionsPageView>();
+            loggerFactoryMock = MockRepository.DynamicMock<ILoggerFactory>();
+            loggerFactoryMock.Stub(x => x.GetLogger(null)).IgnoreArguments().Return(MockRepository.Stub<ILogger>());
             controller = new OptionsPageController(loggerFactoryMock, dataLayerMock, settingsStub, eventDispatcherMock);
         }
 
@@ -40,14 +38,14 @@ namespace VersionOne.VisualStudio.Tests {
             Expect.Call(() => eventDispatcherMock.Notify(controller, new ModelChangedArgs(EventReceiver.WorkitemView, EventContext.WorkitemCacheInvalidated)));
             Expect.Call(() => eventDispatcherMock.Notify(controller, new ModelChangedArgs(EventReceiver.ProjectView, EventContext.ProjectsRequested))).IgnoreArguments();
 
-            mockRepository.ReplayAll();
+            MockRepository.ReplayAll();
             
             controller.RegisterView(viewMock);
             controller.PrepareView();
             controller.Prepare();
             eventRaiser.Raise(controller, new ModelChangedArgs(EventReceiver.OptionsView, EventContext.V1SettingsChanged));
 
-            mockRepository.VerifyAll();
+            MockRepository.VerifyAll();
         }
 
         [Test]
@@ -58,14 +56,14 @@ namespace VersionOne.VisualStudio.Tests {
             Expect.Call(viewMock.UpdateModel);
             Expect.Call(() => eventDispatcherMock.Notify(this, new ModelChangedArgs(EventReceiver.OptionsView, EventContext.V1SettingsChanged))).IgnoreArguments();
 
-            mockRepository.ReplayAll();
+            MockRepository.ReplayAll();
             
             controller.RegisterView(viewMock);
             controller.PrepareView();
             controller.Prepare();
             controller.HandleSaveCommand();
 
-            mockRepository.VerifyAll();
+            MockRepository.VerifyAll();
         }
 
         [Test]
@@ -77,14 +75,14 @@ namespace VersionOne.VisualStudio.Tests {
             Expect.Call(() => eventDispatcherMock.Notify(this, null)).IgnoreArguments().Throw(new DataLayerException(null));
             Expect.Call(() => viewMock.ShowErrorMessage(null, null)).IgnoreArguments();
 
-            mockRepository.ReplayAll();
+            MockRepository.ReplayAll();
             
             controller.RegisterView(viewMock);
             controller.PrepareView();
             controller.Prepare();
             controller.HandleSaveCommand();
 
-            mockRepository.VerifyAll();
+            MockRepository.VerifyAll();
         }
 
         [Test]
@@ -95,14 +93,14 @@ namespace VersionOne.VisualStudio.Tests {
             Expect.Call(() => dataLayerMock.CheckConnection(null)).IgnoreArguments();
             Expect.Call(() => viewMock.ShowMessage(null, null)).IgnoreArguments();
 
-            mockRepository.ReplayAll();
+            MockRepository.ReplayAll();
             
             controller.RegisterView(viewMock);
             controller.PrepareView();
             controller.Prepare();
             controller.HandleVerifyConnectionCommand(settingsStub);
 
-            mockRepository.VerifyAll();
+            MockRepository.VerifyAll();
         }
 
         [Test]
@@ -113,14 +111,14 @@ namespace VersionOne.VisualStudio.Tests {
             Expect.Call(() => dataLayerMock.CheckConnection(null)).IgnoreArguments().Throw(new DataLayerException(null));
             Expect.Call(() => viewMock.ShowErrorMessage(null, null)).IgnoreArguments();
 
-            mockRepository.ReplayAll();
+            MockRepository.ReplayAll();
             
             controller.RegisterView(viewMock);
             controller.PrepareView();
             controller.Prepare();
             controller.HandleVerifyConnectionCommand(settingsStub);
 
-            mockRepository.VerifyAll();
+            MockRepository.VerifyAll();
         }
     }
 }

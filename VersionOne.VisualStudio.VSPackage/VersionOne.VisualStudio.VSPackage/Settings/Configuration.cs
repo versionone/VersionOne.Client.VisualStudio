@@ -9,15 +9,14 @@ namespace VersionOne.VisualStudio.VSPackage.Settings {
         private ProjectTreeSettings projectTreeSettings = new ProjectTreeSettings();
         private AssetDetailSettings assetDetailSettings = new AssetDetailSettings();
         private string apiVersion = "8.3";
-        private static Configuration configuration;
 
         private void Save(Stream stream) {
-            var serializer = new XmlSerializer(typeof(Configuration));
+            var serializer = new XmlSerializer(typeof (Configuration));
             serializer.Serialize(stream, this);
         }
 
         private static Configuration Load(Stream stream) {
-            var serializer = new XmlSerializer(typeof(Configuration));
+            var serializer = new XmlSerializer(typeof (Configuration));
             return (Configuration) serializer.Deserialize(stream);
         }
 
@@ -49,15 +48,9 @@ namespace VersionOne.VisualStudio.VSPackage.Settings {
             }
         }
 
-        public static Configuration Instance {
-            get {
-                if (configuration == null) {
-                    using (var configurationFile = File.OpenRead(ConfigurationFile)) {
-                        configuration = Load(configurationFile);
-                    }
-                }
-
-                return configuration;
+        public static Configuration Load() {
+            using (var configurationFile = File.OpenRead(ConfigurationFile)) {
+                return Load(configurationFile);
             }
         }
     }

@@ -7,7 +7,8 @@ using VersionOne.VisualStudio.DataLayer.Logging;
 namespace VersionOne.VisualStudio.VSPackage.Settings {
     [XmlRoot("Settings")]
     public class SettingsImpl : ISettings {
-        private readonly IDataLayer dataLayer = ApiDataLayer.Instance;
+        private readonly IDataLayer dataLayer = ServiceLocator.Instance.Get<IDataLayer>();
+
         private string applicationUrl;
         private string selectedScopeToken;
         private static SettingsImpl settings;
@@ -76,7 +77,7 @@ namespace VersionOne.VisualStudio.VSPackage.Settings {
             xmlSerializer.Serialize(stream, this);
         }
 
-        public static SettingsImpl Load(string file) {
+        private static SettingsImpl Load(string file) {
             try {
                 using(var fileStream = File.OpenRead(file)) {
                     return Load(fileStream);
@@ -91,15 +92,13 @@ namespace VersionOne.VisualStudio.VSPackage.Settings {
             return (SettingsImpl) xmlSerializer.Deserialize(stream);
         }
 
+        public static ISettings Load() {
+            return Load(SettingsFile);
+        }
+
         public static string SettingsFile {
             get {
                 return Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData), "VersionOne.VSPackage", "settings.xml");
-            }
-        }
-
-        public static ISettings Instance {
-            get {
-                return settings ?? (settings = Load(SettingsFile));
             }
         }
     }

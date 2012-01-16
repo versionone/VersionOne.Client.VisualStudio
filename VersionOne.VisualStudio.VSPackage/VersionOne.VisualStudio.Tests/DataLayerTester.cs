@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using NUnit.Framework;
+using Ninject;
 using VersionOne.SDK.APIClient;
 using VersionOne.SDK.ObjectModel;
 using VersionOne.SDK.ObjectModel.Filters;
@@ -14,18 +15,19 @@ using Workitem = VersionOne.VisualStudio.DataLayer.Entities.Workitem;
 using OmProject = VersionOne.SDK.ObjectModel.Project;
 
 namespace VersionOne.VisualStudio.Tests {
+    // TODO fix, if needed
     [TestFixture]
     [Ignore("These tests need instance of VersionOne server and user with Admin permissions. Required enabled Effort Tracking.")]
-    public class DataLayerTests {
-        private readonly IDataLayer dataLayer = ApiDataLayer.Instance;
+    public class DataLayerTester {
+        private readonly IDataLayer dataLayer = new ApiDataLayer();
 
         private const string V1Url = "http://integsrv01/VersionOneTest/";
         private const string Username = "admin";
         private const string Password = "admin";
         private const bool Integrated = false;
 
-        private const string TestProjectName = "VS Integrational tests project";
-        private const string TestScheduleName = "VS Integrational tests schedule";
+        private const string TestProjectName = "VS Integration tests project";
+        private const string TestScheduleName = "VS Integration tests schedule";
 
         private const double EffortAmount = 3;
         private const double FloatingPointComparisonDelta = 0.001;
@@ -99,6 +101,9 @@ namespace VersionOne.VisualStudio.Tests {
 
         [TestFixtureSetUp]
         public void Before() {
+            ServiceLocator.Instance.SetContainer(new StandardKernel());
+            ServiceLocator.Instance.Container.Bind<IDataLayer>().ToConstant(dataLayer);
+
             instance = new V1Instance(V1Url, Username, Password, false);
 
             dataLayer.AddProperty("Name", Entity.StoryType, false);
@@ -133,13 +138,12 @@ namespace VersionOne.VisualStudio.Tests {
         }
 
         private VersionOneSettings GetSettings() {
-            var settings = new VersionOneSettings {
+            return new VersionOneSettings {
                 Path = V1Url,
                 Username = Username,
                 Password = Password,
                 Integrated = Integrated
             };
-            return settings;
         }
 
         [TestFixtureTearDown]
