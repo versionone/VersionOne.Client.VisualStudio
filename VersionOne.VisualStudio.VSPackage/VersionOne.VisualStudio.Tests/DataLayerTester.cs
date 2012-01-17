@@ -15,13 +15,12 @@ using Workitem = VersionOne.VisualStudio.DataLayer.Entities.Workitem;
 using OmProject = VersionOne.SDK.ObjectModel.Project;
 
 namespace VersionOne.VisualStudio.Tests {
-    // TODO fix, if needed
     [TestFixture]
     [Ignore("These tests need instance of VersionOne server and user with Admin permissions. Required enabled Effort Tracking.")]
     public class DataLayerTester {
-        private readonly IDataLayer dataLayer = new ApiDataLayer();
+        private readonly IDataLayerInternal dataLayer = new ApiDataLayer();
 
-        private const string V1Url = "http://integsrv01/VersionOneTest/";
+        private const string V1Url = "http://integsrv01/VersionOne12/";
         private const string Username = "admin";
         private const string Password = "admin";
         private const bool Integrated = false;
@@ -103,6 +102,7 @@ namespace VersionOne.VisualStudio.Tests {
         public void Before() {
             ServiceLocator.Instance.SetContainer(new StandardKernel());
             ServiceLocator.Instance.Container.Bind<IDataLayer>().ToConstant(dataLayer);
+            ServiceLocator.Instance.Container.Bind<IDataLayerInternal>().ToConstant(dataLayer);
 
             instance = new V1Instance(V1Url, Username, Password, false);
 
