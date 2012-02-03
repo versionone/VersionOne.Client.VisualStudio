@@ -16,6 +16,10 @@ namespace VersionOne.VisualStudio.VSPackage.Controls {
             btnTestConnection.Click += btnTestConnection_Click;
             chkIntegrated.CheckedChanged += chkIntegrated_CheckedChanged;
             chkUseProxy.CheckedChanged += chkUseProxy_CheckedChanged;
+
+            foreach (Control control in pnlContent.Controls) {
+                control.GotFocus += (sender, e) => pnlContent.ScrollControlIntoView(sender as Control ?? ActiveControl);
+            }
         }
 
         public void LoadSettings() {
