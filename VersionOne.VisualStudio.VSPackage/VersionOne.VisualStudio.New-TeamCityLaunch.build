@@ -9,7 +9,7 @@
         </if>
 
 	<target name='launch-build'>
-		<nant buildfile='VersionOne.VisualStudio.build' inheritall='true' target='release setversion cleanclean cleanscc copyright compile test gendoc package publish' >
+		<nant buildfile='VersionOne.VisualStudio.build' inheritall='true' target='release setversion cleanclean cleanscc copyright compile gendoc package publish' >
 			<properties>
 				<property name='ver.build' value='${buildnumber}' readonly='true' />
 				<property name='ver.revision' value='${revnumber}' readonly='true' />
