@@ -13,16 +13,20 @@ namespace VersionOne.VisualStudio.VSPackage.PropertyEditors {
         }
 
         public override object EditValue(ITypeDescriptorContext context, IServiceProvider provider, object value) {
-            IWindowsFormsEditorService editorService = (IWindowsFormsEditorService)provider.GetService(typeof(IWindowsFormsEditorService));
+            var editorService = (IWindowsFormsEditorService) provider.GetService(typeof(IWindowsFormsEditorService));
+            
             if (editorService == null) {
                 return base.EditValue(context, provider, value);
             }
 
-            RichTextEditorDialog modalEditor = new RichTextEditorDialog();
-            modalEditor.HtmlData = (value == null) ? string.Empty : (string)value;
+            var modalEditor = new RichTextEditorDialog {
+                                      HtmlData = (value == null) ? string.Empty : (string) value,
+                                  };
+
             if (editorService.ShowDialog(modalEditor) == DialogResult.OK) {
                 return modalEditor.HtmlData != "<P>&nbsp;</P>" ? modalEditor.HtmlData : "<br>";
             }
+            
             return value;
         }
     }

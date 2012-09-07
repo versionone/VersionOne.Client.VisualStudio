@@ -54,9 +54,15 @@ namespace VersionOne.VisualStudio.VSPackage.Controls {
         // NOTE state lifecycle is loading <-> interactive -> complete
         private void ctlHtmlEditor_ReadyStateChanged(object sender, ReadyStateChangedEventArgs e) {
             readyState = e.ReadyState;
-            if (readyState == ReadyStateComplete && textToLoad != null) {
-                ctlHtmlEditor.HtmlDocument2.GetBody().innerHTML = textToLoad;
-                textToLoad = null;
+            
+            if (readyState == ReadyStateComplete) {
+                ctlHtmlEditor.HtmlDocument2.GetBody().style.SetFontFamily("Verdana,Arial,Helvetica,sans-serif");               
+                ctlHtmlEditor.HtmlDocument2.GetBody().style.SetFontSize("10px");               
+                
+                if (textToLoad != null) {
+                    ctlHtmlEditor.HtmlDocument2.GetBody().innerHTML = textToLoad;
+                    textToLoad = null;
+                }
             }
         }
 

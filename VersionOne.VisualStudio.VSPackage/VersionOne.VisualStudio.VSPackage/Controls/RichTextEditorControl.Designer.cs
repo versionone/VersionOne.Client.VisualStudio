@@ -36,16 +36,14 @@ namespace VersionOne.VisualStudio.VSPackage.Controls
             this.btnStrikethrough = new System.Windows.Forms.ToolStripButton();
             this.btnRemoveFormat = new System.Windows.Forms.ToolStripButton();
             this.toolStripSeparator1 = new System.Windows.Forms.ToolStripSeparator();
+            this.btnJustifyLeft = new System.Windows.Forms.ToolStripButton();
+            this.btnJustifyRight = new System.Windows.Forms.ToolStripButton();
+            this.btnJustifyCenter = new System.Windows.Forms.ToolStripButton();
+            this.btnJustifyFull = new System.Windows.Forms.ToolStripButton();
             this.btnBulletedList = new System.Windows.Forms.ToolStripButton();
             this.btnNumberedList = new System.Windows.Forms.ToolStripButton();
             this.btnIncreaseIndent = new System.Windows.Forms.ToolStripButton();
             this.btnDecreaseIndent = new System.Windows.Forms.ToolStripButton();
-            this.toolStripSeparator2 = new System.Windows.Forms.ToolStripSeparator();
-            this.btnJustifyCenter = new System.Windows.Forms.ToolStripButton();
-            this.btnJustifyLeft = new System.Windows.Forms.ToolStripButton();
-            this.btnJustifyRight = new System.Windows.Forms.ToolStripButton();
-            this.btnJustifyFull = new System.Windows.Forms.ToolStripButton();
-            this.toolStripSeparator3 = new System.Windows.Forms.ToolStripSeparator();
             this.btnUndo = new System.Windows.Forms.ToolStripButton();
             this.btnRedo = new System.Windows.Forms.ToolStripButton();
             this.tsToolMenu.SuspendLayout();
@@ -62,6 +60,7 @@ namespace VersionOne.VisualStudio.VSPackage.Controls
             this.ctlHtmlEditor.DefaultComposeSettings.ForeColor = System.Drawing.Color.Black;
             this.ctlHtmlEditor.DefaultPreamble = onlyconnect.EncodingType.UTF8;
             this.ctlHtmlEditor.DocumentEncoding = onlyconnect.EncodingType.WindowsCurrent;
+            this.ctlHtmlEditor.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.ctlHtmlEditor.IsDesignMode = true;
             this.ctlHtmlEditor.Location = new System.Drawing.Point(0, 28);
             this.ctlHtmlEditor.Name = "ctlHtmlEditor";
@@ -84,16 +83,14 @@ namespace VersionOne.VisualStudio.VSPackage.Controls
             this.btnStrikethrough,
             this.btnRemoveFormat,
             this.toolStripSeparator1,
+            this.btnJustifyLeft,
+            this.btnJustifyRight,
+            this.btnJustifyCenter,
+            this.btnJustifyFull,
             this.btnBulletedList,
             this.btnNumberedList,
             this.btnIncreaseIndent,
             this.btnDecreaseIndent,
-            this.toolStripSeparator2,
-            this.btnJustifyCenter,
-            this.btnJustifyLeft,
-            this.btnJustifyRight,
-            this.btnJustifyFull,
-            this.toolStripSeparator3,
             this.btnUndo,
             this.btnRedo});
             this.tsToolMenu.Location = new System.Drawing.Point(0, 0);
@@ -158,6 +155,46 @@ namespace VersionOne.VisualStudio.VSPackage.Controls
             this.toolStripSeparator1.Name = "toolStripSeparator1";
             this.toolStripSeparator1.Size = new System.Drawing.Size(6, 28);
             // 
+            // btnJustifyLeft
+            // 
+            this.btnJustifyLeft.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image;
+            this.btnJustifyLeft.Image = global::VersionOne.VisualStudio.VSPackage.Resources.JustifyLeft;
+            this.btnJustifyLeft.ImageScaling = System.Windows.Forms.ToolStripItemImageScaling.None;
+            this.btnJustifyLeft.ImageTransparentColor = System.Drawing.Color.Magenta;
+            this.btnJustifyLeft.Name = "btnJustifyLeft";
+            this.btnJustifyLeft.Size = new System.Drawing.Size(25, 25);
+            this.btnJustifyLeft.Text = "Justify left";
+            // 
+            // btnJustifyRight
+            // 
+            this.btnJustifyRight.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image;
+            this.btnJustifyRight.Image = global::VersionOne.VisualStudio.VSPackage.Resources.JustifyRight;
+            this.btnJustifyRight.ImageScaling = System.Windows.Forms.ToolStripItemImageScaling.None;
+            this.btnJustifyRight.ImageTransparentColor = System.Drawing.Color.Magenta;
+            this.btnJustifyRight.Name = "btnJustifyRight";
+            this.btnJustifyRight.Size = new System.Drawing.Size(25, 25);
+            this.btnJustifyRight.Text = "Justify right";
+            // 
+            // btnJustifyCenter
+            // 
+            this.btnJustifyCenter.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image;
+            this.btnJustifyCenter.Image = global::VersionOne.VisualStudio.VSPackage.Resources.JustifyCenter;
+            this.btnJustifyCenter.ImageScaling = System.Windows.Forms.ToolStripItemImageScaling.None;
+            this.btnJustifyCenter.ImageTransparentColor = System.Drawing.Color.Magenta;
+            this.btnJustifyCenter.Name = "btnJustifyCenter";
+            this.btnJustifyCenter.Size = new System.Drawing.Size(25, 25);
+            this.btnJustifyCenter.Text = "Justify center";
+            // 
+            // btnJustifyFull
+            // 
+            this.btnJustifyFull.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image;
+            this.btnJustifyFull.Image = global::VersionOne.VisualStudio.VSPackage.Resources.JustifyFull;
+            this.btnJustifyFull.ImageScaling = System.Windows.Forms.ToolStripItemImageScaling.None;
+            this.btnJustifyFull.ImageTransparentColor = System.Drawing.Color.Magenta;
+            this.btnJustifyFull.Name = "btnJustifyFull";
+            this.btnJustifyFull.Size = new System.Drawing.Size(25, 25);
+            this.btnJustifyFull.Text = "Justify full";
+            // 
             // btnBulletedList
             // 
             this.btnBulletedList.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image;
@@ -198,56 +235,6 @@ namespace VersionOne.VisualStudio.VSPackage.Controls
             this.btnDecreaseIndent.Size = new System.Drawing.Size(25, 25);
             this.btnDecreaseIndent.Text = "Decrease indent";
             // 
-            // toolStripSeparator2
-            // 
-            this.toolStripSeparator2.Name = "toolStripSeparator2";
-            this.toolStripSeparator2.Size = new System.Drawing.Size(6, 28);
-            // 
-            // btnJustifyCenter
-            // 
-            this.btnJustifyCenter.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image;
-            this.btnJustifyCenter.Image = global::VersionOne.VisualStudio.VSPackage.Resources.JustifyCenter;
-            this.btnJustifyCenter.ImageScaling = System.Windows.Forms.ToolStripItemImageScaling.None;
-            this.btnJustifyCenter.ImageTransparentColor = System.Drawing.Color.Magenta;
-            this.btnJustifyCenter.Name = "btnJustifyCenter";
-            this.btnJustifyCenter.Size = new System.Drawing.Size(25, 25);
-            this.btnJustifyCenter.Text = "Justify center";
-            // 
-            // btnJustifyLeft
-            // 
-            this.btnJustifyLeft.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image;
-            this.btnJustifyLeft.Image = global::VersionOne.VisualStudio.VSPackage.Resources.JustifyLeft;
-            this.btnJustifyLeft.ImageScaling = System.Windows.Forms.ToolStripItemImageScaling.None;
-            this.btnJustifyLeft.ImageTransparentColor = System.Drawing.Color.Magenta;
-            this.btnJustifyLeft.Name = "btnJustifyLeft";
-            this.btnJustifyLeft.Size = new System.Drawing.Size(25, 25);
-            this.btnJustifyLeft.Text = "Justify left";
-            // 
-            // btnJustifyRight
-            // 
-            this.btnJustifyRight.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image;
-            this.btnJustifyRight.Image = global::VersionOne.VisualStudio.VSPackage.Resources.JustifyRight;
-            this.btnJustifyRight.ImageScaling = System.Windows.Forms.ToolStripItemImageScaling.None;
-            this.btnJustifyRight.ImageTransparentColor = System.Drawing.Color.Magenta;
-            this.btnJustifyRight.Name = "btnJustifyRight";
-            this.btnJustifyRight.Size = new System.Drawing.Size(25, 25);
-            this.btnJustifyRight.Text = "Justify right";
-            // 
-            // btnJustifyFull
-            // 
-            this.btnJustifyFull.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image;
-            this.btnJustifyFull.Image = global::VersionOne.VisualStudio.VSPackage.Resources.JustifyFull;
-            this.btnJustifyFull.ImageScaling = System.Windows.Forms.ToolStripItemImageScaling.None;
-            this.btnJustifyFull.ImageTransparentColor = System.Drawing.Color.Magenta;
-            this.btnJustifyFull.Name = "btnJustifyFull";
-            this.btnJustifyFull.Size = new System.Drawing.Size(25, 25);
-            this.btnJustifyFull.Text = "Justify full";
-            // 
-            // toolStripSeparator3
-            // 
-            this.toolStripSeparator3.Name = "toolStripSeparator3";
-            this.toolStripSeparator3.Size = new System.Drawing.Size(6, 28);
-            // 
             // btnUndo
             // 
             this.btnUndo.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image;
@@ -268,14 +255,14 @@ namespace VersionOne.VisualStudio.VSPackage.Controls
             this.btnRedo.Size = new System.Drawing.Size(25, 25);
             this.btnRedo.Text = "Redo";
             // 
-            // RichTextControl
+            // RichTextEditorControl
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
             this.Controls.Add(this.tsToolMenu);
             this.Controls.Add(this.ctlHtmlEditor);
-            this.Name = "RichTextControl";
+            this.Name = "RichTextEditorControl";
             this.Size = new System.Drawing.Size(459, 175);
             this.tsToolMenu.ResumeLayout(false);
             this.tsToolMenu.PerformLayout();
@@ -298,12 +285,10 @@ namespace VersionOne.VisualStudio.VSPackage.Controls
         private System.Windows.Forms.ToolStripButton btnNumberedList;
         private System.Windows.Forms.ToolStripButton btnIncreaseIndent;
         private System.Windows.Forms.ToolStripButton btnDecreaseIndent;
-        private System.Windows.Forms.ToolStripSeparator toolStripSeparator2;
         private System.Windows.Forms.ToolStripButton btnJustifyCenter;
         private System.Windows.Forms.ToolStripButton btnJustifyLeft;
         private System.Windows.Forms.ToolStripButton btnJustifyRight;
         private System.Windows.Forms.ToolStripButton btnJustifyFull;
-        private System.Windows.Forms.ToolStripSeparator toolStripSeparator3;
         private System.Windows.Forms.ToolStripButton btnUndo;
         private System.Windows.Forms.ToolStripButton btnRedo;
     }
