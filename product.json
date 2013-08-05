@@ -1,0 +1,49 @@
+{
+    "id": "VersionOne.Client.VisualStudio",
+    "titleSection": {
+        "name": "VersionOne Client for Visual Studio",
+        "shortDescription": "short description of VersionOne Client for Visual Studio",
+        "pricing": "Free",
+        "support": {
+            "text": "VersionOne",
+            "href": "http://support.versionone.com/home"
+        }
+    },
+    "descriptionSection": {
+        "description": "Description of VersionOne Client for Visual Studio."
+    },
+    "linksSection": [
+        {
+            "type": "documentation",
+            "title": "Documentation",
+            "href": "http://versionone.github.io/VersionOne.Client.VisualStudio/index.html"
+        }
+    ],
+    "updatesSection": {
+        "updates": [
+            {
+                "date": "2013-08-05T17:43:18.938Z",
+                "description": "Launch",
+                "version": "0.0.1",
+                "releaseNotes": "Initial Release",
+                "qualityBand": "seed"
+            }
+        ],
+        "qualityBands": [
+            "seed": {
+                "shortDescription": "The initial idea of a product. May not be stable code.",
+                "href": "https://github.com/versionone/VersionOne.Client.VisualStudio/blob/master/CONTRIBUTING.md#seed"
+            },
+            "sapling": {
+                "shortDescription": "The product is undergoing rapid growth. The code works but expect major changes.",
+                "href": "https://github.com/versionone/VersionOne.Client.VisualStudio/blob/master/CONTRIBUTING.md#sapling"
+            },
+            "mature": {
+                "shortDescription": "The product is stable. The code will continue to evolve with minimum breaking changes.",
+                "href": "https://github.com/versionone/VersionOne.Client.VisualStudio/blob/master/CONTRIBUTING.md#mature"
+            }
+        ]
+    },
+    "mediaSection": [
+    ]
+}
