@@ -60,6 +60,12 @@ namespace VersionOne.VisualStudio.VSPackage.TreeViewEditors {
             return listBox;
         }
 
+        protected override void DisposeEditor(Control editor)
+        {
+            // TODO: What needs disposing?
+            // throw new NotImplementedException();
+        }
+
         private static void SetSelectionItems(ListBox listBox, PropertyValues propertyValues) {
             if (propertyValues == null) {
                 return;

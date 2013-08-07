@@ -67,6 +67,12 @@ namespace VersionOne.VisualStudio.VSPackage.TreeViewEditors {
             return comboBox;
         }
 
+        protected override void DisposeEditor(Control editor)
+        {
+            // TODO: What needs disposing?
+            // throw new NotImplementedException();
+        }
+
         void EditorDropDownClosed(object sender, EventArgs e) {
             EndEdit(true);
         }
