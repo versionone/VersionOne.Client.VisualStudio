@@ -1,22 +1,25 @@
 ﻿
-Microsoft Visual Studio Solution File, Format Version 11.00
-# Visual Studio 2010
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "VersionOne.VisualStudio.VSPackage", "VersionOne.VisualStudio.VSPackage\VersionOne.VisualStudio.VSPackage.csproj", "{8846BCCB-1012-470B-AD8F-81E6CA80D197}"
-EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "VersionOne.VisualStudio.DataLayer", "VersionOne.VisualStudio.DataLayer\VersionOne.VisualStudio.DataLayer.csproj", "{1BD989CB-941F-412A-8D95-52067EEC9F58}"
-EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "VersionOne.VisualStudio.Tests", "VersionOne.VisualStudio.Tests\VersionOne.VisualStudio.Tests.csproj", "{29FDC6FC-0742-4DAD-A219-99FD71E85BE9}"
-EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "HtmlEditor", "HtmlEditor\HtmlEditor.csproj", "{46B962CC-097B-4E5E-8835-6D89E548ED12}"
-EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Aga.Controls", "Aga.Controls\Aga.Controls.csproj", "{E73BB233-D88B-44A7-A98F-D71EE158381D}"
-EndProject
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio 2012
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Build", "Build", "{C49E0D2E-0D19-414E-A95B-97AD10B19A51}"
 	ProjectSection(SolutionItems) = preProject
 		VersionOne.VisualStudio.build = VersionOne.VisualStudio.build
 		VersionOne.VisualStudio.New-TeamCityLaunch.build = VersionOne.VisualStudio.New-TeamCityLaunch.build
 		VersionOne.VisualStudio.Public.build = VersionOne.VisualStudio.Public.build
 		VersionOne.VisualStudio.Setup.inc = VersionOne.VisualStudio.Setup.inc
+	EndProjectSection
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "VersionOne.VisualStudio.VSPackage", "VersionOne.VisualStudio.VSPackage\VersionOne.VisualStudio.VSPackage.csproj", "{8846BCCB-1012-470B-AD8F-81E6CA80D197}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "VersionOne.VisualStudio.DataLayer", "VersionOne.VisualStudio.DataLayer\VersionOne.VisualStudio.DataLayer.csproj", "{1BD989CB-941F-412A-8D95-52067EEC9F58}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "VersionOne.VisualStudio.Tests", "VersionOne.VisualStudio.Tests\VersionOne.VisualStudio.Tests.csproj", "{29FDC6FC-0742-4DAD-A219-99FD71E85BE9}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = ".nuget", ".nuget", "{8AAB7A7C-193C-4AE7-86FC-5295D7CC9B43}"
+	ProjectSection(SolutionItems) = preProject
+		.nuget\NuGet.Config = .nuget\NuGet.Config
+		.nuget\NuGet.exe = .nuget\NuGet.exe
+		.nuget\NuGet.targets = .nuget\NuGet.targets
 	EndProjectSection
 EndProject
 Global
@@ -45,20 +48,6 @@ Global
 		{29FDC6FC-0742-4DAD-A219-99FD71E85BE9}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{29FDC6FC-0742-4DAD-A219-99FD71E85BE9}.Release|Any CPU.Build.0 = Release|Any CPU
 		{29FDC6FC-0742-4DAD-A219-99FD71E85BE9}.Release|x86.ActiveCfg = Release|Any CPU
-		{46B962CC-097B-4E5E-8835-6D89E548ED12}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{46B962CC-097B-4E5E-8835-6D89E548ED12}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{46B962CC-097B-4E5E-8835-6D89E548ED12}.Debug|x86.ActiveCfg = Debug|x86
-		{46B962CC-097B-4E5E-8835-6D89E548ED12}.Debug|x86.Build.0 = Debug|x86
-		{46B962CC-097B-4E5E-8835-6D89E548ED12}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{46B962CC-097B-4E5E-8835-6D89E548ED12}.Release|Any CPU.Build.0 = Release|Any CPU
-		{46B962CC-097B-4E5E-8835-6D89E548ED12}.Release|x86.ActiveCfg = Release|x86
-		{46B962CC-097B-4E5E-8835-6D89E548ED12}.Release|x86.Build.0 = Release|x86
-		{E73BB233-D88B-44A7-A98F-D71EE158381D}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{E73BB233-D88B-44A7-A98F-D71EE158381D}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{E73BB233-D88B-44A7-A98F-D71EE158381D}.Debug|x86.ActiveCfg = Debug|Any CPU
-		{E73BB233-D88B-44A7-A98F-D71EE158381D}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{E73BB233-D88B-44A7-A98F-D71EE158381D}.Release|Any CPU.Build.0 = Release|Any CPU
-		{E73BB233-D88B-44A7-A98F-D71EE158381D}.Release|x86.ActiveCfg = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
