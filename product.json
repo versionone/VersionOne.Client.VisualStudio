@@ -2,7 +2,7 @@
     "id": "VersionOne.Client.VisualStudio",
     "titleSection": {
         "name": "VersionOne Client for Visual Studio",
-        "shortDescription": "short description of VersionOne Client for Visual Studio",
+        "shortDescription": "View and update VersionOne work items directly from Visual Studio",
         "pricing": "Free",
         "support": {
             "text": "VersionOne",
@@ -10,23 +10,78 @@
         }
     },
     "descriptionSection": {
-        "description": "Description of VersionOne Client for Visual Studio."
+        "description": "The VersionOne Client for Visual Studio extends Microsoft's Visual Studio IDE by providing a view for viewing and updating VersionOne Stories, Defects, Task, and Test. The integration provides access workitems own by the configured user, or any other workitem in an active sprint/iteration. This allows Visual Studio users to Signup, Track, and Close VersionOne workitems without needing to leave the IDE."
     },
     "linksSection": [
         {
+            "type": "download",
+            "title": "Download Latest Stable Build",
+            "href": "http://platform.versionone.com.s3.amazonaws.com/downloads/VersionOne.Client.VisualStudio_8.3.0.87.zip"
+        },
+        {
             "type": "documentation",
             "title": "Documentation",
-            "href": "http://versionone.github.io/VersionOne.Client.VisualStudio/index.html"
+            "href": "http://versionone.github.io/VersionOne.Client.VisualStudio/"
+        },
+        {
+            "type": "documentation",
+            "title": "README",
+            "href": "https://github.com/versionone/VersionOne.Client.VisualStudio/blob/master/README.md"
+        },
+        {
+            "type": "source",
+            "title": "GitHub Project for Source Code and Issues",
+            "href": "https://github.com/versionone/VersionOne.Client.VisualStudio"
+        },
+        {
+            "type": "license",
+            "title": "Modified BSD (3 clause) License",
+            "href": "https://github.com/versionone/VersionOne.Client.VisualStudio/blob/master/LICENSE.md"
         }
     ],
     "updatesSection": {
         "updates": [
             {
-                "date": "2013-08-05T17:43:18.938Z",
-                "description": "Launch",
-                "version": "0.0.1",
+                "date": "2012-11-01T00:00:00.000Z",
+                "description": "Fall 2012",
+                "version": "8.3.0.115",
+                "releaseNotes": "Added: Support for installing into Visual Studio 2012",
+                "qualityBand": "mature"
+            },
+            {
+                "date": "2012-03-06T00:00:00.000Z",
+                "description": "Spring 2012",
+                "version": "101",
+                "releaseNotes": "* Fixed: Honor effort tracking settings from server\n* Fixed: Refresh data after changing VersionOne instance\n* Fixed: Closing and quick closing require manual data refresh\n* Fixed: ToDo not updating after edit\n* Fixed: Owner editor combobox with multi-select",
+                "qualityBand": "mature"
+            },
+            {
+                "date": "2011-12-01T00:00:00.000Z",
+                "description": "Winter 2011",
+                "version": "85",
+                "releaseNotes": "* Added: Asynchronous server calls to reduce UI locking.\n* Added: Refresh project tree on demand to reduce network latency.\n* Added: Add tests via context menu.\n* Fixed: Proxy settings.",
+                "qualityBand": "mature"
+            },
+            {
+                "date": "2011-07-01T00:00:00.000Z",
+                "description": "Summer 2011",
+                "version": "41",
                 "releaseNotes": "Initial Release",
-                "qualityBand": "seed"
+                "qualityBand": "mature"
+            },
+            {
+                "date": "2010-11-15T00:00:00.000Z",
+                "description": "Launch",
+                "version": "30",
+                "releaseNotes": "Fixed: Task and Test order match VersionOne UI",
+                "qualityBand": "mature"
+            },
+            {
+                "date": "2010-03-07T00:00:00.000Z",
+                "description": "Winter 2010",
+                "version": "28",
+                "releaseNotes": "Support for Winter 2010",
+                "qualityBand": "mature"
             }
         ],
         "qualityBands": [
