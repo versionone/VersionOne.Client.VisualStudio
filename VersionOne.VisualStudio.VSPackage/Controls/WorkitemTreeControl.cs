@@ -184,9 +184,9 @@ namespace VersionOne.VisualStudio.VSPackage.Controls {
 			    switch(column.Type) {
                     case "String":
                     case "Effort":
-                        var textEditor = new CustomNodeTextBox();
+                        var textEditor = new NodeTextBox();
                         ConfigureEditor(textEditor, dataPropertyName);
-                        textEditor.IsColumnReadOnly = column.ReadOnly;
+                        //textEditor.IsColumnReadOnly = column.ReadOnly;
                         textEditor.ParentColumn = treeColumn;
                         textEditor.IsEditEnabledValueNeeded += CheckCellEditability;
                         tvWorkitems.NodeControls.Add(textEditor);
@@ -331,10 +331,10 @@ namespace VersionOne.VisualStudio.VSPackage.Controls {
             var propertyName = columnToAttributeMappings[columnName];
             var isReadOnly = item.IsPropertyReadOnly(propertyName);
             
-            if(sender is CustomNodeTextBox) {
-                var textBox = (CustomNodeTextBox) sender;
-                textBox.IsPropertyReadOnly = isReadOnly;
-                textBox.EditorContextMenu = textBox.IsReadOnly ? CreateReadonlyTextBoxContextMenu(textBox) : null;
+            if(sender is NodeTextBox) {
+                var textBox = (NodeTextBox) sender;
+                //textBox.IsPropertyReadOnly = isReadOnly;
+                //textBox.EditorContextMenu = textBox.IsReadOnly ? CreateReadonlyTextBoxContextMenu(textBox) : null;
             }
 
             if(sender is NodeComboBox) {
@@ -358,7 +358,8 @@ namespace VersionOne.VisualStudio.VSPackage.Controls {
         private static ContextMenu CreateReadonlyTextBoxContextMenu(NodeTextBox textBox) {
             var menu = new ContextMenu();
             var miCopyValue = new MenuItem("Copy");
-            miCopyValue.Click += (sender, e) => textBox.Copy();
+            // VP
+            //miCopyValue.Click += (sender, e) => textBox.Copy(((NodeTextBox)textBox).EditorTextBox);
             menu.MenuItems.Add(miCopyValue);
             return menu;
         }
@@ -416,6 +417,30 @@ namespace VersionOne.VisualStudio.VSPackage.Controls {
             if (tvWorkitems.SelectedNode != null) {
                 tvWorkitems.SelectedNode.Expand(false);
             }
+        }
+    }
+    public static class AdvTreeViewExtensions
+    {
+        public static TreeNodeAdv FindNodeByMather(this TreeViewAdv node, Predicate<TreeNodeAdv> matcher)
+        {
+            return FindNodeByMather(node.Root, matcher);
+        }
+
+        private static TreeNodeAdv FindNodeByMather(TreeNodeAdv root, Predicate<TreeNodeAdv> matcher)
+        {
+            foreach (var adv in root.Children)
+            {
+                if (matcher(adv))
+                {
+                    return adv;
+                }
+                var adv2 = FindNodeByMather(adv, matcher);
+                if (adv2 != null)
+                {
+                    return adv2;
+                }
+            }
+            return null;
         }
     }
 }

@@ -38,6 +38,11 @@ namespace VersionOne.VisualStudio.VSPackage.Descriptors {
             return TypeDescriptor.GetAttributes(this, true);
         }
 
+        public string Title 
+        {
+            get { return "Test";}
+        }
+
         public string GetClassName() {
             return "Details";
         }
