@@ -13,7 +13,7 @@
     <AssemblyName>VersionOne.VisualStudio.VSPackage</AssemblyName>
     <SignAssembly>false</SignAssembly>
     <AssemblyOriginatorKeyFile>..\Common\SigningKey\VersionOne.snk</AssemblyOriginatorKeyFile>
-    <TargetFrameworkVersion>v4.0</TargetFrameworkVersion>
+    <TargetFrameworkVersion>v4.5</TargetFrameworkVersion>
     <MinimumVisualStudioVersion>11.0</MinimumVisualStudioVersion>
     <FileUpgradeFlags>
     </FileUpgradeFlags>
@@ -37,6 +37,7 @@
     <BootstrapperEnabled>true</BootstrapperEnabled>
     <SolutionDir Condition="$(SolutionDir) == '' Or $(SolutionDir) == '*Undefined*'">..\</SolutionDir>
     <RestorePackages>true</RestorePackages>
+    <TargetFrameworkProfile />
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
     <DebugSymbols>true</DebugSymbols>
@@ -46,6 +47,7 @@
     <DefineConstants>DEBUG;TRACE</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
+    <Prefer32Bit>false</Prefer32Bit>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
     <DebugType>pdbonly</DebugType>
@@ -55,31 +57,31 @@
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
     <RunCodeAnalysis>true</RunCodeAnalysis>
+    <Prefer32Bit>false</Prefer32Bit>
   </PropertyGroup>
   <ItemGroup>
-    <Reference Include="Aga.Controls, Version=1.7.0.0, Culture=neutral, PublicKeyToken=fcc90fbf924463a3, processorArchitecture=MSIL">
-      <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\packages\TreeViewAdv.1.7.0.0\lib\net\Aga.Controls.dll</HintPath>
-    </Reference>
     <Reference Include="HtmlEditor">
-      <HintPath>..\packages\HtmlEditor.1.0.4967.26938\lib\HtmlEditor.dll</HintPath>
+      <HintPath>..\..\..\..\Desktop\HtmlEditor\bin\Debug\HtmlEditor.dll</HintPath>
     </Reference>
     <Reference Include="Microsoft.CSharp" />
     <Reference Include="Microsoft.VisualStudio.OLE.Interop" />
+    <Reference Include="Microsoft.VisualStudio.Shell.10.0, Version=11.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\..\..\..\..\..\Windows\Microsoft.NET\assembly\GAC_MSIL\Microsoft.VisualStudio.Shell.10.0\v4.0_11.0.0.0__b03f5f7f11d50a3a\Microsoft.VisualStudio.Shell.10.0.dll</HintPath>
+    </Reference>
     <Reference Include="Microsoft.VisualStudio.Shell.Interop" />
     <Reference Include="Microsoft.VisualStudio.Shell.Interop.8.0" />
     <Reference Include="Microsoft.VisualStudio.Shell.Interop.9.0" />
     <Reference Include="Microsoft.VisualStudio.Shell.Interop.10.0" />
     <Reference Include="Microsoft.VisualStudio.TextManager.Interop" />
-    <Reference Include="Microsoft.VisualStudio.Shell.10.0">
-      <Private>false</Private>
-    </Reference>
     <Reference Include="Microsoft.VisualStudio.Shell.Immutable.10.0" />
-    <Reference Include="Ninject">
-      <HintPath>..\packages\Ninject.3.0.1.10\lib\net40\Ninject.dll</HintPath>
+    <Reference Include="Ninject, Version=3.0.0.0, Culture=neutral, PublicKeyToken=c7192dc5380945e7, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\packages\Ninject.3.0.1.10\lib\net45-full\Ninject.dll</HintPath>
     </Reference>
-    <Reference Include="NLog">
-      <HintPath>..\packages\NLog.2.0.1.2\lib\net40\NLog.dll</HintPath>
+    <Reference Include="NLog, Version=2.0.1.0, Culture=neutral, PublicKeyToken=5120e14c03d0593c, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\packages\NLog.2.0.1.2\lib\net45\NLog.dll</HintPath>
     </Reference>
     <Reference Include="System" />
     <Reference Include="System.Core" />
@@ -393,6 +395,10 @@
     <Content Include="Resources\Package.ico" />
   </ItemGroup>
   <ItemGroup>
+    <ProjectReference Include="..\Aga.Controls\Aga.Controls.csproj">
+      <Project>{e73bb233-d88b-44a7-a98f-d71ee158381d}</Project>
+      <Name>Aga.Controls</Name>
+    </ProjectReference>
     <ProjectReference Include="..\VersionOne.VisualStudio.DataLayer\VersionOne.VisualStudio.DataLayer.csproj">
       <Project>{1BD989CB-941F-412A-8D95-52067EEC9F58}</Project>
       <Name>VersionOne.VisualStudio.DataLayer</Name>

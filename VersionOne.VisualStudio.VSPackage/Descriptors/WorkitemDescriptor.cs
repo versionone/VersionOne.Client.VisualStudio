@@ -38,6 +38,29 @@ namespace VersionOne.VisualStudio.VSPackage.Descriptors {
             return TypeDescriptor.GetAttributes(this, true);
         }
 
+        // Begin Binding properties in order to show values in treenodes. 
+        public string Title 
+        {
+            get { return GetProperties()["Title"].GetValue(entity).ToString();}
+        }
+
+        public string ID
+        {
+            get { return GetProperties()["ID"].GetValue(entity).ToString();}
+        }
+
+        public string Owner
+        {
+            get { return GetProperties()["Owner"].GetValue(entity).ToString(); }
+        }
+
+        public System.Drawing.Bitmap Icon
+        {
+            get { return (System.Drawing.Bitmap)GetProperties()["Icon"].GetValue(entity); }
+        }
+        // End Binding properties in order to show values in treenodes. 
+
+
         public string GetClassName() {
             return "Details";
         }
