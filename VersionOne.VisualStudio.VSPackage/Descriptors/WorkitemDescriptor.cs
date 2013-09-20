@@ -39,25 +39,51 @@ namespace VersionOne.VisualStudio.VSPackage.Descriptors {
         }
 
         // Begin Binding properties in order to show values in treenodes. 
-        public string Title 
+        public object Title 
         {
-            get { return GetProperties()["Title"].GetValue(entity).ToString();}
+            get { return GetProperties()["Title"].GetValue(entity);}
         }
 
-        public string ID
+        public object ID
         {
-            get { return GetProperties()["ID"].GetValue(entity).ToString();}
+            get { return GetProperties()["ID"].GetValue(entity);}
         }
 
-        public string Owner
+        public object Owner
         {
-            get { return GetProperties()["Owner"].GetValue(entity).ToString(); }
+            get { return GetProperties()["Owner"].GetValue(entity); }
         }
 
-        public System.Drawing.Bitmap Icon
+        public object Icon
         {
             get { return (System.Drawing.Bitmap)GetProperties()["Icon"].GetValue(entity); }
         }
+
+        public object Status
+        {
+            get { return GetProperties()["Status"].GetValue(entity); }
+        }
+
+        public object Estimate
+        {
+            get { return GetProperties()["Estimate"].GetValue(entity); }
+        }
+
+        public object DetailEstimate
+        {
+            get { return GetProperties()["DetailEstimate"].GetValue(entity); }
+        }
+
+        public object Done
+        {
+            get { return GetProperties()["Done"].GetValue(entity); }
+        }
+
+        public object Effort
+        {
+            get { return GetProperties()["Effort"].GetValue(entity); }
+        }
+
         // End Binding properties in order to show values in treenodes. 
 
 

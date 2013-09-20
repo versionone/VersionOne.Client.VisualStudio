@@ -346,7 +346,9 @@
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
       <IncludeInVSIX>true</IncludeInVSIX>
     </Content>
-    <None Include="packages.config" />
+    <None Include="packages.config">
+      <SubType>Designer</SubType>
+    </None>
     <None Include="Resources\SpinnerImage.gif" />
     <Resource Include="Resources\AddDefect.gif" />
     <Resource Include="Resources\AddStory.gif" />

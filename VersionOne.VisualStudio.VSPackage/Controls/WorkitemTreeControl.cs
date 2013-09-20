@@ -184,9 +184,9 @@ namespace VersionOne.VisualStudio.VSPackage.Controls {
 			    switch(column.Type) {
                     case "String":
                     case "Effort":
-                        var textEditor = new NodeTextBox();
+                        var textEditor = new CustomNodeTextBox();
                         ConfigureEditor(textEditor, dataPropertyName);
-                        //textEditor.IsColumnReadOnly = column.ReadOnly;
+                        textEditor.IsColumnReadOnly = column.ReadOnly;
                         textEditor.ParentColumn = treeColumn;
                         textEditor.IsEditEnabledValueNeeded += CheckCellEditability;
                         tvWorkitems.NodeControls.Add(textEditor);
@@ -331,10 +331,10 @@ namespace VersionOne.VisualStudio.VSPackage.Controls {
             var propertyName = columnToAttributeMappings[columnName];
             var isReadOnly = item.IsPropertyReadOnly(propertyName);
             
-            if(sender is NodeTextBox) {
-                var textBox = (NodeTextBox) sender;
-                //textBox.IsPropertyReadOnly = isReadOnly;
-                //textBox.EditorContextMenu = textBox.IsReadOnly ? CreateReadonlyTextBoxContextMenu(textBox) : null;
+            if(sender is CustomNodeTextBox) {
+                var textBox = (CustomNodeTextBox) sender;
+                textBox.IsPropertyReadOnly = isReadOnly;
+                textBox.EditorContextMenu = textBox.IsReadOnly ? CreateReadonlyTextBoxContextMenu(textBox) : null;
             }
 
             if(sender is NodeComboBox) {
