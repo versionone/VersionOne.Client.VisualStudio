@@ -39,49 +39,52 @@ namespace VersionOne.VisualStudio.VSPackage.Descriptors {
         }
 
         // Begin Binding properties in order to show values in treenodes. 
-        public object Title 
+        public object Title
         {
-            get { return GetProperties()["Title"].GetValue(entity);}
+          get { return GetProperty("Title"); }
         }
 
         public object ID
         {
-            get { return GetProperties()["ID"].GetValue(entity);}
+          get
+          {
+            return GetProperty("ID");
+          }
         }
 
         public object Owner
         {
-            get { return GetProperties()["Owner"].GetValue(entity); }
+          get { return GetProperty("Owner"); }
         }
 
         public object Icon
         {
-            get { return (System.Drawing.Bitmap)GetProperties()["Icon"].GetValue(entity); }
+            get { return GetProperty("Icon"); }
         }
 
         public object Status
         {
-            get { return GetProperties()["Status"].GetValue(entity); }
+          get { return GetProperty("Status"); }
         }
 
-        public object Estimate
+        public object Estimate 
         {
-            get { return GetProperties()["Estimate"].GetValue(entity); }
+          get { return GetProperty("Estimate"); }
         }
 
         public object DetailEstimate
         {
-            get { return GetProperties()["DetailEstimate"].GetValue(entity); }
+          get { return GetProperty("DetailEstimate"); }
         }
 
         public object Done
         {
-            get { return GetProperties()["Done"].GetValue(entity); }
+            get { return GetProperty("Done"); }
         }
 
         public object Effort
         {
-            get { return GetProperties()["Effort"].GetValue(entity); }
+            get { return GetProperty("Effort"); }
         }
 
         // End Binding properties in order to show values in treenodes. 
@@ -117,6 +120,11 @@ namespace VersionOne.VisualStudio.VSPackage.Descriptors {
 
         public EventDescriptorCollection GetEvents(Attribute[] attributes) {
             return TypeDescriptor.GetEvents(this, attributes, true);
+        }
+
+        public object GetProperty(string propertyName)
+        {
+          return GetProperties()[propertyName].GetValue(entity);
         }
 
         public PropertyDescriptorCollection GetProperties() {
