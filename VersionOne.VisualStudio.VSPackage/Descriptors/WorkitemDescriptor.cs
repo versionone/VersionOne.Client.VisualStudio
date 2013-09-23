@@ -38,6 +38,58 @@ namespace VersionOne.VisualStudio.VSPackage.Descriptors {
             return TypeDescriptor.GetAttributes(this, true);
         }
 
+        // Begin Binding properties in order to show values in treenodes. 
+        public object Title
+        {
+          get { return GetProperty("Title"); }
+        }
+
+        public object ID
+        {
+          get
+          {
+            return GetProperty("ID");
+          }
+        }
+
+        public object Owner
+        {
+          get { return GetProperty("Owner"); }
+        }
+
+        public object Icon
+        {
+            get { return GetProperty("Icon"); }
+        }
+
+        public object Status
+        {
+          get { return GetProperty("Status"); }
+        }
+
+        public object Estimate 
+        {
+          get { return GetProperty("Estimate"); }
+        }
+
+        public object DetailEstimate
+        {
+          get { return GetProperty("DetailEstimate"); }
+        }
+
+        public object Done
+        {
+            get { return GetProperty("Done"); }
+        }
+
+        public object Effort
+        {
+            get { return GetProperty("Effort"); }
+        }
+
+        // End Binding properties in order to show values in treenodes. 
+
+
         public string GetClassName() {
             return "Details";
         }
@@ -68,6 +120,11 @@ namespace VersionOne.VisualStudio.VSPackage.Descriptors {
 
         public EventDescriptorCollection GetEvents(Attribute[] attributes) {
             return TypeDescriptor.GetEvents(this, attributes, true);
+        }
+
+        public object GetProperty(string propertyName)
+        {
+          return GetProperties()[propertyName].GetValue(entity);
         }
 
         public PropertyDescriptorCollection GetProperties() {

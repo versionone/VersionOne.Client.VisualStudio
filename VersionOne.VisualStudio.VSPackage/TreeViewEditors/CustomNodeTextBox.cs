@@ -9,12 +9,12 @@ namespace VersionOne.VisualStudio.VSPackage.TreeViewEditors {
         
         public TextBox EditorTextBox {
             get {
-                return CurrentEditor as TextBox;
+                return Parent.CurrentEditor as TextBox;
             }
         }
 
         public ContextMenu EditorContextMenu {
-            get { return CurrentEditor != null ? CurrentEditor.ContextMenu : null; }
+            get { return Parent.CurrentEditor != null ? Parent.CurrentEditor.ContextMenu : null; }
             set { contextMenu = value; }
         }
 
@@ -39,9 +39,10 @@ namespace VersionOne.VisualStudio.VSPackage.TreeViewEditors {
         }
 
         private void UpdateEditor() {
-            if (EditorTextBox != null && !EditorTextBox.IsDisposed) {
-                EditorTextBox.ReadOnly = IsReadOnly;
-            }
+            //IsPropertyReadOnly = IsReadOnly;
+            //if (EditorTextBox != null && !EditorTextBox.IsDisposed) {
+            //    EditorTextBox.ReadOnly = IsReadOnly;
+            //}
         }
 
         protected override TextBox CreateTextBox() {

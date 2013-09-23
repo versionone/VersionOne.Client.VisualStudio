@@ -358,7 +358,8 @@ namespace VersionOne.VisualStudio.VSPackage.Controls {
         private static ContextMenu CreateReadonlyTextBoxContextMenu(NodeTextBox textBox) {
             var menu = new ContextMenu();
             var miCopyValue = new MenuItem("Copy");
-            miCopyValue.Click += (sender, e) => textBox.Copy();
+            // VP
+            //miCopyValue.Click += (sender, e) => textBox.Copy(((NodeTextBox)textBox).EditorTextBox);
             menu.MenuItems.Add(miCopyValue);
             return menu;
         }
