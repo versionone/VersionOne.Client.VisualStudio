@@ -39,6 +39,7 @@ namespace VersionOne.VisualStudio.VSPackage.TreeViewEditors {
         }
 
         private void UpdateEditor() {
+            //IsPropertyReadOnly = IsReadOnly;
             //if (EditorTextBox != null && !EditorTextBox.IsDisposed) {
             //    EditorTextBox.ReadOnly = IsReadOnly;
             //}

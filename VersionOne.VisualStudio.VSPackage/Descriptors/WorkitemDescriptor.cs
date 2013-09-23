@@ -39,25 +39,54 @@ namespace VersionOne.VisualStudio.VSPackage.Descriptors {
         }
 
         // Begin Binding properties in order to show values in treenodes. 
-        public string Title 
+        public object Title
         {
-            get { return GetProperties()["Title"].GetValue(entity).ToString();}
+          get { return GetProperty("Title"); }
         }
 
-        public string ID
+        public object ID
         {
-            get { return GetProperties()["ID"].GetValue(entity).ToString();}
+          get
+          {
+            return GetProperty("ID");
+          }
         }
 
-        public string Owner
+        public object Owner
         {
-            get { return GetProperties()["Owner"].GetValue(entity).ToString(); }
+          get { return GetProperty("Owner"); }
         }
 
-        public System.Drawing.Bitmap Icon
+        public object Icon
         {
-            get { return (System.Drawing.Bitmap)GetProperties()["Icon"].GetValue(entity); }
+            get { return GetProperty("Icon"); }
         }
+
+        public object Status
+        {
+          get { return GetProperty("Status"); }
+        }
+
+        public object Estimate 
+        {
+          get { return GetProperty("Estimate"); }
+        }
+
+        public object DetailEstimate
+        {
+          get { return GetProperty("DetailEstimate"); }
+        }
+
+        public object Done
+        {
+            get { return GetProperty("Done"); }
+        }
+
+        public object Effort
+        {
+            get { return GetProperty("Effort"); }
+        }
+
         // End Binding properties in order to show values in treenodes. 
 
 
@@ -91,6 +120,11 @@ namespace VersionOne.VisualStudio.VSPackage.Descriptors {
 
         public EventDescriptorCollection GetEvents(Attribute[] attributes) {
             return TypeDescriptor.GetEvents(this, attributes, true);
+        }
+
+        public object GetProperty(string propertyName)
+        {
+          return GetProperties()[propertyName].GetValue(entity);
         }
 
         public PropertyDescriptorCollection GetProperties() {
