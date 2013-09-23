@@ -37,6 +37,7 @@
     <BootstrapperEnabled>true</BootstrapperEnabled>
     <SolutionDir Condition="$(SolutionDir) == '' Or $(SolutionDir) == '*Undefined*'">..\</SolutionDir>
     <RestorePackages>true</RestorePackages>
+    <TargetFrameworkProfile />
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
     <DebugSymbols>true</DebugSymbols>
@@ -46,6 +47,7 @@
     <DefineConstants>DEBUG;TRACE</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
+    <Prefer32Bit>false</Prefer32Bit>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
     <DebugType>pdbonly</DebugType>
@@ -55,14 +57,16 @@
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
     <RunCodeAnalysis>true</RunCodeAnalysis>
+    <Prefer32Bit>false</Prefer32Bit>
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="Aga.Controls, Version=1.7.0.0, Culture=neutral, PublicKeyToken=fcc90fbf924463a3, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
       <HintPath>..\packages\TreeViewAdv.1.7.0.0\lib\net\Aga.Controls.dll</HintPath>
     </Reference>
-    <Reference Include="HtmlEditor">
-      <HintPath>..\packages\HtmlEditor.1.0.4967.26938\lib\HtmlEditor.dll</HintPath>
+    <Reference Include="HtmlEditor, Version=1.0.5009.18932, Culture=neutral, PublicKeyToken=2c8737fc352bd9c2, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\packages\HtmlEditor.1.0.5009.18932\lib\HtmlEditor.dll</HintPath>
     </Reference>
     <Reference Include="Microsoft.CSharp" />
     <Reference Include="Microsoft.VisualStudio.OLE.Interop" />
@@ -160,6 +164,7 @@
     <Compile Include="Controllers\OptionsPageController.cs" />
     <Compile Include="Controllers\ProjectTreeController.cs" />
     <Compile Include="Controllers\WorkitemTreeController.cs" />
+    <Compile Include="Controls\AdvTreeViewExtensions.cs" />
     <Compile Include="Controls\ErrorMessageControl.cs">
       <SubType>UserControl</SubType>
     </Compile>
@@ -347,7 +352,9 @@
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
       <IncludeInVSIX>true</IncludeInVSIX>
     </Content>
-    <None Include="packages.config" />
+    <None Include="packages.config">
+      <SubType>Designer</SubType>
+    </None>
     <None Include="Resources\SpinnerImage.gif" />
     <Resource Include="Resources\AddDefect.gif" />
     <Resource Include="Resources\AddStory.gif" />
