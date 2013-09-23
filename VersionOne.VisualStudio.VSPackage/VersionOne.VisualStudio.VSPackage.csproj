@@ -159,6 +159,7 @@
     <Compile Include="Controllers\OptionsPageController.cs" />
     <Compile Include="Controllers\ProjectTreeController.cs" />
     <Compile Include="Controllers\WorkitemTreeController.cs" />
+    <Compile Include="Controls\AdvTreeViewExtensions.cs" />
     <Compile Include="Controls\ErrorMessageControl.cs">
       <SubType>UserControl</SubType>
     </Compile>
