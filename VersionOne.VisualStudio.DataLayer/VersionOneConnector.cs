@@ -82,8 +82,16 @@ namespace VersionOne.VisualStudio.DataLayer {
         }
 
         public void CheckConnection(VersionOneSettings settings) {
-            var connectionValidator = new V1ConnectionValidator(settings.Path, settings.Username, settings.Password, settings.Integrated, GetProxy(settings.ProxySettings));
-            connectionValidator.Test(ApiVersion);
+	        if (settings.OAuth2)
+	        {
+		        return;
+	        }
+	        else
+	        {
+		        var connectionValidator = new V1ConnectionValidator(settings.Path, settings.Username, settings.Password,
+		                                                            settings.Integrated, GetProxy(settings.ProxySettings));
+		        connectionValidator.Test(ApiVersion);
+	        }
         }
     }
 }
