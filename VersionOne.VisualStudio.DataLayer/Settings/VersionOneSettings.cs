@@ -14,7 +14,9 @@
 
         public ProxyConnectionSettings ProxySettings { get; set; }
 
-        public VersionOneSettings() {
+        public VersionOneSettings()
+        {
+	        OAuth2 = true;
             ProxySettings = new ProxyConnectionSettings();
         }
     }
