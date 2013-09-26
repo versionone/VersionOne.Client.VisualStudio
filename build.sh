@@ -193,7 +193,6 @@ if [ -z "$NUNIT_XML_OUTPUT" ]
   then
     NUNIT_XML_OUTPUT="nunit-VisualStudioClient-result.xml"
   fi
-
 # Make sure the nunit-console is available first...
 NUNIT_CONSOLE_RUNNER=`/usr/bin/find packages | grep "${NUNIT_RUNNER_NAME}\$"`
 if [ -z "$NUNIT_CONSOLE_RUNNER" ]
@@ -201,7 +200,6 @@ then
 echo "Could not find $NUNIT_RUNNER_NAME in the $WORKSPACE/packages folder."
   exit -1
 fi
-
 
 if [ -e /etc/bash.bashrc ] ; then
   # Cygwin specific settings
