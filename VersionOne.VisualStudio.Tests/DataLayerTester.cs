@@ -16,11 +16,10 @@ using OmProject = VersionOne.SDK.ObjectModel.Project;
 
 namespace VersionOne.VisualStudio.Tests {
     [TestFixture]
-    [Ignore("These tests need instance of VersionOne server and user with Admin permissions. Required enabled Effort Tracking.")]
     public class DataLayerTester {
         private readonly IDataLayerInternal dataLayer = new ApiDataLayer();
 
-        private const string V1Url = "http://integsrv01/VersionOne12/";
+        private const string V1Url = "https://www14.v1host.com/v1sdktesting/";
         private const string Username = "admin";
         private const string Password = "admin";
         private const bool Integrated = false;
@@ -201,7 +200,7 @@ namespace VersionOne.VisualStudio.Tests {
             Assert.AreEqual(2, stories.Count);
             Assert.AreEqual(story1.ID.Token, stories[0].Id, "First story ID");
             Assert.AreEqual("Story 1", stories[0].GetProperty(Entity.NameProperty), "Story name");
-            Assert.AreEqual(null, stories[0].GetProperty(Entity.DoneProperty), "Story efforts sum");
+            Assert.AreEqual(story1.Done, stories[0].GetProperty(Entity.DoneProperty), "Story efforts sum");
             Assert.AreEqual(2, stories[0].Children.Count, "First story children count");
             Assert.AreEqual(task1.ID.Token, stories[0].Children[0].Id, "First story first task ID");
             Assert.AreEqual(story2.ID.Token, stories[1].Id, "Second story ID");
