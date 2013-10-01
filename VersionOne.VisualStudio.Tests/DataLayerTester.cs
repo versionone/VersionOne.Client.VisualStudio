@@ -17,7 +17,6 @@ using Workitem = VersionOne.VisualStudio.DataLayer.Entities.Workitem;
 
 namespace VersionOne.VisualStudio.Tests {
     [TestFixture]
-    
     public class DataLayerTester {
         private readonly IDataLayerInternal dataLayer = new ApiDataLayer();
 
@@ -202,7 +201,7 @@ namespace VersionOne.VisualStudio.Tests {
             Assert.AreEqual(2, stories.Count);
             Assert.AreEqual(story1.ID.Token, stories[0].Id, "First story ID");
             Assert.AreEqual("Story 1", stories[0].GetProperty(Entity.NameProperty), "Story name");
-            Assert.AreEqual(null, stories[0].GetProperty(Entity.DoneProperty), "Story efforts sum");
+            Assert.AreEqual(story1.Done, stories[0].GetProperty(Entity.DoneProperty), "Story efforts sum");
             Assert.AreEqual(2, stories[0].Children.Count, "First story children count");
             Assert.AreEqual(task1.ID.Token, stories[0].Children[0].Id, "First story first task ID");
             Assert.AreEqual(story2.ID.Token, stories[1].Id, "Second story ID");
