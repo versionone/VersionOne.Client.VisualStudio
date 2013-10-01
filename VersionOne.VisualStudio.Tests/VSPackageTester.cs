@@ -5,7 +5,6 @@ using NUnit.Framework;
 
 namespace VersionOne.VisualStudio.Tests {
     [TestFixture]
-    [Ignore("There are issues with these tests, and they are not really so useful")]
     public class VSPackageTester {
         [Test]
         public void CreateInstance() {

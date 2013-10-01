@@ -43,7 +43,7 @@ namespace VersionOne.VisualStudio.VSPackage.Settings {
 
         private static string ConfigurationFile {
             get {
-                var info = new DirectoryInfo(Assembly.GetCallingAssembly().Location);
+                var info = new DirectoryInfo(new System.Uri(Assembly.GetCallingAssembly().CodeBase).LocalPath);
                 return info.Parent.FullName + "\\configuration.xml";
             }
         }
