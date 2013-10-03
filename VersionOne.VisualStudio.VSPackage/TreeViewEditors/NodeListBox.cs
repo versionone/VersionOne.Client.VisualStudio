@@ -53,7 +53,7 @@ namespace VersionOne.VisualStudio.VSPackage.TreeViewEditors {
             SetSelectionItems(listBox, propertyValues);
 
             listBox.LostFocus += EditorDropDownClosed;
-            listBox.Click += ListBoxClick;
+            //listBox.Click += ListBoxClick;
             SetEditControlProperties(listBox, node);
             listBox.IntegralHeight = false;
             listBox.ScrollAlwaysVisible = true;            

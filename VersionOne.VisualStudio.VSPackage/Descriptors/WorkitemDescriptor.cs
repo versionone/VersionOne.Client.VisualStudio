@@ -15,6 +15,16 @@ namespace VersionOne.VisualStudio.VSPackage.Descriptors {
         private readonly bool iconless;
         private readonly PropertyDescriptorCollection propertyDescriptors = new PropertyDescriptorCollection(new PropertyDescriptor[] {});
 
+        private object title;
+        private object owner;
+        private object status;
+        private object done;
+        private object estimate;
+        private object detailEstimate;
+        private object effort;
+
+
+
         private readonly IDataLayer dataLayer;
 
         public WorkitemDescriptor(Entity entity, IEnumerable<ColumnSetting> columns, PropertyUpdateSource updateSource, bool iconless) {
@@ -41,7 +51,16 @@ namespace VersionOne.VisualStudio.VSPackage.Descriptors {
         // Begin Binding properties in order to show values in treenodes. 
         public object Title
         {
-          get { return GetProperty("Title"); }
+            get {
+                if (title==null)
+                {
+                    title = this.GetProperty("Title");
+                }
+                return title;
+            }
+            set { 
+                title = value; 
+            }
         }
 
         public object ID
@@ -54,7 +73,17 @@ namespace VersionOne.VisualStudio.VSPackage.Descriptors {
 
         public object Owner
         {
-          get { return GetProperty("Owner"); }
+          
+            get {
+                if (owner == null)
+                {
+                    owner = GetProperty("Owner");
+                }
+                return owner; 
+            }
+            set {
+                owner = value;
+            }
         }
 
         public object Icon
@@ -64,27 +93,77 @@ namespace VersionOne.VisualStudio.VSPackage.Descriptors {
 
         public object Status
         {
-          get { return GetProperty("Status"); }
+            get {
+                if (status == null)
+                {
+                    status = GetProperty("Status");
+                }
+                return status;
+            }
+            set
+            {
+                status = value;
+            }
         }
 
         public object Estimate 
         {
-          get { return GetProperty("Estimate"); }
+          get {
+              if (estimate == null)
+              {
+                  estimate = GetProperty("Estimate");
+              }
+              return estimate;
+          }
+            set
+            {
+                estimate = value;
+            }
         }
 
         public object DetailEstimate
         {
-          get { return GetProperty("DetailEstimate"); }
+          get {
+              if (detailEstimate == null)
+              {
+                  detailEstimate = GetProperty("DetailEstimate");
+              }
+              return detailEstimate;
+          }
+            set
+            {
+                detailEstimate = value;
+            }
         }
 
         public object Done
         {
-            get { return GetProperty("Done"); }
+            get {
+                if (done == null)
+                {
+                    done = GetProperty("Done");
+                }
+                return done;
+            }
+            set
+            {
+                done = value;
+            }
         }
 
         public object Effort
         {
-            get { return GetProperty("Effort"); }
+            get {
+                if (effort == null)
+                {
+                    effort = GetProperty("Effort");
+                }
+                return effort;
+            }
+            set
+            {
+                effort = value;
+            }
         }
 
         // End Binding properties in order to show values in treenodes. 
