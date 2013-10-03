@@ -41,50 +41,62 @@ namespace VersionOne.VisualStudio.VSPackage.Descriptors {
         // Begin Binding properties in order to show values in treenodes. 
         public object Title
         {
-          get { return GetProperty("Title"); }
+            get { return GetProperty("Title"); }
+            set { SetProperty("Title", value); }
         }
 
         public object ID
         {
-          get
-          {
-            return GetProperty("ID");
-          }
+            get { return GetProperty("ID"); }
+            set { SetProperty("ID", value); }
         }
 
         public object Owner
         {
-          get { return GetProperty("Owner"); }
+            get { return GetProperty("Owner"); }
+            set { SetProperty("Owner", value); }
         }
 
         public object Icon
         {
             get { return GetProperty("Icon"); }
+            set { SetProperty("Icon", value); }
         }
 
         public object Status
         {
-          get { return GetProperty("Status"); }
+            get { return GetProperty("Status"); }
+            set { SetProperty("Status", value); }
         }
 
         public object Estimate 
         {
-          get { return GetProperty("Estimate"); }
+            get { return GetProperty("Estimate"); }
+            set { SetProperty("Estimate", value); }
         }
 
         public object DetailEstimate
         {
-          get { return GetProperty("DetailEstimate"); }
+            get { return GetProperty("DetailEstimate"); }
+            set { SetProperty("DetailEstimate", value); }
         }
 
         public object Done
         {
             get { return GetProperty("Done"); }
+            set { SetProperty("Done", value); }
         }
 
         public object Effort
         {
             get { return GetProperty("Effort"); }
+            set { SetProperty("Effort", value); }
+        }
+
+        public object ToDo
+        {
+            get { return GetProperty("ToDo"); }
+            set { SetProperty("ToDo", value); }
         }
 
         // End Binding properties in order to show values in treenodes. 
@@ -125,6 +137,11 @@ namespace VersionOne.VisualStudio.VSPackage.Descriptors {
         public object GetProperty(string propertyName)
         {
           return GetProperties()[propertyName].GetValue(entity);
+        }
+
+        public void SetProperty(string propertyName, object value)
+        {
+            GetProperties()[propertyName].SetValue(entity, value);
         }
 
         public PropertyDescriptorCollection GetProperties() {

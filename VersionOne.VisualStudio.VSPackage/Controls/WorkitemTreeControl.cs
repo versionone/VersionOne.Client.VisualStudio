@@ -179,13 +179,14 @@ namespace VersionOne.VisualStudio.VSPackage.Controls {
 
                 columnToAttributeMappings.Add(dataPropertyName, column.Attribute);
 
-			    var treeColumn = new TreeColumn(dataPropertyName, column.Width) { SortOrder = SortOrder.None, TooltipText = dataPropertyName };
+                var treeColumn = new TreeColumn(dataPropertyName, column.Width) { SortOrder = SortOrder.None, TooltipText = dataPropertyName };
 
 			    switch(column.Type) {
                     case "String":
                     case "Effort":
                         var textEditor = new CustomNodeTextBox();
                         ConfigureEditor(textEditor, dataPropertyName);
+                        textEditor.EditEnabled = !textEditor.IsReadOnly;
                         textEditor.IsColumnReadOnly = column.ReadOnly;
                         textEditor.ParentColumn = treeColumn;
                         textEditor.IsEditEnabledValueNeeded += CheckCellEditability;
@@ -355,11 +356,10 @@ namespace VersionOne.VisualStudio.VSPackage.Controls {
         #endregion
 
 
-        private static ContextMenu CreateReadonlyTextBoxContextMenu(NodeTextBox textBox) {
+        private static ContextMenu CreateReadonlyTextBoxContextMenu(CustomNodeTextBox textBox) {
             var menu = new ContextMenu();
             var miCopyValue = new MenuItem("Copy");
-            // VP
-            //miCopyValue.Click += (sender, e) => textBox.Copy(((NodeTextBox)textBox).EditorTextBox);
+            miCopyValue.Click += (sender, e) => textBox.Copy(textBox.EditorTextBox);
             menu.MenuItems.Add(miCopyValue);
             return menu;
         }

@@ -6,10 +6,12 @@ namespace VersionOne.VisualStudio.VSPackage.TreeViewEditors {
         private bool isColumnReadOnly;
         private bool isPropertyReadOnly;
         private ContextMenu contextMenu;
+
+        private TextBox textBox;
         
         public TextBox EditorTextBox {
             get {
-                return Parent.CurrentEditor as TextBox;
+                return this.textBox;
             }
         }
 
@@ -39,14 +41,13 @@ namespace VersionOne.VisualStudio.VSPackage.TreeViewEditors {
         }
 
         private void UpdateEditor() {
-            //IsPropertyReadOnly = IsReadOnly;
-            //if (EditorTextBox != null && !EditorTextBox.IsDisposed) {
-            //    EditorTextBox.ReadOnly = IsReadOnly;
-            //}
+            if (EditorTextBox != null && !EditorTextBox.IsDisposed) {
+                EditorTextBox.ReadOnly = IsReadOnly;
+            }
         }
 
         protected override TextBox CreateTextBox() {
-            TextBox textBox = new TextBox();
+            this.textBox = new TextBox();
             textBox.ReadOnly = IsReadOnly;
             if(contextMenu != null) {
                 textBox.ContextMenu = contextMenu;
