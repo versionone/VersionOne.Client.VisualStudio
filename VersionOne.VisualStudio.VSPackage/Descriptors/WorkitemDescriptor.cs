@@ -15,16 +15,6 @@ namespace VersionOne.VisualStudio.VSPackage.Descriptors {
         private readonly bool iconless;
         private readonly PropertyDescriptorCollection propertyDescriptors = new PropertyDescriptorCollection(new PropertyDescriptor[] {});
 
-        private object title;
-        private object owner;
-        private object status;
-        private object done;
-        private object estimate;
-        private object detailEstimate;
-        private object effort;
-
-
-
         private readonly IDataLayer dataLayer;
 
         public WorkitemDescriptor(Entity entity, IEnumerable<ColumnSetting> columns, PropertyUpdateSource updateSource, bool iconless) {
@@ -51,119 +41,62 @@ namespace VersionOne.VisualStudio.VSPackage.Descriptors {
         // Begin Binding properties in order to show values in treenodes. 
         public object Title
         {
-            get {
-                if (title==null)
-                {
-                    title = this.GetProperty("Title");
-                }
-                return title;
-            }
-            set { 
-                title = value; 
-            }
+            get { return GetProperty("Title"); }
+            set { SetProperty("Title", value); }
         }
 
         public object ID
         {
-          get
-          {
-            return GetProperty("ID");
-          }
+            get { return GetProperty("ID"); }
+            set { SetProperty("ID", value); }
         }
 
         public object Owner
         {
-          
-            get {
-                if (owner == null)
-                {
-                    owner = GetProperty("Owner");
-                }
-                return owner; 
-            }
-            set {
-                owner = value;
-            }
+            get { return GetProperty("Owner"); }
+            set { SetProperty("Owner", value); }
         }
 
         public object Icon
         {
             get { return GetProperty("Icon"); }
+            set { SetProperty("Icon", value); }
         }
 
         public object Status
         {
-            get {
-                if (status == null)
-                {
-                    status = GetProperty("Status");
-                }
-                return status;
-            }
-            set
-            {
-                status = value;
-            }
+            get { return GetProperty("Status"); }
+            set { SetProperty("Status", value); }
         }
 
         public object Estimate 
         {
-          get {
-              if (estimate == null)
-              {
-                  estimate = GetProperty("Estimate");
-              }
-              return estimate;
-          }
-            set
-            {
-                estimate = value;
-            }
+            get { return GetProperty("Estimate"); }
+            set { SetProperty("Estimate", value); }
         }
 
         public object DetailEstimate
         {
-          get {
-              if (detailEstimate == null)
-              {
-                  detailEstimate = GetProperty("DetailEstimate");
-              }
-              return detailEstimate;
-          }
-            set
-            {
-                detailEstimate = value;
-            }
+            get { return GetProperty("DetailEstimate"); }
+            set { SetProperty("DetailEstimate", value); }
         }
 
         public object Done
         {
-            get {
-                if (done == null)
-                {
-                    done = GetProperty("Done");
-                }
-                return done;
-            }
-            set
-            {
-                done = value;
-            }
+            get { return GetProperty("Done"); }
+            set { SetProperty("Done", value); }
         }
 
         public object Effort
         {
-            get {
-                if (effort == null)
-                {
-                    effort = GetProperty("Effort");
-                }
-                return effort;
-            }
-            set
-            {
-                effort = value;
-            }
+            get { return GetProperty("Effort"); }
+            set { SetProperty("Effort", value); }
+        }
+
+        public object ToDo
+        {
+            get { return GetProperty("ToDo"); }
+            set { SetProperty("ToDo", value); }
         }
 
         // End Binding properties in order to show values in treenodes. 
@@ -204,6 +137,11 @@ namespace VersionOne.VisualStudio.VSPackage.Descriptors {
         public object GetProperty(string propertyName)
         {
           return GetProperties()[propertyName].GetValue(entity);
+        }
+
+        public void SetProperty(string propertyName, object value)
+        {
+            GetProperties()[propertyName].SetValue(entity, value);
         }
 
         public PropertyDescriptorCollection GetProperties() {

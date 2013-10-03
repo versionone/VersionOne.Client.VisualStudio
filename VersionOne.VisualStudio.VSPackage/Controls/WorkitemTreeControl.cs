@@ -179,7 +179,7 @@ namespace VersionOne.VisualStudio.VSPackage.Controls {
 
                 columnToAttributeMappings.Add(dataPropertyName, column.Attribute);
 
-			    var treeColumn = new TreeColumn(dataPropertyName, column.Width) { SortOrder = SortOrder.None, TooltipText = dataPropertyName };
+                var treeColumn = new TreeColumn(dataPropertyName, column.Width) { SortOrder = SortOrder.None, TooltipText = dataPropertyName };
 
 			    switch(column.Type) {
                     case "String":
