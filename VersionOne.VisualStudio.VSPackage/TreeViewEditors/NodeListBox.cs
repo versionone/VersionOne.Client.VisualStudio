@@ -52,8 +52,6 @@ namespace VersionOne.VisualStudio.VSPackage.TreeViewEditors {
 
             SetSelectionItems(listBox, propertyValues);
 
-            listBox.LostFocus += EditorDropDownClosed;
-            listBox.Click += ListBoxClick;
             SetEditControlProperties(listBox, node);
             listBox.IntegralHeight = false;
             listBox.ScrollAlwaysVisible = true;            
@@ -73,10 +71,6 @@ namespace VersionOne.VisualStudio.VSPackage.TreeViewEditors {
             foreach (var item in propertyValues) {
                 listBox.SelectedItems.Add(item);
             }
-        }
-
-        private void EditorDropDownClosed(object sender, EventArgs e) {
-            EndEdit(true);
         }
 
         public override void UpdateEditor(Control control) {
@@ -105,12 +99,6 @@ namespace VersionOne.VisualStudio.VSPackage.TreeViewEditors {
         public override void MouseUp(TreeNodeAdvMouseEventArgs args) {
             if (args.Node != null && args.Node.IsSelected) {
                 base.MouseUp(args);
-            }
-        }
-
-        private void ListBoxClick(object sender, EventArgs e) {
-            if (Control.ModifierKeys != Keys.Control) {
-                EndEdit(true);
             }
         }
     }
