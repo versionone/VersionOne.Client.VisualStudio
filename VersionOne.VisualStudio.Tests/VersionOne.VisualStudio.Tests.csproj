@@ -68,26 +68,6 @@
       <SpecificVersion>False</SpecificVersion>
       <HintPath>..\packages\Ninject.3.0.1.10\lib\net45-full\Ninject.dll</HintPath>
     </Reference>
-    <Reference Include="nunit.core">
-      <HintPath>..\packages\NUnitTestAdapter.0.97\lib\nunit.core.dll</HintPath>
-      <Private>False</Private>
-    </Reference>
-    <Reference Include="nunit.core.interfaces">
-      <HintPath>..\packages\NUnitTestAdapter.0.97\lib\nunit.core.interfaces.dll</HintPath>
-      <Private>False</Private>
-    </Reference>
-    <Reference Include="nunit.framework, Version=2.6.2.12296, Culture=neutral, PublicKeyToken=96d09a1eb7f44a77, processorArchitecture=MSIL">
-      <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\packages\NUnit.2.6.2\lib\nunit.framework.dll</HintPath>
-    </Reference>
-    <Reference Include="nunit.util">
-      <HintPath>..\packages\NUnitTestAdapter.0.97\lib\nunit.util.dll</HintPath>
-      <Private>False</Private>
-    </Reference>
-    <Reference Include="NUnit.VisualStudio.TestAdapter">
-      <HintPath>..\packages\NUnitTestAdapter.0.97\lib\NUnit.VisualStudio.TestAdapter.dll</HintPath>
-      <Private>False</Private>
-    </Reference>
     <Reference Include="nunit.framework, Version=2.6.2.12296, Culture=neutral, PublicKeyToken=96d09a1eb7f44a77, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
       <HintPath>..\packages\NUnit.2.6.2\lib\nunit.framework.dll</HintPath>
@@ -97,22 +77,22 @@
       <HintPath>..\packages\RhinoMocks.3.6.1\lib\net\Rhino.Mocks.dll</HintPath>
     </Reference>
     <Reference Include="System" />
+    <Reference Include="System.Configuration" />
     <Reference Include="System.Core" />
     <Reference Include="System.Xml.Linq" />
     <Reference Include="Microsoft.CSharp" />
     <Reference Include="System.Data" />
     <Reference Include="System.Xml" />
-    <Reference Include="VersionOne.SDK.APIClient, Version=8.0.478.0, Culture=neutral, PublicKeyToken=e0f410c10d2e7630, processorArchitecture=MSIL">
-      <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\packages\VersionOne.SDK.APIClient.12.4.0.153\lib\net40\VersionOne.SDK.APIClient.dll</HintPath>
+    <Reference Include="VersionOne.SDK.APIClient">
+      <HintPath>..\packages\VersionOne.SDK.APIClient.12.5.0.181\lib\net40\VersionOne.SDK.APIClient.dll</HintPath>
     </Reference>
-    <Reference Include="VersionOne.SDK.ObjectModel, Version=8.0.478.0, Culture=neutral, PublicKeyToken=e0f410c10d2e7630, processorArchitecture=MSIL">
-      <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\packages\VersionOne.SDK.ObjectModel.12.3.211.0\lib\net40\VersionOne.SDK.ObjectModel.dll</HintPath>
+    <Reference Include="VersionOne.SDK.ObjectModel">
+      <HintPath>..\packages\VersionOne.SDK.ObjectModel.13.0.0.815\lib\net40\VersionOne.SDK.ObjectModel.dll</HintPath>
     </Reference>
   </ItemGroup>
   <ItemGroup>
     <Compile Include="BaseTester.cs" />
+    <Compile Include="TestConfiguration.cs" />
     <Compile Include="DataLayerTester.cs" />
     <Compile Include="EffortTrackingTester.cs" />
     <Compile Include="OptionsPageControllerTester.cs" />
@@ -135,6 +115,9 @@
     <WCFMetadata Include="Service References\" />
   </ItemGroup>
   <ItemGroup>
+    <None Include="App.config">
+      <SubType>Designer</SubType>
+    </None>
     <None Include="packages.config">
       <SubType>Designer</SubType>
     </None>

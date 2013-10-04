@@ -1,8 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Configuration;
 using System.Linq;
-using NUnit.Framework;
 using Ninject;
+using NUnit.Framework;
 using VersionOne.SDK.APIClient;
 using VersionOne.SDK.ObjectModel;
 using VersionOne.SDK.ObjectModel.Filters;
@@ -10,19 +11,18 @@ using VersionOne.VisualStudio.DataLayer;
 using VersionOne.VisualStudio.DataLayer.Settings;
 
 using Entity = VersionOne.VisualStudio.DataLayer.Entities.Entity;
+using OmProject = VersionOne.SDK.ObjectModel.Project;
 using Project = VersionOne.VisualStudio.DataLayer.Entities.Project;
 using Workitem = VersionOne.VisualStudio.DataLayer.Entities.Workitem;
-using OmProject = VersionOne.SDK.ObjectModel.Project;
 
 namespace VersionOne.VisualStudio.Tests {
     [TestFixture]
-    [Ignore("These tests need instance of VersionOne server and user with Admin permissions. Required enabled Effort Tracking.")]
     public class DataLayerTester {
         private readonly IDataLayerInternal dataLayer = new ApiDataLayer();
 
-        private const string V1Url = "http://integsrv01/VersionOne12/";
-        private const string Username = "admin";
-        private const string Password = "admin";
+        private string V1Url = TestConfiguration.GetVariable("V1Url");
+        private string Username = TestConfiguration.GetVariable("V1User");
+        private string Password = TestConfiguration.GetVariable("V1Pass");
         private const bool Integrated = false;
 
         private const string TestProjectName = "VS Integration tests project";
@@ -201,7 +201,7 @@ namespace VersionOne.VisualStudio.Tests {
             Assert.AreEqual(2, stories.Count);
             Assert.AreEqual(story1.ID.Token, stories[0].Id, "First story ID");
             Assert.AreEqual("Story 1", stories[0].GetProperty(Entity.NameProperty), "Story name");
-            Assert.AreEqual(null, stories[0].GetProperty(Entity.DoneProperty), "Story efforts sum");
+            Assert.AreEqual(story1.Done, stories[0].GetProperty(Entity.DoneProperty), "Story efforts sum");
             Assert.AreEqual(2, stories[0].Children.Count, "First story children count");
             Assert.AreEqual(task1.ID.Token, stories[0].Children[0].Id, "First story first task ID");
             Assert.AreEqual(story2.ID.Token, stories[1].Id, "Second story ID");

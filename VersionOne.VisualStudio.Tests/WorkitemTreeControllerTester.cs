@@ -259,34 +259,17 @@ namespace VersionOne.VisualStudio.Tests {
         }
 
         [Test]
-        [Ignore("Rewrite to cover ProjectSelected")]
         public void ModelChangedEvent() {
+            ExpectRegisterAndPrepareView();
+
             Expect.Call(() => eventDispatcherMock.ModelChanged += null).IgnoreArguments();
             var raiser = LastCall.GetEventRaiser();
-            Expect.Call(viewMock.Controller).PropertyBehavior();
-            Expect.Call(dataLayerMock.CurrentProject).Return(null);
-            Expect.Call(viewMock.Title).IgnoreArguments().PropertyBehavior();
-            Expect.Call(viewMock.Model).IgnoreArguments().PropertyBehavior();
-            Expect.Call(viewMock.ReconfigureTreeColumns);
-            Expect.Call(viewMock.CheckSettingsAreValid()).Return(true);
-            Expect.Call(viewMock.ReconfigureTreeColumns);
-            Expect.Call(viewMock.SetSelection);
-            Expect.Call(viewMock.Refresh);
-            Expect.Call(viewMock.CurrentWorkitemDescriptor).Return(null);
-            Expect.Call(viewMock.AddTaskCommandEnabled).IgnoreArguments().PropertyBehavior();
-            Expect.Call(viewMock.AddTestCommandEnabled).IgnoreArguments().PropertyBehavior();
-            Expect.Call(viewMock.AddDefectCommandEnabled).IgnoreArguments().PropertyBehavior();
-
-            Expect.Call(dataLayerMock.CurrentProject).Return(null);
-            Expect.Call(viewMock.CheckSettingsAreValid()).Return(false);
-            Expect.Call(viewMock.ResetPropertyView);
-            Expect.Call(viewMock.Refresh);
-            Expect.Call(viewMock.CurrentWorkitemDescriptor).Return(null);
-
+            
             mockRepository.ReplayAll();
-
+            
             controller.Register(viewMock);
             controller.PrepareView();
+
             raiser.Raise(null, new ModelChangedArgs(EventReceiver.WorkitemView, EventContext.ProjectSelected));
 
             mockRepository.VerifyAll();

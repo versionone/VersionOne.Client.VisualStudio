@@ -60,7 +60,7 @@
     <Reference Include="System.Data" />
     <Reference Include="System.Xml" />
     <Reference Include="VersionOne.SDK.APIClient">
-      <HintPath>..\packages\VersionOne.SDK.APIClient.12.4.0.153\lib\net40\VersionOne.SDK.APIClient.dll</HintPath>
+      <HintPath>..\packages\VersionOne.SDK.APIClient.12.5.0.181\lib\net40\VersionOne.SDK.APIClient.dll</HintPath>
     </Reference>
   </ItemGroup>
   <ItemGroup>
