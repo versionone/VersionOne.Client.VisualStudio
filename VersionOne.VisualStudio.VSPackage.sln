@@ -1,14 +1,6 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio 2012
-Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Build", "Build", "{C49E0D2E-0D19-414E-A95B-97AD10B19A51}"
-	ProjectSection(SolutionItems) = preProject
-		VersionOne.VisualStudio.build = VersionOne.VisualStudio.build
-		VersionOne.VisualStudio.New-TeamCityLaunch.build = VersionOne.VisualStudio.New-TeamCityLaunch.build
-		VersionOne.VisualStudio.Public.build = VersionOne.VisualStudio.Public.build
-		VersionOne.VisualStudio.Setup.inc = VersionOne.VisualStudio.Setup.inc
-	EndProjectSection
-EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "VersionOne.VisualStudio.VSPackage", "VersionOne.VisualStudio.VSPackage\VersionOne.VisualStudio.VSPackage.csproj", "{8846BCCB-1012-470B-AD8F-81E6CA80D197}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "VersionOne.VisualStudio.DataLayer", "VersionOne.VisualStudio.DataLayer\VersionOne.VisualStudio.DataLayer.csproj", "{1BD989CB-941F-412A-8D95-52067EEC9F58}"
