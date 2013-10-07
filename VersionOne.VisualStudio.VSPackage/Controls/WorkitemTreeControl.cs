@@ -325,6 +325,7 @@ namespace VersionOne.VisualStudio.VSPackage.Controls {
             }
         }
 
+        // Reporduce the Alt + Enter behavior
         private void miProperties_Click(object sender, EventArgs e)
         {
             SendKeys.Send("{F4}");
