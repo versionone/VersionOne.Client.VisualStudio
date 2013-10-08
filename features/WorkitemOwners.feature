@@ -27,10 +27,16 @@ Scenario: Save Workitem "Story with Inactive Member"
   When I "Save"
   Then I should see "Future" Status for "Story with Inactive Member" in the VersionOne Web UI
 
-When I try to sign up for "Story with Inactivated Member"
-Then ...
-
-
+Scenario: Sign Me Up adds me to the Owners of a Workitem
+-- TODO: add issue to rename "Signup" to "Sign Me Up"
+  Given a Member with
+    Name : "Carlena Active"
+    Nickname: "CarlenaAc"
+    Username: "carlenaactive"
+  And I have configured client is configured with Member named "Carlena Active"
+  When I invoke the "Sign Me Up" command on "Story with Inactive Member"
+  Then I see the Owners field updated to include Member "CarlenaAc"
+  And I see the Owners field updated to include Member "CarlenaAc" in the VersionOne Web UI
 
 When I open the Owners drop-down for "Story with Inactivated Member"
 Then ...
