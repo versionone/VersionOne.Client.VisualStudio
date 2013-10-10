@@ -49,6 +49,8 @@ namespace VersionOne.VisualStudio.VSPackage.Controls {
             this.miNewTask = new System.Windows.Forms.MenuItem();
             this.miNewDefect = new System.Windows.Forms.MenuItem();
             this.miNewTest = new System.Windows.Forms.MenuItem();
+            this.miSeparator5 = new System.Windows.Forms.MenuItem();
+            this.miProperties = new System.Windows.Forms.MenuItem();
             this.lblLoading = new System.Windows.Forms.Label();
             this.tvWorkitems = new Aga.Controls.Tree.TreeViewAdv();
             this.tsMenu.SuspendLayout();
@@ -178,7 +180,9 @@ namespace VersionOne.VisualStudio.VSPackage.Controls {
             this.miSeparator4,
             this.miNewTask,
             this.miNewDefect,
-            this.miNewTest});
+            this.miNewTest,
+            this.miSeparator5,
+            this.miProperties});
             // 
             // miSave
             // 
@@ -234,6 +238,16 @@ namespace VersionOne.VisualStudio.VSPackage.Controls {
             // 
             this.miNewTest.Index = 10;
             this.miNewTest.Text = "New Test";
+            //
+            //miSeparator5
+            //
+            this.miSeparator5.Index = 11;
+            this.miSeparator5.Text = "-";
+            //
+            //miProperties
+            //
+            this.miProperties.Index = 12;
+            this.miProperties.Text = "Properties";
             // 
             // lblLoading
             // 
@@ -314,5 +328,7 @@ namespace VersionOne.VisualStudio.VSPackage.Controls {
         private MenuItem miNewTask;
         private MenuItem miNewDefect;
         private MenuItem miNewTest;
+        private MenuItem miSeparator5;
+        private MenuItem miProperties;
 	}
 }
