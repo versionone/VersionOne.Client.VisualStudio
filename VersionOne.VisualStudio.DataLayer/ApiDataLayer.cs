@@ -402,24 +402,37 @@ namespace VersionOne.VisualStudio.DataLayer {
             var res = new PropertyValues();
             var assetType = connector.MetaModel.GetAssetType(propertyName);
             var nameDef = assetType.GetAttributeDefinition(Entity.NameProperty);
-            IAttributeDefinition inactiveDef;
 
+            IAttributeDefinition inactiveDef;
+            assetType.TryGetAttributeDefinition("Inactive", out inactiveDef);
+           
             var query = new Query(assetType);
             query.Selection.Add(nameDef);
+
+            if (inactiveDef != null) {
+                query.Selection.Add(inactiveDef);
+            }
             
+            /*
             if(assetType.TryGetAttributeDefinition("Inactive", out inactiveDef)) {
                 var filter = new FilterTerm(inactiveDef);
                 filter.Equal("False");
                 query.Filter = filter;
             }
-
+            */
+            
             query.OrderBy.MajorSort(assetType.DefaultOrderBy, OrderBy.Order.Ascending);
 
-            res.Add(new ValueId());
+            res.Add(new ValueId()); // which is the aim of this? having a blank item at the begining of the combo?
             
             foreach(var asset in connector.Services.Retrieve(query).Assets) {
                 var name = asset.GetAttribute(nameDef).Value as string;
-                res.Add(new ValueId(asset.Oid, name));
+                var inactive = false;
+                if (inactiveDef != null)
+                {
+                    inactive = (bool)asset.GetAttribute(inactiveDef).Value;
+                }
+                res.Add(new ValueId(asset.Oid, name, inactive));
             }
 
             return res;

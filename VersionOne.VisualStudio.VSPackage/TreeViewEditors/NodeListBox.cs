@@ -8,6 +8,7 @@ using Aga.Controls;
 using Aga.Controls.Tree;
 using Aga.Controls.Tree.NodeControls;
 using VersionOne.VisualStudio.DataLayer;
+using System.Linq;
 
 namespace VersionOne.VisualStudio.VSPackage.TreeViewEditors {
     public class NodeListBox : BaseTextControl {
@@ -44,7 +45,7 @@ namespace VersionOne.VisualStudio.VSPackage.TreeViewEditors {
             var listBox = new ListBox {SelectionMode = SelectionMode.MultiExtended};
 
             if (DropDownItems != null) {
-                listBox.Items.AddRange(DropDownItems.ToArray());
+                listBox.Items.AddRange(DropDownItems.Where(i => i.Inactive == false).ToArray());
             }
 
             var value = GetValue(node);
