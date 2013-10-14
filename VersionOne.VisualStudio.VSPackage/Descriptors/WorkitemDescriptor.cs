@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.ComponentModel;
 using System.Drawing.Design;
 using VersionOne.VisualStudio.DataLayer.Entities;
@@ -14,14 +15,12 @@ namespace VersionOne.VisualStudio.VSPackage.Descriptors {
         private readonly PropertyUpdateSource updateSource;
         private readonly bool iconless;
         private readonly PropertyDescriptorCollection propertyDescriptors = new PropertyDescriptorCollection(new PropertyDescriptor[] {});
-
         private readonly IDataLayer dataLayer;
 
         public WorkitemDescriptor(Entity entity, IEnumerable<ColumnSetting> columns, PropertyUpdateSource updateSource, bool iconless) {
             this.entity = entity;
             this.updateSource = updateSource;
             this.iconless = iconless;
-            
             dataLayer = ServiceLocator.Instance.Get<IDataLayer>();
             ConfigurePropertyDescriptors(columns);
         }
@@ -172,7 +171,7 @@ namespace VersionOne.VisualStudio.VSPackage.Descriptors {
 
                 var attrs = new List<Attribute> {new CategoryAttribute(column.Category)};
 
-                var name = dataLayer.LocalizerResolve(column.Name);
+                var name = dataLayer.LocalizerResolve(column.Name).Replace(" ", string.Empty);
 
                 switch (column.Type) {
                     case "String":

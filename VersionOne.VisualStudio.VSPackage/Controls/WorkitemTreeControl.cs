@@ -175,12 +175,12 @@ namespace VersionOne.VisualStudio.VSPackage.Controls {
                 if (column.EffortTracking && !DataLayer.EffortTracking.TrackEffort) {
 					continue;
 				}
-
-			    var dataPropertyName = DataLayer.LocalizerResolve(column.Name);
+                var columnName = DataLayer.LocalizerResolve(column.Name);
+                var dataPropertyName = columnName.Replace(" ", string.Empty);
 
                 columnToAttributeMappings.Add(dataPropertyName, column.Attribute);
 
-                var treeColumn = new TreeColumn(dataPropertyName, column.Width) { SortOrder = SortOrder.None, TooltipText = dataPropertyName };
+                var treeColumn = new TreeColumn(columnName, column.Width) { SortOrder = SortOrder.None, TooltipText = dataPropertyName };
 
 			    switch(column.Type) {
                     case "String":
