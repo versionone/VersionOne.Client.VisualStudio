@@ -32,7 +32,7 @@ If the Chocolatey install worked, then:
 
 This should start downloading and automatically installling the tools listed in [packages.config](packages.config).
 
-# Alternatively: If you don't want or cannot use Chocolatey, you can manually install developer tools
+## Alternatively: If you don't want or cannot use Chocolatey, you can manually install developer tools
 
 * [Install Visual Studio 2012 Professional or higher](http://msdn.microsoft.com/en-US/library/vstudio/e2h7fzkw.aspx)
 * [Install Update 3 for Visual Studio 2012](http://support.microsoft.com/kb/2835600)
