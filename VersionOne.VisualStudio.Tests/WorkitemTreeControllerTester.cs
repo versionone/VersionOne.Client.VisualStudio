@@ -83,6 +83,7 @@ namespace VersionOne.VisualStudio.Tests {
             Expect.Call(assetCacheMock.Drop);
             Expect.Call(dataLayerMock.EffortTracking).Return(effortTrackingMock);
             Expect.Call(effortTrackingMock.Refresh);
+            Expect.Call(dataLayerMock.UpdateListPropertyValues);
             Expect.Call(() => eventDispatcherMock.Notify(null, new ModelChangedArgs(EventReceiver.WorkitemView, EventContext.WorkitemsRequested)));
 
             mockRepository.ReplayAll();
