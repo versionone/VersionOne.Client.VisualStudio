@@ -113,6 +113,7 @@ namespace VersionOne.VisualStudio.VSPackage.Controls {
             miNewTask.Click += AddTask_Click;
             miNewDefect.Click += AddDefect_Click;
             miNewTest.Click += AddTest_Click;
+            miProperties.Click += miProperties_Click;
             tvWorkitems.ContextMenu.Popup += ContextMenu_Popup;
 
             btnAddTask.Click += AddTask_Click;
@@ -130,7 +131,7 @@ namespace VersionOne.VisualStudio.VSPackage.Controls {
             tvWorkitems.Expanding += tvWorkitems_Expanding;
             tvWorkitems.Expanded += tvWorkitems_Expanded;
         }
-
+        
         private void tvWorkitems_Expanded(object sender, TreeViewAdvEventArgs e) {
             if(!IsHandleCreated) {
                 return;
@@ -174,12 +175,12 @@ namespace VersionOne.VisualStudio.VSPackage.Controls {
                 if (column.EffortTracking && !DataLayer.EffortTracking.TrackEffort) {
 					continue;
 				}
-
-			    var dataPropertyName = DataLayer.LocalizerResolve(column.Name);
+                var columnName = DataLayer.LocalizerResolve(column.Name);
+                var dataPropertyName = columnName.Replace(" ", string.Empty);
 
                 columnToAttributeMappings.Add(dataPropertyName, column.Attribute);
 
-                var treeColumn = new TreeColumn(dataPropertyName, column.Width) { SortOrder = SortOrder.None, TooltipText = dataPropertyName };
+                var treeColumn = new TreeColumn(columnName, column.Width) { SortOrder = SortOrder.None, TooltipText = dataPropertyName };
 
 			    switch(column.Type) {
                     case "String":
@@ -322,6 +323,12 @@ namespace VersionOne.VisualStudio.VSPackage.Controls {
                     Controller.CloseItem(workitem);
                 }
             }
+        }
+
+        // Reporduce the Alt + Enter behavior
+        private void miProperties_Click(object sender, EventArgs e)
+        {
+            SendKeys.Send("{F4}");
         }
 
         private void CheckCellEditability(object sender, NodeControlValueEventArgs e) {
