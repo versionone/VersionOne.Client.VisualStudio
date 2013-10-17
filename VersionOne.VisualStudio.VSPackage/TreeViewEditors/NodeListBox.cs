@@ -53,6 +53,8 @@ namespace VersionOne.VisualStudio.VSPackage.TreeViewEditors {
 
             SetSelectionItems(listBox, propertyValues);
 
+            listBox.Click += ListBoxClick;
+
             SetEditControlProperties(listBox, node);
             listBox.IntegralHeight = false;
             listBox.ScrollAlwaysVisible = true;            
@@ -65,11 +67,19 @@ namespace VersionOne.VisualStudio.VSPackage.TreeViewEditors {
             // throw new NotImplementedException();
         }
 
-        private static void SetSelectionItems(ListBox listBox, PropertyValues propertyValues) {
-            if (propertyValues == null) {
+        private static void SetSelectionItems(ListBox listBox, PropertyValues propertyValues)
+        {
+            if (propertyValues == null)
+            {
                 return;
             }
-            foreach (var item in propertyValues) {
+            foreach (var item in propertyValues)
+            {
+                if (!listBox.SelectedItems.Contains(item) && item.Inactive)
+                {
+                    listBox.Items.Add(item);
+                }
+
                 listBox.SelectedItems.Add(item);
             }
         }
@@ -100,6 +110,14 @@ namespace VersionOne.VisualStudio.VSPackage.TreeViewEditors {
         public override void MouseUp(TreeNodeAdvMouseEventArgs args) {
             if (args.Node != null && args.Node.IsSelected) {
                 base.MouseUp(args);
+            }
+        }
+
+        private void ListBoxClick(object sender, EventArgs e)
+        {
+            if (Control.ModifierKeys != Keys.Control)
+            {
+                EndEdit(true);
             }
         }
     }
