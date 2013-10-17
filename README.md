@@ -40,9 +40,19 @@ This should start downloading and automatically installling the tools listed in 
 * **Install Bash shell** -- our `build.sh` and other scripts are written in Bash, so you need a good Bash shell to execute them. People on the VersionOne team use both [http://git-scm.com/download/win](Git Bash) and 
 [Cygwin with the Bash package](http://www.cygwin.com/) successfully.
 
-## Build known issues and solutions or workarounds
+# How to Build
 
-### Symptom: Build says failed, but with 0 apparent errors
+Assuming you have followed the previous steps and your environment is all setup correctly now:
+
+# Open a Git Bash prompt as `Administrator`
+# Change directory to `/c/Projects/VersionOne.Client.VisualStudio`
+# Type `./build.sh`
+
+This should build the client successfully. TODO: what about tests?
+
+# Build known issues and solutions or workarounds
+
+## Symptom: Build says failed, but with 0 apparent errors
 
 ### Likely cause
 
