@@ -44,9 +44,9 @@ This should start downloading and automatically installling the tools listed in 
 
 Assuming you have followed the previous steps and your environment is all setup correctly now:
 
-# Open a Git Bash prompt as `Administrator`
-# Change directory to `/c/Projects/VersionOne.Client.VisualStudio`
-# Type `./build.sh`
+* Open a Git Bash prompt as `Administrator`
+* Change directory to `/c/Projects/VersionOne.Client.VisualStudio`
+* Type `./build.sh`
 
 This should build the client successfully. TODO: what about tests?
 
