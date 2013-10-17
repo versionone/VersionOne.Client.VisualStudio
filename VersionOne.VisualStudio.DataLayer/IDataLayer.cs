@@ -69,6 +69,11 @@ namespace VersionOne.VisualStudio.DataLayer {
         PropertyValues GetListPropertyValues(string propertyName);
 
         /// <summary>
+        /// Update collection of available values of list property.
+        /// </summary>
+        void UpdateListPropertyValues();
+
+        /// <summary>
         /// Flag managing filtering tasks by owner, persistance and modified state.
         /// </summary>
         bool ShowAllTasks { get; set;}

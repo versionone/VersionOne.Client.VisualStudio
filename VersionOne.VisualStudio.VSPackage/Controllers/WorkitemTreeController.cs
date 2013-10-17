@@ -197,6 +197,7 @@ namespace VersionOne.VisualStudio.VSPackage.Controllers {
             try {
                 assetCache.Drop();
                 DataLayer.EffortTracking.Refresh();
+                DataLayer.UpdateListPropertyValues();
                 EventDispatcher.Notify(null, new ModelChangedArgs(EventReceiver.WorkitemView, EventContext.WorkitemsRequested));
             } catch(DataLayerException ex) {
                 view.ResetPropertyView();
