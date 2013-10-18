@@ -15,6 +15,11 @@ namespace VersionOne.VisualStudio.DataLayer {
         }
 
         public override string ToString() {
+            if (this.Inactive)
+            {
+                return "(Inactive: " + name + ")";
+            }
+
             return name;
         }
 

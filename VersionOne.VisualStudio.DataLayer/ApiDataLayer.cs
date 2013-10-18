@@ -321,7 +321,10 @@ namespace VersionOne.VisualStudio.DataLayer {
                 InitEffortTracking();
 
                 MemberOid = connector.Services.LoggedIn;
-                listPropertyValues = GetListPropertyValues();
+                
+                // This method creates the list values needed to popuplate the combo lists components.
+                UpdateListPropertyValues();
+                
                 requiredFieldsValidator = new RequiredFieldsValidator(connector.MetaModel, connector.Services, this);
                 connector.IsConnected = true;
 
@@ -365,8 +368,15 @@ namespace VersionOne.VisualStudio.DataLayer {
             return propertyAlias;
         }
 
-        private Dictionary<string, PropertyValues> GetListPropertyValues() {
-            var res = new Dictionary<string, PropertyValues>(AttributesToQuery.Count);
+        public void UpdateListPropertyValues() {
+            if (listPropertyValues == null)
+            {
+                listPropertyValues = new Dictionary<string, PropertyValues>(AttributesToQuery.Count);
+            }
+            else {
+                listPropertyValues.Clear();
+            }
+           
             
             foreach(var attrInfo in AttributesToQuery) {
                 if(!attrInfo.IsList) {
@@ -375,33 +385,41 @@ namespace VersionOne.VisualStudio.DataLayer {
 
                 var propertyAlias = attrInfo.Prefix + attrInfo.Attr;
 
-                if(res.ContainsKey(propertyAlias)) {
+                if (listPropertyValues.ContainsKey(propertyAlias))
+                {
                     continue;
                 }
 
                 var propertyName = ResolvePropertyKey(propertyAlias);
 
                 PropertyValues values;
-                
-                if(res.ContainsKey(propertyName)) {
-                    values = res[propertyName];
+
+                if (listPropertyValues.ContainsKey(propertyName))
+                {
+                    values = listPropertyValues[propertyName];
                 } else {
                     values = QueryPropertyValues(propertyName);
-                    res.Add(propertyName, values);
+                    listPropertyValues.Add(propertyName, values);
                 }
 
-                if(!res.ContainsKey(propertyAlias)) {
-                    res.Add(propertyAlias, values);
+                if (!listPropertyValues.ContainsKey(propertyAlias))
+                {
+                    listPropertyValues.Add(propertyAlias, values);
                 }
             }
-
-            return res;
         }
 
         private PropertyValues QueryPropertyValues(string propertyName) {
             var res = new PropertyValues();
             var assetType = connector.MetaModel.GetAssetType(propertyName);
-            var nameDef = assetType.GetAttributeDefinition(Entity.NameProperty);
+            IAttributeDefinition nameDef = null;
+            if (propertyName == "Member")
+            {
+                nameDef = assetType.GetAttributeDefinition("Nickname");
+            }
+            else {
+                nameDef = assetType.GetAttributeDefinition("Name");
+            }
 
             IAttributeDefinition inactiveDef;
             assetType.TryGetAttributeDefinition("Inactive", out inactiveDef);
