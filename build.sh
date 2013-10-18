@@ -112,20 +112,6 @@ if [ -z "$BUILD_NUMBER" ]; then
   export BUILD_NUMBER=`date +%H%M`  # hour + minute
 fi
 
-function update_nuget_deps() {
-  install_nuget_deps
-  NuGet.exe update $SOLUTION_FILE -Verbose -Source $NUGET_FETCH_URL
-}
-
-function install_nuget_deps() {
-  PKGSDIRW=`winpath "$WORKSPACE/packages"`
-  for D in $WORKSPACE/*; do
-    if [ -d $D ] && [ -f $D/packages.config ]; then
-      PKGSCONFIGW=`winpath "$D/packages.config"`
-      NuGet.exe install "$PKGSCONFIGW" -o "$PKGSDIRW" -Source "$NUGET_FETCH_URL"
-    fi
-  done
-}
 
 
 
@@ -195,15 +181,6 @@ MSBuild.exe $SOLUTION_FILE -m \
   -p:Configuration="$Configuration" \
   -p:Platform="$Platform" \
   -p:Verbosity=Diagnostic
-
-
-
-# ---- Update NuGet Packages --------------------------------------------------
-
-# Suspending update
-# update_nuget_deps
-install_nuget_deps
-
 
 # ---- Build solution using msbuild -------------------------------------------
 
