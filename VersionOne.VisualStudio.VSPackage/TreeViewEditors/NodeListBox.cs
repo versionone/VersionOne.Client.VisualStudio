@@ -8,6 +8,7 @@ using Aga.Controls;
 using Aga.Controls.Tree;
 using Aga.Controls.Tree.NodeControls;
 using VersionOne.VisualStudio.DataLayer;
+using System.Linq;
 
 namespace VersionOne.VisualStudio.VSPackage.TreeViewEditors {
     public class NodeListBox : BaseTextControl {
@@ -44,13 +45,15 @@ namespace VersionOne.VisualStudio.VSPackage.TreeViewEditors {
             var listBox = new ListBox {SelectionMode = SelectionMode.MultiExtended};
 
             if (DropDownItems != null) {
-                listBox.Items.AddRange(DropDownItems.ToArray());
+                listBox.Items.AddRange(DropDownItems.Where(i => i.Inactive == false).ToArray());
             }
 
             var value = GetValue(node);
             var propertyValues = value as PropertyValues;
 
             SetSelectionItems(listBox, propertyValues);
+
+            listBox.Click += ListBoxClick;
 
             SetEditControlProperties(listBox, node);
             listBox.IntegralHeight = false;
@@ -64,11 +67,19 @@ namespace VersionOne.VisualStudio.VSPackage.TreeViewEditors {
             // throw new NotImplementedException();
         }
 
-        private static void SetSelectionItems(ListBox listBox, PropertyValues propertyValues) {
-            if (propertyValues == null) {
+        private static void SetSelectionItems(ListBox listBox, PropertyValues propertyValues)
+        {
+            if (propertyValues == null)
+            {
                 return;
             }
-            foreach (var item in propertyValues) {
+            foreach (var item in propertyValues)
+            {
+                if (!listBox.SelectedItems.Contains(item) && item.Inactive)
+                {
+                    listBox.Items.Add(item);
+                }
+
                 listBox.SelectedItems.Add(item);
             }
         }
@@ -99,6 +110,14 @@ namespace VersionOne.VisualStudio.VSPackage.TreeViewEditors {
         public override void MouseUp(TreeNodeAdvMouseEventArgs args) {
             if (args.Node != null && args.Node.IsSelected) {
                 base.MouseUp(args);
+            }
+        }
+
+        private void ListBoxClick(object sender, EventArgs e)
+        {
+            if (Control.ModifierKeys != Keys.Control)
+            {
+                EndEdit(true);
             }
         }
     }
