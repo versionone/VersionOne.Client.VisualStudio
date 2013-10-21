@@ -16,7 +16,7 @@
         {
             "type": "download",
             "title": "Download Latest Stable Build",
-            "href": "http://platform.versionone.com.s3.amazonaws.com/downloads/VersionOne.Client.VisualStudio_8.3.0.87.zip"
+            "href": "http://platform.versionone.com.s3.amazonaws.com/downloads/VersionOne.Client.VisualStudio_9.0.0.zip"
         },
         {
             "type": "documentation",
@@ -41,6 +41,13 @@
     ],
     "updatesSection": {
         "updates": [
+            {
+                "date": "2013-11-01T00:00:00.000Z",
+                "description": "Winter 2014",
+                "version": "9.0.0",
+                "releaseNotes": "* Removed: No longer supports VS2010.\n* Added: Context menu option to open properties view for worktitem details.",
+                "qualityBand": "mature"
+            },
             {
                 "date": "2012-11-01T00:00:00.000Z",
                 "description": "Fall 2012",
