@@ -1,1 +1,1 @@
-Install-ChocolateyVsixPackage "VersionOne.Client.VisualStudio" https://github.com/versionone/VersionOne.Client.VisualStudio/raw/master/chocolatey/VersionOne.Client.VisualStudio.nupkg 11
+Install-ChocolateyVsixPackage "VersionOne.Client.VisualStudio" https://github.com/versionone/VersionOne.Client.VisualStudio/raw/master/chocolatey/VersionOne.VisualStudio.VSPackage.vsix 11
