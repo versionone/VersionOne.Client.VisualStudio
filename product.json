@@ -16,7 +16,7 @@
         {
             "type": "download",
             "title": "Download Latest Stable Build",
-            "href": "http://platform.versionone.com.s3.amazonaws.com/downloads/VersionOne.Client.VisualStudio_9.0.0.zip"
+            "href": "http://platform.versionone.com.s3.amazonaws.com/downloads/VersionOne.Client.VisualStudio_9.0.0.47.zip"
         },
         {
             "type": "documentation",
@@ -44,9 +44,10 @@
             {
                 "date": "2013-11-01T00:00:00.000Z",
                 "description": "Winter 2014",
-                "version": "9.0.0",
-                "releaseNotes": "* Removed: No longer supports VS2010.\n* Added: Context menu option to open properties view for worktitem details.",
-                "qualityBand": "mature"
+                "version": "9.0.0.47",
+                "releaseNotes": "* Removed: No longer supports VS2010.\n* Added: Context menu option to open properties view for worktitem details.\n* Fixed: Inactivated owners now annotated. Context menu now available for items with inactivated members.",
+                "qualityBand": "mature",
+                "downloadUrl": "http://platform.versionone.com.s3.amazonaws.com/downloads/VersionOne.Client.VisualStudio_9.0.0.47.zip"
             },
             {
                 "date": "2012-11-01T00:00:00.000Z",
