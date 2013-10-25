@@ -45,7 +45,7 @@
                 "date": "2013-11-01T00:00:00.000Z",
                 "description": "Winter 2014",
                 "version": "9.0.0.47",
-                "releaseNotes": "* Removed: No longer supports VS2010.\n* Added: Context menu option to open properties view for worktitem details.\n* Fixed: Inactivated owners now annotated. Context menu now available for items with inactivated members.",
+                "releaseNotes": "* VS Support: Added VS2013, keeping VS2012, removed VS2010.\n* Added: Context menu option to open properties view for worktitem details.\n* Fixed: Inactivated owners now annotated. Context menu now available for items with inactivated members.\n* Fixed: Task window throws error on first run when opened before project window.",
                 "qualityBand": "mature",
                 "downloadUrl": "http://platform.versionone.com.s3.amazonaws.com/downloads/VersionOne.Client.VisualStudio_9.0.0.47.zip"
             },
