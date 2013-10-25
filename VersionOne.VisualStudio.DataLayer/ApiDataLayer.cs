@@ -71,15 +71,19 @@ namespace VersionOne.VisualStudio.DataLayer {
 
         public string CurrentProjectId { get; set; }
 
-        public Project CurrentProject {
-            get {
-                if(CurrentProjectId == null) {
+        public Project CurrentProject
+        {
+            get
+            {
+                if (CurrentProjectId == Oid.Null.Token || string.IsNullOrEmpty(CurrentProjectId))
+                {
                     CurrentProjectId = "Scope:0";
                 }
 
                 return GetProjectById(CurrentProjectId);
             }
-            set {
+            set
+            {
                 CurrentProjectId = value.Id;
             }
         }
