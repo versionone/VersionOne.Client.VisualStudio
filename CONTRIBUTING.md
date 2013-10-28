@@ -34,7 +34,7 @@ Open source software evolves over time. A young project may be little more than 
 
 ### Seed
 
-The initial idea of a product. The code may not always work. Very little of the code may be covered by tests. Documentation may be sparse. All APIs are considered "private" and are expected to change. Please expect to work with developers to use and maintain the product.
+A seed has a lot of potential, but expect to put in your own time, expertise, and materials. We put this release into the wild in order to get feedback and to attract contributors. Use with caution. Please expect to work with developers to use and maintain this release.
 
 ### Sapling
 

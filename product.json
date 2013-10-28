@@ -15,7 +15,7 @@
     "linksSection": [
         {
             "type": "download",
-            "title": "Download Latest Stable Build",
+            "title": "Download Latest Early Access Build",
             "href": "http://platform.versionone.com.s3.amazonaws.com/downloads/VersionOne.Client.VisualStudio_9.0.0.47.zip"
         },
         {
@@ -46,7 +46,7 @@
                 "description": "Winter 2014",
                 "version": "9.0.0.47",
                 "releaseNotes": "* VS Support: Added VS2013, keeping VS2012, removed VS2010.\n* Added: Context menu option to open properties view for worktitem details.\n* Fixed: Inactivated owners now annotated. Context menu now available for items with inactivated members.\n* Fixed: Task window throws error on first run when opened before project window.",
-                "qualityBand": "mature",
+                "qualityBand": "seed",
                 "downloadUrl": "http://platform.versionone.com.s3.amazonaws.com/downloads/VersionOne.Client.VisualStudio_9.0.0.47.zip"
             },
             {
@@ -94,7 +94,7 @@
         ],
         "qualityBands": {
             "seed": {
-                "shortDescription": "The initial idea of a product. May not be stable code.",
+                "shortDescription": "Early access build. Use with caution.",
                 "href": "https://github.com/versionone/VersionOne.Client.VisualStudio/blob/master/CONTRIBUTING.md#seed"
             },
             "sapling": {
