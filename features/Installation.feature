@@ -9,6 +9,7 @@ Feature: Install the VersionOne Client for Visual Studio
     Examples:
       | Version |  Edition  | Result |
       | Any     |  Express  | Failure message |
+      | Any     |  Team Exp | Failure message |
       | 2010    |  Any      | Failure message |
       | 2012    |  Pro      | Success message | 
       | 2012    |  Premium  | Success message | 
