@@ -130,9 +130,9 @@ cat > "$WORKSPACE/$COMPONENT_NAME/source.extension.vsixmanifest" <<EOF
     <License>License.rtf</License>
   </Metadata>
   <Installation>
-    <InstallationTarget Version="[12.0,13.0)" Id="Microsoft.VisualStudio.Premium"/>
-    <InstallationTarget Version="[12.0,13.0)" Id="Microsoft.VisualStudio.Ultimate"/>
-    <InstallationTarget Version="[12.0,13.0)" Id="Microsoft.VisualStudio.Pro"/>
+    <InstallationTarget Version="[11.0,13.0)" Id="Microsoft.VisualStudio.Premium"/>
+    <InstallationTarget Version="[11.0,13.0)" Id="Microsoft.VisualStudio.Ultimate"/>
+    <InstallationTarget Version="[11.0,13.0)" Id="Microsoft.VisualStudio.Pro"/>
   </Installation>
   <Dependencies>
     <Dependency Id="Microsoft.Framework.NDP" DisplayName="Microsoft .NET Framework" d:Source="Manual" Version="[4.0,4.5)" />
