@@ -2,6 +2,10 @@
 
 VersionOne.Client.VisualStudio is a Visual Studio extension that connects to VersionOne.
 
+# Download a build
+
+You can find the latest public build for the extension in the [VersionOne App Catalog](http://v1appcatalog.azurewebsites.net/app/index.html#/Details/VersionOne.Client.VisualStudio).
+
 # Build Prerequisites
 
 ## Step 1: Install or upgrade to the latest NuGet
