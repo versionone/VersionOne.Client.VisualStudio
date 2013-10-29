@@ -9,12 +9,12 @@ Feature: Install the VersionOne Client for Visual Studio
     | Version |  Edition  | Result |
     | Any     |  Express  | Failure message |
     | 2010    |  Any      | Failure message |
-    | 2012    |  Pro      | Success and functionality works | 
-    | 2012    |  Premium  | Success and functionality works | 
-    | 2012    |  Ultimate | Success and functionality works | 
-    | 2013    |  Pro      | Success and functionality works | 
-    | 2013    |  Premium  | Success and functionality works | 
-    | 2013    |  Ultimate | Success and functionality works |
+    | 2012    |  Pro      | Success message | 
+    | 2012    |  Premium  | Success message | 
+    | 2012    |  Ultimate | Success message | 
+    | 2013    |  Pro      | Success message | 
+    | 2013    |  Premium  | Success message | 
+    | 2013    |  Ultimate | Success message |
 
   Note: Download at http://platform.versionone.com.s3.amazonaws.com/downloads/VersionOne.Client.VisualStudio_9.0.0.47.zip
 
