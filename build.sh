@@ -130,13 +130,12 @@ cat > "$WORKSPACE/$COMPONENT_NAME/source.extension.vsixmanifest" <<EOF
     <License>License.rtf</License>
   </Metadata>
   <Installation>
-    <InstallationTarget Id="Microsoft.VisualStudio.Pro" Version="11.0" />
-    <InstallationTarget Version="[11.0,12.0)" Id="Microsoft.VisualStudio.Ultimate" />
-    <InstallationTarget Version="[11.0,12.0)" Id="Microsoft.VisualStudio.Premium" />
+    <InstallationTarget Version="[12.0,13.0)" Id="Microsoft.VisualStudio.Premium"/>
+    <InstallationTarget Version="[12.0,13.0)" Id="Microsoft.VisualStudio.Ultimate"/>
+    <InstallationTarget Version="[12.0,13.0)" Id="Microsoft.VisualStudio.Pro"/>
   </Installation>
   <Dependencies>
     <Dependency Id="Microsoft.Framework.NDP" DisplayName="Microsoft .NET Framework" d:Source="Manual" Version="[4.0,4.5)" />
-    <Dependency d:Source="Manual" Id="Microsoft.VisualStudio.MPF" DisplayName="Visual Studio MPF" Version="10.0" d:InstallSource="Manual" />
   </Dependencies>
   <Assets>
     <Asset Type="Microsoft.VisualStudio.VsPackage" d:Source="Project" d:ProjectName="%CurrentProject%" Path="|%CurrentProject%;PkgdefProjectOutputGroup|" />
