@@ -16,6 +16,8 @@ Feature: Install the VersionOne Client for Visual Studio
     | 2013    |  Premium  | Success and functionality works | 
     | 2013    |  Ultimate | Success and functionality works |
 
+  Note: Download at http://platform.versionone.com.s3.amazonaws.com/downloads/VersionOne.Client.VisualStudio_9.0.0.47.zip
+
   Scenario: Install using Chocolatey
 
   Scenario: Install using Microsoft Visual Studio Gallery
