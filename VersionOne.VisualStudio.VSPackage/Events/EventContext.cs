@@ -8,6 +8,6 @@
         WorkitemPropertiesUpdatedFromView,
         WorkitemPropertiesUpdatedFromPropertyView,
         WorkitemCacheInvalidated,
-        ProjectPropertiesUpdated,
+        ProjectPropertiesUpdated
     }
 }

@@ -123,5 +123,7 @@ namespace VersionOne.VisualStudio.DataLayer {
         /// Effort tracking information.
         /// </summary>
         IEffortTracking EffortTracking { get; }
+
+        void RemoveWorkitem(Workitem workitem);
     }
 }

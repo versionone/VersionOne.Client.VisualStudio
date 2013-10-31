@@ -54,6 +54,16 @@ namespace VersionOne.VisualStudio.VSPackage.Controls {
             get { return tvWorkitems.SelectedNode == null ? null : tvWorkitems.SelectedNode.Tag as WorkitemDescriptor; }
         }
 
+        public TreeNodeAdv CurrentNode
+        {
+            get { return tvWorkitems == null ? null : tvWorkitems.SelectedNode == null ? tvWorkitems.Root : tvWorkitems.SelectedNode as TreeNodeAdv; }
+        }
+
+        public TreeViewAdv Tree
+        {
+            get { return tvWorkitems as TreeViewAdv; }
+        }
+
         public StoryTreeModel Model {
             get { return storyTreeModel; }
             set {
@@ -272,6 +282,7 @@ namespace VersionOne.VisualStudio.VSPackage.Controls {
         }
 
         private void AddDefect_Click(object sender, EventArgs e) {
+            tvWorkitems.SelectedNode = null;
             Controller.AddDefect();
         }
 
@@ -417,6 +428,7 @@ namespace VersionOne.VisualStudio.VSPackage.Controls {
                                                          });
             if(foundNode != null) {
                 tvWorkitems.SelectedNode = foundNode;
+                SendKeys.Send("{F2}");
             }
         }
 

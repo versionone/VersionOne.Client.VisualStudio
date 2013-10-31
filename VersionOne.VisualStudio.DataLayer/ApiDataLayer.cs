@@ -589,5 +589,13 @@ namespace VersionOne.VisualStudio.DataLayer {
             var assetFactory = new AssetFactory(this, CurrentProject, LoggerFactory, AttributesToQuery);
             return WorkitemFactory.CreateWorkitem(assetFactory, assetType, parent, entityContainer);
         }
+
+        public void RemoveWorkitem(Workitem workitem)
+        {
+            if (workitem.Parent != null && workitem.Parent.Children != null)
+            {
+                workitem.Parent.Children.Remove(workitem);
+            }
+        }
     }
 }
