@@ -2,6 +2,10 @@
 
 VersionOne.Client.VisualStudio is a Visual Studio extension that connects to VersionOne.
 
+# Download a build
+
+You can find the latest public build for the extension in the [VersionOne App Catalog](http://v1appcatalog.azurewebsites.net/app/index.html#/Details/VersionOne.Client.VisualStudio).
+
 # Build Prerequisites
 
 ## Step 1: Install or upgrade to the latest NuGet
@@ -61,3 +65,22 @@ If you have already installed the extension before, and then tried to uninstall 
 ### Remedy
 
 While we do not know yet how to prevent this issue, see the issue [Build completes with FAILED message, despite no visible Errors, but Detailed logging shows Task "EnableExtension" FAILED](https://github.com/versionone/VersionOne.Client.VisualStudio/issues/10) which documents the resolution for when it happens.
+
+# Advanced Builds
+
+## How to Build with Visual Studio 2013
+
+The steps below assume you have Chocolatey installed. If you do not, you can find the downloads on Microsoft's web site.
+
+* Install Visual Studio 2013: `cinst VisualStudio2013Professional`. Other editions exist as Chocolatey packages too.
+* Install the Visual Studio 2013 SDK: `cinst VS2013SDK`
+* Using a text editor, open `VersionOne.VisualStudio.VSPackage\VersionOne.VisualStudio.VSPackage.csproj`
+* Change `11.0` to `12.0` in the line that reads `<MinimumVisualStudioVersion>11.0</MinimumVisualStudioVersion>` -- this tells Visual Studio that the project can work with Visual Studio 2013, which happens to be version 12.
+* You should now be able to open the solution with Visual Studio and compile the VSIX package.
+* **NOTE:** We have also tested that when you build with 2013, you can still successfully install the extension into 2012.
+
+## How to target lower Visual Studio editions (like 2010)
+
+The VersionOne policy is to support the current and current - 1 product versions for the integrations that we formally support. However, this code is open source, and we welcome your assistance in building the projecct with targets for other editions if you will also test them and demo your findings with us. If it appears that all test cases work, then you can send us a pull request for the additional target.
+
+Since we have not been able to fully test against 2010, we do not currently have the installation target for it. But, if you'd like to help this project by building and testing against 2010, please contact us because we can work with you to make this happen. We have the previous versions of the code that did target 2010, and as we understand it [from this post on StackOverflow](http://stackoverflow.com/questions/12499133/develop-vsix-for-vs2010-under-vs2012), it may be possible to still target 2010 from 2012 or higher.
