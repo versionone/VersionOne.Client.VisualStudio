@@ -10,7 +10,7 @@
         }
     },
     "descriptionSection": {
-        "description": "The VersionOne Client for Visual Studio extends Microsoft's Visual Studio IDE by providing a view for viewing and updating VersionOne Stories, Defects, Task, and Test. The integration provides access workitems own by the configured user, or any other workitem in an active sprint/iteration. This allows Visual Studio users to Signup, Track, and Close VersionOne workitems without needing to leave the IDE."
+        "description": "The VersionOne Client for Visual Studio extends Microsoft's Visual Studio IDE by providing ability for viewing and updating VersionOne Stories, Defects, Tasks, and Tests. The integration provides access to workitems owned by the configured user, or any other workitem in an active sprint/iteration. This allows Visual Studio users to Signup, Track, and Close VersionOne workitems without needing to leave the IDE."
     },
     "linksSection": [
         {
@@ -43,9 +43,9 @@
         "updates": [
             {
                 "date": "2013-11-01T00:00:00.000Z",
-                "description": "Winter 2014",
+                "description": "Winter 2014 Early Access",
                 "version": "9.0.0.47",
-                "releaseNotes": "* VS Support: Added VS2013, keeping VS2012, removed VS2010.\n* Added: Context menu option to open properties view for worktitem details.\n* Fixed: Inactivated owners now annotated. Context menu now available for items with inactivated members.\n* Fixed: Task window throws error on first run when opened before project window.",
+                "releaseNotes": "* VS Support: Added VS2013, keeping VS2012, removed VS2010.\n* Added: Context menu option to open properties view for workitem details.\n* Fixed: Inactivated owners now annotated. Context menu now available for items owned by inactivated members.\n* Fixed: Task window throws error on first run when opened before project window.",
                 "qualityBand": "seed",
                 "downloadUrl": "http://platform.versionone.com.s3.amazonaws.com/downloads/VersionOne.Client.VisualStudio_9.0.0.47.zip"
             },
