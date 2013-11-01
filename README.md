@@ -81,6 +81,6 @@ The steps below assume you have Chocolatey installed. If you do not, you can fin
 
 ## How to target lower Visual Studio editions (like 2010)
 
-The VersionOne policy is to support the current and current - 1 product versions for the integrations that we formally support. However, this code is open source, and we welcome your assistance in building the projecct with targets for other editions if you will also test them and demo your findings with us. If it appears that all test cases work, then you can send us a pull request for the additional target.
+Historically, we have only supported 2 versions of Visual Studio: the current and current - 1 versions. However, this code is open source, and we welcome your assistance in building the projecct with targets for other editions if you will also test them and demo your findings with us. If it appears that all test cases work, then you can send us a pull request for the additional target.
 
 Since we have not been able to fully test against 2010, we do not currently have the installation target for it. But, if you'd like to help this project by building and testing against 2010, please contact us because we can work with you to make this happen. We have the previous versions of the code that did target 2010, and as we understand it [from this post on StackOverflow](http://stackoverflow.com/questions/12499133/develop-vsix-for-vs2010-under-vs2012), it may be possible to still target 2010 from 2012 or higher.
