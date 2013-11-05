@@ -56,8 +56,8 @@ namespace VersionOne.VisualStudio.DataLayer {
             }
         }
 
-        public void Refresh(Workitem item) {
-            dataLayer.RefreshAsset(item, AllAssets);
+        public Asset Refresh(Workitem item) {
+            return dataLayer.RefreshAsset(item, AllAssets);
         }
 
         public void AddEffort(Entity item, double newValue) {

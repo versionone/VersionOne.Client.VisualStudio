@@ -61,13 +61,5 @@ namespace VersionOne.VisualStudio.VSPackage {
             StructureChanged(this, new TreePathEventArgs(treePath));
         }
 
-        internal void OnNodeRemoved(Node parent, int index, Node node)
-        {
-            if (NodesRemoved != null)
-            {
-                TreeModelEventArgs args = new TreeModelEventArgs(new TreePath(parent), new int[] { index }, new object[] { node });
-                StructureChanged(this, args);
-            }
-        }
     }
 }

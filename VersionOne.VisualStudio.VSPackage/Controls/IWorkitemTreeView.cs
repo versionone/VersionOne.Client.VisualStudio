@@ -10,7 +10,7 @@ namespace VersionOne.VisualStudio.VSPackage.Controls {
         
         string Title { get; set; }
         WorkitemDescriptor CurrentWorkitemDescriptor { get; }
-        TreeNodeAdv CurrentNode { get; }
+        TreeNodeAdv CurrentNode { get; set; }
         TreeViewAdv Tree { get; }
         StoryTreeModel Model { get; set; }
 
