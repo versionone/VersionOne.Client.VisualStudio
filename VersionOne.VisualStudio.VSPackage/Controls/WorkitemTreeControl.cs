@@ -57,6 +57,7 @@ namespace VersionOne.VisualStudio.VSPackage.Controls {
         public TreeNodeAdv CurrentNode
         {
             get { return tvWorkitems == null ? null : tvWorkitems.SelectedNode == null ? tvWorkitems.Root : tvWorkitems.SelectedNode as TreeNodeAdv; }
+            set { tvWorkitems.SelectedNode = value; }
         }
 
         public TreeViewAdv Tree
@@ -143,15 +144,16 @@ namespace VersionOne.VisualStudio.VSPackage.Controls {
         }
         
         private void tvWorkitems_Expanded(object sender, TreeViewAdvEventArgs e) {
-            if(!IsHandleCreated) {
+            if (!IsHandleCreated || !e.Node.CanExpand)
+            {
                 return;
             }
-
+            
             Invoke(new Action(() => waitCursor.Hide()));
         }
 
         private void tvWorkitems_Expanding(object sender, TreeViewAdvEventArgs e) {
-            if(!IsHandleCreated) {
+            if(!IsHandleCreated || !e.Node.CanExpand) {
                 return;
             }
 

@@ -36,7 +36,7 @@ namespace VersionOne.VisualStudio.VSPackage.Controllers {
                     HandleWorkitemPropertiesUpdated(PropertyUpdateSource.WorkitemPropertyView);
                     break;
                 case EventContext.WorkitemsChanged:
-                    TreePath treePath = view.Tree.GetPath(view.CurrentNode.IsLeaf ? view.CurrentNode.Parent : view.CurrentNode);
+                    TreePath treePath = view.Tree.GetPath(view.CurrentNode.Level==2 ? view.CurrentNode.Parent : view.CurrentNode);
                     model.InvokeStructureChanged(treePath);
                     break;
                 case EventContext.ProjectSelected:
@@ -120,7 +120,7 @@ namespace VersionOne.VisualStudio.VSPackage.Controllers {
             if(descriptor != null) {
                 RunTaskAsync(view.GetWaitCursor(),
                              () => descriptor.Workitem.CommitChanges(),
-                             () => EventDispatcher.Notify(null, new ModelChangedArgs(EventReceiver.WorkitemView, EventContext.WorkitemsRequested)),
+                             () => EventDispatcher.Notify(null, new ModelChangedArgs(EventReceiver.WorkitemView, EventContext.WorkitemsChanged)),
                              ex => {
                                  if(ex is ValidatorException) {
                                      view.ShowErrorMessage("Workitem cannot be saved because the following required fields are empty:" + ex.Message);
@@ -139,7 +139,7 @@ namespace VersionOne.VisualStudio.VSPackage.Controllers {
 
                 if (item.IsVirtual)
                 {
-                    DataLayer.RemoveWorkitem(item);
+                    item.Remove();
                     EventDispatcher.Notify(null, new ModelChangedArgs(EventReceiver.WorkitemView, EventContext.WorkitemsChanged));
                 }
 
@@ -153,7 +153,7 @@ namespace VersionOne.VisualStudio.VSPackage.Controllers {
             if(descriptor != null) {
                 RunTaskAsync(view.GetWaitCursor(),
                     () => descriptor.Workitem.Signup(),
-                    () => EventDispatcher.Notify(null, new ModelChangedArgs(EventReceiver.WorkitemView, EventContext.WorkitemsRequested)));
+                    () => EventDispatcher.Notify(null, new ModelChangedArgs(EventReceiver.WorkitemView, EventContext.WorkitemsChanged)));
             }
         }
         
@@ -163,7 +163,7 @@ namespace VersionOne.VisualStudio.VSPackage.Controllers {
             if(descriptor != null) {
                 RunTaskAsync(view.GetWaitCursor(),
                              descriptor.Workitem.QuickClose,
-                             () => EventDispatcher.Notify(null, new ModelChangedArgs(EventReceiver.WorkitemView, EventContext.WorkitemsRequested)),
+                             () => {descriptor.Workitem.Remove(); EventDispatcher.Notify(null, new ModelChangedArgs(EventReceiver.WorkitemView, EventContext.WorkitemsChanged));},
                              ex => {
                                  if(ex is ValidatorException) {
                                      Logger.Warn("Cannot save workitem before closing it because of validation errors", ex);
@@ -176,12 +176,16 @@ namespace VersionOne.VisualStudio.VSPackage.Controllers {
         public void CloseItem(Workitem workitem) {
             RunTaskAsync(view.GetWaitCursor(),
                          workitem.Close,
-                         () => EventDispatcher.Notify(null, new ModelChangedArgs(EventReceiver.WorkitemView, EventContext.WorkitemsRequested)),
-                         ex => {
-                             if(ex.GetType() == typeof(ValidatorException)) {
+                         () => { workitem.Remove(); EventDispatcher.Notify(null, new ModelChangedArgs(EventReceiver.WorkitemView, EventContext.WorkitemsChanged)); },
+                         ex =>
+                         {
+                             if (ex.GetType() == typeof(ValidatorException))
+                             {
                                  Logger.Warn("Cannot save workitem before closing it because of validation errors", ex);
                                  view.ShowValidationInformationDialog(ex.Message);
-                             } else if(ex.GetType() == typeof(DataLayerException)) {
+                             }
+                             else if (ex.GetType() == typeof(DataLayerException))
+                             {
                                  Logger.Error("Failed to close workitem", ex);
                                  view.ShowErrorMessage("Server communication error. Failed to close workitem. " + Environment.NewLine + ex.Message);
                              }
@@ -281,9 +285,16 @@ namespace VersionOne.VisualStudio.VSPackage.Controllers {
             var parent = selectedItem.IsPrimary ? selectedItem : selectedItem.Parent;
             var item = DataLayer.CreateWorkitem(type, parent, assetCache);
 
+            TreeNodeAdv node = view.CurrentNode;
             EventDispatcher.Notify(null, new ModelChangedArgs(EventReceiver.WorkitemView, EventContext.WorkitemsChanged));
 
+            if (!node.IsLeaf && !node.IsExpanded)
+            {
+                node.Expand(false);
+            }
+
             view.SelectWorkitem(item);
+            
             view.Refresh();
         }
 

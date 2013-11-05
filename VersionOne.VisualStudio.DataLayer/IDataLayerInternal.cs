@@ -11,7 +11,7 @@ namespace VersionOne.VisualStudio.DataLayer {
 
         void ExecuteOperation(Asset asset, IOperation operation);
         void CommitAsset(IDictionary<Asset, double> efforts, Asset asset);
-        void RefreshAsset(Workitem workitem, IList<Asset> containingAssetCollection);
+        Asset RefreshAsset(Workitem workitem, IList<Asset> containingAssetCollection);
 
         IAssetType ProjectType { get; }
         IAssetType TaskType { get; }
