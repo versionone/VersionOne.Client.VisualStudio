@@ -8,6 +8,8 @@ namespace VersionOne.VisualStudio.VSPackage.TreeViewEditors {
         private bool isPropertyReadOnly;
         private ContextMenu contextMenu;
         private TextBox textBox;
+
+        public event KeyEventHandler KeyTextBoxDown;
         
         public TextBox EditorTextBox {
             get {
@@ -56,7 +58,13 @@ namespace VersionOne.VisualStudio.VSPackage.TreeViewEditors {
             if(contextMenu != null) {
                 textBox.ContextMenu = contextMenu;
             }
+            this.textBox.KeyDown += textBox_KeyDown;
             return textBox;
         }
+
+        void textBox_KeyDown(object sender, KeyEventArgs e)
+        {
+            this.KeyTextBoxDown(sender, e);
+        }    
     }
 }
