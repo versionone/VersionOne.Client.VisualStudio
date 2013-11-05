@@ -146,7 +146,6 @@ namespace VersionOne.VisualStudio.Tests {
             ExpectRegisterAndPrepareView();
             Expect.Call(viewMock.CurrentWorkitemDescriptor).Return(descriptor);
             Expect.Call(workitemMock.RevertChanges);
-            Expect.Call(viewMock.RefreshProperties);
             Expect.Call(viewMock.Refresh);
 
             mockRepository.ReplayAll();
@@ -283,10 +282,9 @@ namespace VersionOne.VisualStudio.Tests {
             ExpectRegisterAndPrepareView();
             Expect.Call(dataLayerMock.CreateWorkitem(Entity.DefectType, null, assetCacheMock)).Return(workitemMock);
             Expect.Call(() => assetCacheMock.Add(workitemMock));
-            Expect.Call(() => eventDispatcherMock.Notify(null, new ModelChangedArgs(EventReceiver.ProjectView, EventContext.ProjectSelected)));
+            Expect.Call(() => eventDispatcherMock.Notify(null, new ModelChangedArgs(EventReceiver.ProjectView, EventContext.WorkitemsChanged)));
             Expect.Call(() => viewMock.SelectWorkitem(workitemMock));
             Expect.Call(viewMock.Refresh);
-            Expect.Call(viewMock.RefreshProperties);
 
             mockRepository.ReplayAll();
             controller.Register(viewMock);
@@ -305,10 +303,8 @@ namespace VersionOne.VisualStudio.Tests {
             Expect.Call(viewMock.CurrentWorkitemDescriptor).Return(descriptor);
             Expect.Call(dataLayerMock.CreateWorkitem(Entity.TaskType, parentWorkitemMock, assetCacheMock)).Return(workitemMock);
             Expect.Call(() => eventDispatcherMock.Notify(null, new ModelChangedArgs(EventReceiver.WorkitemView, EventContext.WorkitemsChanged)));
-            Expect.Call(viewMock.ExpandCurrentNode);
             Expect.Call(() => viewMock.SelectWorkitem(workitemMock));
             Expect.Call(viewMock.Refresh);
-            Expect.Call(viewMock.RefreshProperties);
 
             mockRepository.ReplayAll();
             controller.Register(viewMock);

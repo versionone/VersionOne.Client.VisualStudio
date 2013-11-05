@@ -18,7 +18,7 @@ namespace VersionOne.VisualStudio.VSPackage {
             this.controller = controller;
             this.configuration = configuration;
         }
-
+      
         public IEnumerable GetChildren(TreePath treePath) {
             if (!controller.CanRetrieveData) {
                 return null;
@@ -54,6 +54,20 @@ namespace VersionOne.VisualStudio.VSPackage {
 
         public void InvokeStructureChanged(){
             StructureChanged(this, new TreePathEventArgs());
+        }
+
+        public void InvokeStructureChanged(TreePath treePath)
+        {
+            StructureChanged(this, new TreePathEventArgs(treePath));
+        }
+
+        internal void OnNodeRemoved(Node parent, int index, Node node)
+        {
+            if (NodesRemoved != null)
+            {
+                TreeModelEventArgs args = new TreeModelEventArgs(new TreePath(parent), new int[] { index }, new object[] { node });
+                StructureChanged(this, args);
+            }
         }
     }
 }

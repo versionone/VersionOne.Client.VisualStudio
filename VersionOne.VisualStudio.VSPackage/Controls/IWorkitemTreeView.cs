@@ -1,4 +1,5 @@
 using System.Windows.Forms;
+using Aga.Controls.Tree;
 using VersionOne.VisualStudio.DataLayer.Entities;
 using VersionOne.VisualStudio.VSPackage.Controllers;
 using VersionOne.VisualStudio.VSPackage.Descriptors;
@@ -9,6 +10,8 @@ namespace VersionOne.VisualStudio.VSPackage.Controls {
         
         string Title { get; set; }
         WorkitemDescriptor CurrentWorkitemDescriptor { get; }
+        TreeNodeAdv CurrentNode { get; }
+        TreeViewAdv Tree { get; }
         StoryTreeModel Model { get; set; }
 
         void Refresh();
