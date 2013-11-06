@@ -128,6 +128,7 @@ namespace VersionOne.VisualStudio.VSPackage.Controls {
             miNewDefect.Click += AddDefect_Click;
             miNewTest.Click += AddTest_Click;
             miProperties.Click += miProperties_Click;
+            miOpenInVersionOne.Click += miOpenInVersionOne_Click;
             tvWorkitems.ContextMenu.Popup += ContextMenu_Popup;
 
             btnAddTask.Click += AddTask_Click;
@@ -439,9 +440,40 @@ namespace VersionOne.VisualStudio.VSPackage.Controls {
         }
 
         // Reporduce the Alt + Enter behavior
-        private void miProperties_Click(object sender, EventArgs e)
-        {
+        private void miProperties_Click(object sender, EventArgs e) {
             SendKeys.Send("{F4}");
+        }
+
+        private void miOpenInVersionOne_Click(object sender, EventArgs e) {
+          var applicationUrl = ServiceLocator.Instance.Get<ISettings>().ApplicationUrl;
+          var workItemId = CurrentWorkitemDescriptor.Workitem.Id;
+          var assetDetailTempl = "assetdetail.v1?oid=";
+
+          if (!applicationUrl.EndsWith("/")) {
+            assetDetailTempl = "/" + assetDetailTempl;
+          }
+
+          var url = applicationUrl + assetDetailTempl + workItemId;
+
+          try {
+            System.Diagnostics.Process.Start(url);
+          }
+          catch(System.ComponentModel.Win32Exception noBrowser) {
+            if (noBrowser.ErrorCode == -2147467259) {
+              MessageBox.Show(noBrowser.Message);
+            }
+          }
+          catch (System.Exception other) {
+            MessageBox.Show(other.Message);
+          }
+
+          /* Note: this is one way to pop open a tab INSIDE Visual Studio:
+          var svc = GetService(typeof(SVsWebBrowsingService)) as IVsWebBrowsingService;
+          const __VSWBNAVIGATEFLAGS flags = __VSWBNAVIGATEFLAGS.VSNWB_ForceNew;
+          IVsWindowFrame frame;
+          int hr = svc.Navigate(url, (uint)flags, out frame);
+          frame.Show();
+          */
         }
 
         private void CheckCellEditability(object sender, NodeControlValueEventArgs e) {
