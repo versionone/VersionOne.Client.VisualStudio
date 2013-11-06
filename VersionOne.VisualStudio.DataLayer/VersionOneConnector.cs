@@ -24,36 +24,52 @@ namespace VersionOne.VisualStudio.DataLayer {
 
         public VersionOneSettings VersionOneSettings { get; private set; }
 
-        public void Connect(VersionOneSettings settings) {
-            var path = settings.Path;
-            var username = settings.Username;
-            var password = settings.Password;
-            var integrated = settings.Integrated;
-            var proxy = GetProxy(settings.ProxySettings);
-            VersionOneSettings = settings;
+		public void Connect(VersionOneSettings settings)
+		{
+			var path = settings.Path;
+			var username = settings.Username;
+			var password = settings.Password;
+			var integrated = settings.Integrated;
+			var proxy = GetProxy(settings.ProxySettings);
+			VersionOneSettings = settings;
 
-            var metaConnector = new V1APIConnector(path + MetaUrlSuffix, username, password, integrated, proxy);
-            MetaModel = new MetaModel(metaConnector);
+			if (VersionOneSettings.OAuth2)
+			{
+				var storage = OAuth2Client.Storage.JsonFileStorage.Default;
+				var metaConnector = new V1OAuth2APIConnector(path + MetaUrlSuffix, storage, proxy);
+				MetaModel = new MetaModel(metaConnector);
 
-            var localizerConnector = new V1APIConnector(path + LocalizerUrlSuffix, username, password, integrated, proxy);
-            Localizer = new Localizer(localizerConnector);
+				var localizerConnector = new V1OAuth2APIConnector(path + LocalizerUrlSuffix, storage, proxy);
+				Localizer = new Localizer(localizerConnector);
 
-            var dataConnector = new V1APIConnector(path + DataUrlSuffix, username, password, integrated, proxy);
-            Services = new Services(MetaModel, dataConnector);
+				var dataConnector = new V1OAuth2APIConnector(path + DataUrlSuffix, storage, proxy);
+				Services = new Services(MetaModel, dataConnector);
 
-            V1Configuration = LoadV1Configuration();
-        }
+			}
+			else
+			{
+				var metaConnector = new V1APIConnector(path + MetaUrlSuffix, username, password, integrated, proxy);
+				MetaModel = new MetaModel(metaConnector);
+
+				var localizerConnector = new V1APIConnector(path + LocalizerUrlSuffix, username, password, integrated, proxy);
+				Localizer = new Localizer(localizerConnector);
+
+				var dataConnector = new V1APIConnector(path + DataUrlSuffix, username, password, integrated, proxy);
+				Services = new Services(MetaModel, dataConnector);
+				
+			}
+			V1Configuration = LoadV1Configuration();
+		}
 
         public IV1Configuration LoadV1Configuration() {
+			// This V1 API endpoint does not require authentication
             if (VersionOneSettings == null) {
                 throw new InvalidOperationException("Connection is needed for configuration loading.");
             }
-
             var path = VersionOneSettings.Path;
-            var integrated = VersionOneSettings.Integrated;
-            var proxy = GetProxy(VersionOneSettings.ProxySettings);
-
-            return new V1Configuration(new V1APIConnector(path + ConfigUrlSuffix, null, null, integrated, proxy));
+			var integrated = VersionOneSettings.Integrated;
+			var proxy = GetProxy(VersionOneSettings.ProxySettings);
+			return new V1Configuration(new V1APIConnector(path + ConfigUrlSuffix, null, null, integrated, proxy));
         }
 
         private static ProxyProvider GetProxy(ProxyConnectionSettings settings) {
@@ -66,8 +82,16 @@ namespace VersionOne.VisualStudio.DataLayer {
         }
 
         public void CheckConnection(VersionOneSettings settings) {
-            var connectionValidator = new V1ConnectionValidator(settings.Path, settings.Username, settings.Password, settings.Integrated, GetProxy(settings.ProxySettings));
-            connectionValidator.Test(ApiVersion);
+	        if (settings.OAuth2)
+	        {
+		        return;
+	        }
+	        else
+	        {
+		        var connectionValidator = new V1ConnectionValidator(settings.Path, settings.Username, settings.Password,
+		                                                            settings.Integrated, GetProxy(settings.ProxySettings));
+		        connectionValidator.Test(ApiVersion);
+	        }
         }
     }
 }
