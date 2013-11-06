@@ -1,0 +1,23 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<package xmlns="http://schemas.microsoft.com/packaging/2010/07/nuspec.xsd">
+  <metadata>
+    <id>VersionOne.Client.VisualStudio</id>
+    <title>VersionOne Visual Studio Client</title>
+    <version>9.0</version>
+    <authors>VersionOne, Inc.</authors>
+    <owners>VersionOne, Inc.</owners>
+    <summary>VersionOne Visual Studio Client</summary>
+    <description>VersionOne Visual Studio Client</description>
+    <projectUrl>http://www.github.com/versionone/VersionOne.Client.VisualStudio</projectUrl>
+    <tags>VersionOne VisualStudio</tags>
+    <copyright></copyright>
+    <licenseUrl>http://www.versionone.com</licenseUrl>
+    <requireLicenseAcceptance>false</requireLicenseAcceptance>
+    <!--<iconUrl>https://raw.github.com/__CHOCO_PKG_OWNER_REPO__/master/VersionOne/VersionOne.png</iconUrl>-->
+    <releaseNotes></releaseNotes>
+  </metadata>
+  <files>
+    <file src="tools\**.ps1" target="tools" />
+    <!--<file src="content\**" target="content" />-->
+  </files>
+</package>

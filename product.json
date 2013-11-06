@@ -10,13 +10,13 @@
         }
     },
     "descriptionSection": {
-        "description": "The VersionOne Client for Visual Studio extends Microsoft's Visual Studio IDE by providing a view for viewing and updating VersionOne Stories, Defects, Task, and Test. The integration provides access workitems own by the configured user, or any other workitem in an active sprint/iteration. This allows Visual Studio users to Signup, Track, and Close VersionOne workitems without needing to leave the IDE."
+        "description": "The VersionOne Client for Visual Studio extends Microsoft's Visual Studio IDE by providing ability for viewing and updating VersionOne Stories, Defects, Tasks, and Tests. The integration provides access to workitems owned by the configured user, or any other workitem in an active sprint/iteration. This allows Visual Studio users to Signup, Track, and Close VersionOne workitems without needing to leave the IDE."
     },
     "linksSection": [
         {
             "type": "download",
-            "title": "Download Latest Stable Build",
-            "href": "http://platform.versionone.com.s3.amazonaws.com/downloads/VersionOne.Client.VisualStudio_8.3.0.87.zip"
+            "title": "Download Latest Early Access Build",
+            "href": "http://platform.versionone.com.s3.amazonaws.com/downloads/VersionOne.Client.VisualStudio_9.0.0.75.vsix"
         },
         {
             "type": "documentation",
@@ -41,6 +41,14 @@
     ],
     "updatesSection": {
         "updates": [
+            {
+                "date": "2013-11-01T00:00:00.000Z",
+                "description": "Winter 2014 Early Access",
+                "version": "9.0.0.75",
+                "releaseNotes": "* VS Support: Keeping VS2012, removed VS2010.\n* Added: Context menu option to open properties view for workitem details.\n* Added: New secondary workitems are selected for editing after adding them.\n* Added: Tab to cycle through editable fields for a selected workitem.\n* Fixed: Inactivated owners now annotated. Context menu now available for items owned by inactivated members.\n* Fixed: Task window throws error on first run when opened before project window.\n* Fixed: State of the workitem tree is not reset for every user action (such as create new workitem and signup)",
+                "qualityBand": "seed",
+                "downloadUrl": "http://platform.versionone.com.s3.amazonaws.com/downloads/VersionOne.Client.VisualStudio_9.0.0.75.vsix"
+            },
             {
                 "date": "2012-11-01T00:00:00.000Z",
                 "description": "Fall 2012",
@@ -84,9 +92,9 @@
                 "qualityBand": "mature"
             }
         ],
-        "qualityBands": [
+        "qualityBands": {
             "seed": {
-                "shortDescription": "The initial idea of a product. May not be stable code.",
+                "shortDescription": "Early access build. Use with caution.",
                 "href": "https://github.com/versionone/VersionOne.Client.VisualStudio/blob/master/CONTRIBUTING.md#seed"
             },
             "sapling": {
@@ -97,7 +105,7 @@
                 "shortDescription": "The product is stable. The code will continue to evolve with minimum breaking changes.",
                 "href": "https://github.com/versionone/VersionOne.Client.VisualStudio/blob/master/CONTRIBUTING.md#mature"
             }
-        ]
+        }
     },
     "mediaSection": [
     ]

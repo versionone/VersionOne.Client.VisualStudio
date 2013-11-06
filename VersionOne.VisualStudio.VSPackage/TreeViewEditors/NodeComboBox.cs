@@ -27,6 +27,8 @@ namespace VersionOne.VisualStudio.VSPackage.TreeViewEditors {
             set { dropDownItems = value; }
         }
 
+        public event KeyEventHandler KeyComboBoxDown;
+
         #endregion
 
         public NodeComboBox() {
@@ -64,7 +66,13 @@ namespace VersionOne.VisualStudio.VSPackage.TreeViewEditors {
             comboBox.DropDownStyle = ComboBoxStyle.DropDownList;
             comboBox.DropDownClosed += EditorDropDownClosed;
             SetEditControlProperties(comboBox, node);
+            comboBox.KeyDown += comboBox_KeyDown;
             return comboBox;
+        }
+
+        void comboBox_KeyDown(object sender, KeyEventArgs e)
+        {
+            KeyComboBoxDown(sender, e);
         }
 
         protected override void DisposeEditor(Control editor)

@@ -30,7 +30,7 @@ namespace VersionOne.VisualStudio.DataLayer.Entities {
         protected readonly IEntityContainer EntityContainer;
         protected readonly ILogger Logger;
 
-        protected internal readonly Asset Asset;
+        protected internal Asset Asset;
 
         public abstract string TypePrefix { get; }
 

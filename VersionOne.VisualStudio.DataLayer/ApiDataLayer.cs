@@ -71,15 +71,19 @@ namespace VersionOne.VisualStudio.DataLayer {
 
         public string CurrentProjectId { get; set; }
 
-        public Project CurrentProject {
-            get {
-                if(CurrentProjectId == null) {
+        public Project CurrentProject
+        {
+            get
+            {
+                if (CurrentProjectId == Oid.Null.Token || string.IsNullOrEmpty(CurrentProjectId))
+                {
                     CurrentProjectId = "Scope:0";
                 }
 
                 return GetProjectById(CurrentProjectId);
             }
-            set {
+            set
+            {
                 CurrentProjectId = value.Id;
             }
         }
@@ -544,7 +548,7 @@ namespace VersionOne.VisualStudio.DataLayer {
         /// Refreshes data for Asset wrapped by specified Workitem.
         /// </summary>
         // TODO refactor
-        public void RefreshAsset(Workitem workitem, IList<Asset> containingAssetCollection) {
+        public Asset RefreshAsset(Workitem workitem, IList<Asset> containingAssetCollection) {
             try {
                 var stateDef = workitem.Asset.AssetType.GetAttributeDefinition("AssetState");
                 
@@ -558,7 +562,7 @@ namespace VersionOne.VisualStudio.DataLayer {
 
                 if(newAssets.TotalAvaliable != 1) {
                     containedIn.Remove(workitem.Asset);
-                    return;
+                    return null;
                 }
 
                 var newAsset = newAssets.Assets[0];
@@ -566,18 +570,22 @@ namespace VersionOne.VisualStudio.DataLayer {
                 
                 if(newAssetState == AssetState.Closed) {
                     containedIn.Remove(workitem.Asset);
-                    return;
+                    return null;
                 }
 
                 containedIn[containedIn.IndexOf(workitem.Asset)] = newAsset;
                 newAsset.Children.AddRange(workitem.Asset.Children);
+                return newAsset;
             } catch(MetaException ex) {
                 Logger.Error("Unable to get workitems.", ex);
+                return null;
             } catch(WebException ex) {
                 connector.IsConnected = false;
                 Logger.Error("Unable to get workitems.", ex);
+                return null;
             } catch(Exception ex) {
                 Logger.Error("Unable to get workitems.", ex);
+                return null;
             }
         }
 
@@ -585,5 +593,6 @@ namespace VersionOne.VisualStudio.DataLayer {
             var assetFactory = new AssetFactory(this, CurrentProject, LoggerFactory, AttributesToQuery);
             return WorkitemFactory.CreateWorkitem(assetFactory, assetType, parent, entityContainer);
         }
+
     }
 }

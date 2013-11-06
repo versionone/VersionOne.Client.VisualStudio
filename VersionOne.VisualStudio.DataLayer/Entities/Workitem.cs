@@ -74,7 +74,7 @@ namespace VersionOne.VisualStudio.DataLayer.Entities {
                 EntityContainer.Commit(this);
 
                 if(refreshInCache) {
-                    EntityContainer.Refresh(this);
+                    this.Asset = EntityContainer.Refresh(this) ?? this.Asset;
                 }
             } catch (APIException ex) {
                 Logger.Error("Failed to commit changes.", ex);
@@ -128,7 +128,7 @@ namespace VersionOne.VisualStudio.DataLayer.Entities {
         public virtual void Signup() {
             try {
                 DataLayer.ExecuteOperation(Asset, Asset.AssetType.GetOperation("QuickSignup"));
-                EntityContainer.Refresh(this);
+                this.Asset = EntityContainer.Refresh(this)??this.Asset;
             } catch (APIException ex) {
                Logger.Error("Failed to QuickSignup.", ex);
             }
@@ -150,6 +150,14 @@ namespace VersionOne.VisualStudio.DataLayer.Entities {
 
         public virtual void RevertChanges() {
             EntityContainer.Revert(this);
+        }
+
+        public void Remove()
+        {
+            if (this.Parent != null && this.Parent.Children != null)
+            {
+                this.Parent.Children.Remove(this);
+            }
         }
     }
 }

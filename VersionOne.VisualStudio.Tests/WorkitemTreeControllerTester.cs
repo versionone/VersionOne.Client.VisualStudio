@@ -11,6 +11,7 @@ using VersionOne.VisualStudio.VSPackage.Controls;
 using VersionOne.VisualStudio.VSPackage.Descriptors;
 using VersionOne.VisualStudio.VSPackage.Events;
 using VersionOne.VisualStudio.VSPackage.Settings;
+using Aga.Controls.Tree;
 
 namespace VersionOne.VisualStudio.Tests {
     [TestFixture]
@@ -39,9 +40,7 @@ namespace VersionOne.VisualStudio.Tests {
             loggerFactoryMock = mockRepository.DynamicMock<ILoggerFactory>();
             effortTrackingMock = mockRepository.StrictMock<IEffortTracking>();
             loggerFactoryMock.Stub(x => x.GetLogger(null)).IgnoreArguments().Return(mockRepository.Stub<ILogger>());
-
             configuration = new Configuration();
-
             Container.Rebind<IDataLayer>().ToConstant(dataLayerMock);
             controller = new WorkitemTreeController(loggerFactoryMock, dataLayerMock, configuration, settingsMock, eventDispatcherMock);
         }
@@ -146,7 +145,6 @@ namespace VersionOne.VisualStudio.Tests {
             ExpectRegisterAndPrepareView();
             Expect.Call(viewMock.CurrentWorkitemDescriptor).Return(descriptor);
             Expect.Call(workitemMock.RevertChanges);
-            Expect.Call(viewMock.RefreshProperties);
             Expect.Call(viewMock.Refresh);
 
             mockRepository.ReplayAll();
@@ -283,10 +281,9 @@ namespace VersionOne.VisualStudio.Tests {
             ExpectRegisterAndPrepareView();
             Expect.Call(dataLayerMock.CreateWorkitem(Entity.DefectType, null, assetCacheMock)).Return(workitemMock);
             Expect.Call(() => assetCacheMock.Add(workitemMock));
-            Expect.Call(() => eventDispatcherMock.Notify(null, new ModelChangedArgs(EventReceiver.ProjectView, EventContext.ProjectSelected)));
+            Expect.Call(() => eventDispatcherMock.Notify(null, new ModelChangedArgs(EventReceiver.ProjectView, EventContext.WorkitemsChanged)));
             Expect.Call(() => viewMock.SelectWorkitem(workitemMock));
             Expect.Call(viewMock.Refresh);
-            Expect.Call(viewMock.RefreshProperties);
 
             mockRepository.ReplayAll();
             controller.Register(viewMock);
@@ -300,15 +297,15 @@ namespace VersionOne.VisualStudio.Tests {
             var parentWorkitemMock = mockRepository.PartialMock<TestWorkitem>(Guid.NewGuid().ToString(), true, assetCacheMock);
             var workitemMock = mockRepository.PartialMock<TestWorkitem>(Guid.NewGuid().ToString(), false, assetCacheMock);
             var descriptor = new WorkitemDescriptor(parentWorkitemMock, new ColumnSetting[0], PropertyUpdateSource.WorkitemView, true);
+            TreeNodeAdv node = new TreeNodeAdv(null);
 
             ExpectRegisterAndPrepareView();
             Expect.Call(viewMock.CurrentWorkitemDescriptor).Return(descriptor);
             Expect.Call(dataLayerMock.CreateWorkitem(Entity.TaskType, parentWorkitemMock, assetCacheMock)).Return(workitemMock);
+            Expect.Call(viewMock.CurrentNode).Return(node);
             Expect.Call(() => eventDispatcherMock.Notify(null, new ModelChangedArgs(EventReceiver.WorkitemView, EventContext.WorkitemsChanged)));
-            Expect.Call(viewMock.ExpandCurrentNode);
             Expect.Call(() => viewMock.SelectWorkitem(workitemMock));
             Expect.Call(viewMock.Refresh);
-            Expect.Call(viewMock.RefreshProperties);
 
             mockRepository.ReplayAll();
             controller.Register(viewMock);

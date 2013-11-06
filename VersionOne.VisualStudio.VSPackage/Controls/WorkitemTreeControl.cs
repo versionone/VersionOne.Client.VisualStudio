@@ -10,6 +10,7 @@ using VersionOne.VisualStudio.VSPackage.Descriptors;
 using Aga.Controls.Tree;
 using VersionOne.VisualStudio.DataLayer;
 using System.Windows.Forms;
+using System.Linq;
 
 using VersionOne.VisualStudio.VSPackage.Events;
 using VersionOne.VisualStudio.VSPackage.Forms;
@@ -24,6 +25,8 @@ namespace VersionOne.VisualStudio.VSPackage.Controls {
     /// </summary>
     public partial class WorkitemTreeControl : V1UserControl, IWorkitemTreeView {        
         private readonly Dictionary<string, string> columnToAttributeMappings = new Dictionary<string, string>();
+
+        private string lastColumnEdited;
         
         private StoryTreeModel storyTreeModel;
 
@@ -52,6 +55,17 @@ namespace VersionOne.VisualStudio.VSPackage.Controls {
 
         public WorkitemDescriptor CurrentWorkitemDescriptor {
             get { return tvWorkitems.SelectedNode == null ? null : tvWorkitems.SelectedNode.Tag as WorkitemDescriptor; }
+        }
+
+        public TreeNodeAdv CurrentNode
+        {
+            get { return tvWorkitems == null ? null : tvWorkitems.SelectedNode == null ? tvWorkitems.Root : tvWorkitems.SelectedNode as TreeNodeAdv; }
+            set { tvWorkitems.SelectedNode = value; }
+        }
+
+        public TreeViewAdv Tree
+        {
+            get { return tvWorkitems as TreeViewAdv; }
         }
 
         public StoryTreeModel Model {
@@ -130,18 +144,113 @@ namespace VersionOne.VisualStudio.VSPackage.Controls {
             tvWorkitems.LoadOnDemand = true;
             tvWorkitems.Expanding += tvWorkitems_Expanding;
             tvWorkitems.Expanded += tvWorkitems_Expanded;
+
+            tvWorkitems.KeyDown += tvWorkitems_KeyDown;
+        }
+
+        void tvWorkitems_PreviewKeyDown(object sender, KeyEventArgs e)
+        {
+            if (e.KeyCode == Keys.Tab)
+            {
+                try
+                {
+                    tvWorkitems.HideEditor();
+                }
+                catch
+                {
+                    //DO Nothing. Just for the case that if this component is NodeComboBox
+                }
+                tvWorkitems_KeyDown(sender, e);
+            }
+        }
+
+        void tvWorkitems_KeyDown(object sender, KeyEventArgs e)
+        {
+            if (e.KeyCode == Keys.Tab)
+            {
+                if (tvWorkitems.SelectedNode != null)
+                {
+                    var list = columnToAttributeMappings.ToList();
+                    var index = list.FindIndex(fi => fi.Key == lastColumnEdited);
+                    index = index == -1 ? 0 : index + 1;
+                    var canEdit = false;
+                    var idx = index;
+                    CustomNodeTextBox texBoxNodeCast = null;
+                    NodeListBox listBoxNodeCast = null;
+                    NodeComboBox comboBoxNodeCast = null;
+
+                    while (!canEdit)
+                    {
+                        idx = e.Shift ? idx - 1 : idx + 1;
+                        if (idx > list.Count)
+                        {
+                            idx = 0;
+                        }
+                        if (idx < 0)
+                        {
+                            idx = list.Count;
+                        }
+                        if (idx == index)
+                        {
+                            return;
+                        }
+                        texBoxNodeCast = tvWorkitems.NodeControls[idx] as CustomNodeTextBox;
+                        listBoxNodeCast = tvWorkitems.NodeControls[idx] as NodeListBox;
+                        comboBoxNodeCast = tvWorkitems.NodeControls[idx] as NodeComboBox;
+
+                        if (texBoxNodeCast != null)
+                        {
+                            if (!texBoxNodeCast.IsReadOnly)
+                            {
+                                canEdit = true;
+                            }
+                        }
+                        if (listBoxNodeCast != null)
+                        {
+                            canEdit = true;
+                        }
+                        if (comboBoxNodeCast != null)
+                        {
+                            canEdit = true;
+                        }
+                    }
+                    if (idx != index)
+                    {
+                        if (texBoxNodeCast != null)
+                        {
+                            (tvWorkitems.NodeControls[idx] as CustomNodeTextBox).BeginEdit();
+                        }
+                        else
+                        {
+                            if (listBoxNodeCast != null)
+                            {
+                                (tvWorkitems.NodeControls[idx] as NodeListBox).BeginEdit();
+                            }
+                            else
+                            {
+                                if (comboBoxNodeCast != null)
+                                {
+                                    (tvWorkitems.NodeControls[idx] as NodeComboBox).BeginEdit();
+                                }
+                            }
+                        }
+                        lastColumnEdited = list[idx - 1].Key;
+                    }
+                }
+            }
         }
         
         private void tvWorkitems_Expanded(object sender, TreeViewAdvEventArgs e) {
-            if(!IsHandleCreated) {
+            if (!IsHandleCreated || !e.Node.CanExpand)
+            {
                 return;
             }
-
+            
             Invoke(new Action(() => waitCursor.Hide()));
         }
 
         private void tvWorkitems_Expanding(object sender, TreeViewAdvEventArgs e) {
-            if(!IsHandleCreated) {
+            if(!IsHandleCreated || !e.Node.CanExpand) {
                 return;
             }
 
@@ -192,6 +301,7 @@ namespace VersionOne.VisualStudio.VSPackage.Controls {
                         textEditor.ParentColumn = treeColumn;
                         textEditor.IsEditEnabledValueNeeded += CheckCellEditability;
                         tvWorkitems.NodeControls.Add(textEditor);
+                        textEditor.KeyTextBoxDown += tvWorkitems_PreviewKeyDown;
                         break;
                     case "List":
                         var listEditor = new NodeComboBox();
@@ -200,6 +310,7 @@ namespace VersionOne.VisualStudio.VSPackage.Controls {
                         listEditor.ParentColumn = treeColumn;
                         listEditor.IsEditEnabledValueNeeded += CheckCellEditability;
                         tvWorkitems.NodeControls.Add(listEditor);
+                        listEditor.KeyComboBoxDown += tvWorkitems_PreviewKeyDown;
                         break;
                     case "Multi":
 			            var listBoxEditor = new NodeListBox {ParentTree = tvWorkitems};
@@ -208,6 +319,7 @@ namespace VersionOne.VisualStudio.VSPackage.Controls {
                         listBoxEditor.ParentColumn = treeColumn;
                         listBoxEditor.IsEditEnabledValueNeeded += CheckCellEditability;
                         tvWorkitems.NodeControls.Add(listBoxEditor);
+                        listBoxEditor.KeyListBoxDown += tvWorkitems_PreviewKeyDown;
                         break;
                     default:
                         throw new NotSupportedException();
@@ -272,6 +384,7 @@ namespace VersionOne.VisualStudio.VSPackage.Controls {
         }
 
         private void AddDefect_Click(object sender, EventArgs e) {
+            tvWorkitems.SelectedNode = null;
             Controller.AddDefect();
         }
 
@@ -417,6 +530,7 @@ namespace VersionOne.VisualStudio.VSPackage.Controls {
                                                          });
             if(foundNode != null) {
                 tvWorkitems.SelectedNode = foundNode;
+                SendKeys.Send("{F2}");
             }
         }
 

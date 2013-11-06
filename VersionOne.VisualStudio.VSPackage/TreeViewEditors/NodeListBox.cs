@@ -31,6 +31,8 @@ namespace VersionOne.VisualStudio.VSPackage.TreeViewEditors {
             set { parentTree = value; }
         }
 
+        public event KeyEventHandler KeyListBoxDown;
+
         #endregion
 
         public NodeListBox() {
@@ -57,8 +59,14 @@ namespace VersionOne.VisualStudio.VSPackage.TreeViewEditors {
 
             SetEditControlProperties(listBox, node);
             listBox.IntegralHeight = false;
-            listBox.ScrollAlwaysVisible = true;            
+            listBox.ScrollAlwaysVisible = true;
+            listBox.KeyDown += listBox_KeyDown;
             return listBox;
+        }
+
+        void listBox_KeyDown(object sender, KeyEventArgs e)
+        {
+            KeyListBoxDown(sender, e);
         }
 
         protected override void DisposeEditor(Control editor)
