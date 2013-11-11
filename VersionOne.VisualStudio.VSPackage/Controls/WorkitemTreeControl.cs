@@ -54,13 +54,13 @@ namespace VersionOne.VisualStudio.VSPackage.Controls {
         }
 
         public WorkitemDescriptor CurrentWorkitemDescriptor {
-            get { return tvWorkitems.SelectedNode == null ? null : tvWorkitems.SelectedNode.Tag as WorkitemDescriptor; }
+            get { return Tree.SelectedNode == null ? null : Tree.SelectedNode.Tag as WorkitemDescriptor; }
         }
 
         public TreeNodeAdv CurrentNode
         {
-            get { return tvWorkitems == null ? null : tvWorkitems.SelectedNode == null ? tvWorkitems.Root : tvWorkitems.SelectedNode as TreeNodeAdv; }
-            set { tvWorkitems.SelectedNode = value; }
+            get { return Tree == null ? null : Tree.SelectedNode == null ? Tree.Root : Tree.SelectedNode as TreeNodeAdv; }
+            set { Tree.SelectedNode = value; }
         }
 
         public TreeViewAdv Tree
@@ -144,8 +144,13 @@ namespace VersionOne.VisualStudio.VSPackage.Controls {
             tvWorkitems.LoadOnDemand = true;
             tvWorkitems.Expanding += tvWorkitems_Expanding;
             tvWorkitems.Expanded += tvWorkitems_Expanded;
-
+            tvWorkitems.Paint += tvWorkitems_Paint;
             tvWorkitems.KeyDown += tvWorkitems_KeyDown;
+        }
+
+        void tvWorkitems_Paint(object sender, PaintEventArgs e)
+        {
+            e.Graphics.ResetTransform();
         }
 
         void tvWorkitems_PreviewKeyDown(object sender, KeyEventArgs e)

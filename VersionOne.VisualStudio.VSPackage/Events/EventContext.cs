@@ -8,6 +8,7 @@
         WorkitemPropertiesUpdatedFromView,
         WorkitemPropertiesUpdatedFromPropertyView,
         WorkitemCacheInvalidated,
-        ProjectPropertiesUpdated
+        ProjectPropertiesUpdated,
+        VirtualWorkitemRemoved
     }
 }

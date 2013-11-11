@@ -157,6 +157,7 @@ namespace VersionOne.VisualStudio.DataLayer.Entities {
             if (this.Parent != null && this.Parent.Children != null)
             {
                 this.Parent.Children.Remove(this);
+                this.Parent = null;
             }
         }
     }

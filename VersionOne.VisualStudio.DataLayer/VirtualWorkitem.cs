@@ -38,7 +38,7 @@ namespace VersionOne.VisualStudio.DataLayer {
                     child.SetProperty("Parent", Asset.Oid);
                 }
 
-                EntityContainer.Refresh(this);
+                this.Asset = EntityContainer.Refresh(this);
             } catch (APIException ex) {
                 Logger.Error("Failed to commit changes.", ex);
             }
