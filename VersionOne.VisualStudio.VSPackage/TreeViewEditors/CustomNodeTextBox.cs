@@ -9,8 +9,8 @@ namespace VersionOne.VisualStudio.VSPackage.TreeViewEditors {
         private ContextMenu contextMenu;
         private TextBox textBox;
 
-        public event KeyEventHandler KeyTextBoxDown;
-        
+        public event PreviewKeyDownEventHandler KeyTextBoxDown;
+
         public TextBox EditorTextBox {
             get {
                 return this.textBox;
@@ -58,13 +58,21 @@ namespace VersionOne.VisualStudio.VSPackage.TreeViewEditors {
             if(contextMenu != null) {
                 textBox.ContextMenu = contextMenu;
             }
-            this.textBox.KeyDown += textBox_KeyDown;
+            if (textBox.ReadOnly)
+            {
+                textBox.BackColor = System.Drawing.Color.DarkGray;
+            }
+            this.textBox.PreviewKeyDown += textBox_PreviewKeyDown;
             return textBox;
         }
 
-        void textBox_KeyDown(object sender, KeyEventArgs e)
+        void textBox_PreviewKeyDown(object sender, PreviewKeyDownEventArgs e)
         {
-            this.KeyTextBoxDown(sender, e);
-        }    
+            if (e.Shift && e.KeyCode == Keys.Tab)
+                KeyTextBoxDown(sender, e);
+            else
+                if (e.KeyCode == Keys.Tab)
+                    KeyTextBoxDown(sender, e);
+        }               
     }
 }
