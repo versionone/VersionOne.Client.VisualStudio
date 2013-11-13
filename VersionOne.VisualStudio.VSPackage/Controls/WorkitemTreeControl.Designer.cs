@@ -51,6 +51,7 @@ namespace VersionOne.VisualStudio.VSPackage.Controls {
             this.miNewTest = new System.Windows.Forms.MenuItem();
             this.miSeparator5 = new System.Windows.Forms.MenuItem();
             this.miProperties = new System.Windows.Forms.MenuItem();
+            this.miOpenInVersionOne = new System.Windows.Forms.MenuItem();
             this.lblLoading = new System.Windows.Forms.Label();
             this.tvWorkitems = new Aga.Controls.Tree.TreeViewAdv();
             this.tsMenu.SuspendLayout();
@@ -182,7 +183,8 @@ namespace VersionOne.VisualStudio.VSPackage.Controls {
             this.miNewDefect,
             this.miNewTest,
             this.miSeparator5,
-            this.miProperties});
+            this.miProperties,
+            this.miOpenInVersionOne});
             // 
             // miSave
             // 
@@ -248,6 +250,11 @@ namespace VersionOne.VisualStudio.VSPackage.Controls {
             //
             this.miProperties.Index = 12;
             this.miProperties.Text = "Properties";
+            //
+            //miOpenInVersionOne
+            //
+            this.miOpenInVersionOne.Index = 13;
+            this.miOpenInVersionOne.Text = "Open in VersionOne";
             // 
             // lblLoading
             // 
@@ -330,5 +337,6 @@ namespace VersionOne.VisualStudio.VSPackage.Controls {
         private MenuItem miNewTest;
         private MenuItem miSeparator5;
         private MenuItem miProperties;
-	}
+        private MenuItem miOpenInVersionOne;
+    }
 }
