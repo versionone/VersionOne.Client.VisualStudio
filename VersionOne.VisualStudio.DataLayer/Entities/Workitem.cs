@@ -28,13 +28,15 @@ namespace VersionOne.VisualStudio.DataLayer.Entities {
             }
         }
 
-        public virtual bool IsVirtual {
-            get { return false; }
+        public virtual bool IsVirtual
+        {
+            get;
+            set;
         }
 
         internal Workitem(Asset asset, Workitem parent, IEntityContainer entityContainer) : base(asset, entityContainer) {
             Parent = parent;
-
+            IsVirtual = false;
             //TODO maybe make one more constructor for tests instead of this?
             // the following check is for unit tests            
             if(asset == null || asset.Children == null) {
