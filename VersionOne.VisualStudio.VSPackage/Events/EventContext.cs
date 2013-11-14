@@ -1,5 +1,6 @@
 ﻿namespace VersionOne.VisualStudio.VSPackage.Events {
-    public enum EventContext {
+    public enum EventContext
+    {
         V1SettingsChanged,
         ProjectsRequested,
         ProjectSelected,
@@ -8,6 +9,8 @@
         WorkitemPropertiesUpdatedFromView,
         WorkitemPropertiesUpdatedFromPropertyView,
         WorkitemCacheInvalidated,
-        ProjectPropertiesUpdated
+        ProjectPropertiesUpdated,
+        VirtualWorkitemRemoved,
+        WorkitemSaved
     }
 }
