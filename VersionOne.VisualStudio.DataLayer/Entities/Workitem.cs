@@ -74,7 +74,7 @@ namespace VersionOne.VisualStudio.DataLayer.Entities {
                 EntityContainer.Commit(this);
 
                 if(refreshInCache) {
-                    EntityContainer.Refresh(this);
+                    this.Asset = EntityContainer.Refresh(this) ?? this.Asset;
                 }
             } catch (APIException ex) {
                 Logger.Error("Failed to commit changes.", ex);

@@ -16,7 +16,7 @@
         {
             "type": "download",
             "title": "Download Latest Early Access Build",
-            "href": "http://platform.versionone.com.s3.amazonaws.com/downloads/VersionOne.Client.VisualStudio_9.0.0.47.zip"
+            "href": "http://platform.versionone.com.s3.amazonaws.com/downloads/VersionOne.Client.VisualStudio_9.0.0.75.vsix"
         },
         {
             "type": "documentation",
@@ -44,10 +44,10 @@
             {
                 "date": "2013-11-01T00:00:00.000Z",
                 "description": "Winter 2014 Early Access",
-                "version": "9.0.0.47",
-                "releaseNotes": "* VS Support: Added VS2013, keeping VS2012, removed VS2010.\n* Added: Context menu option to open properties view for workitem details.\n* Fixed: Inactivated owners now annotated. Context menu now available for items owned by inactivated members.\n* Fixed: Task window throws error on first run when opened before project window.",
+                "version": "9.0.0.75",
+                "releaseNotes": "* VS Support: Keeping VS2012, removed VS2010.\n* Added: Context menu option to open properties view for workitem details.\n* Added: New secondary workitems are selected for editing after adding them.\n* Added: Tab to cycle through editable fields for a selected workitem.\n* Fixed: Inactivated owners now annotated. Context menu now available for items owned by inactivated members.\n* Fixed: Task window throws error on first run when opened before project window.\n* Fixed: State of the workitem tree is not reset for every user action (such as create new workitem and signup)",
                 "qualityBand": "seed",
-                "downloadUrl": "http://platform.versionone.com.s3.amazonaws.com/downloads/VersionOne.Client.VisualStudio_9.0.0.47.zip"
+                "downloadUrl": "http://platform.versionone.com.s3.amazonaws.com/downloads/VersionOne.Client.VisualStudio_9.0.0.75.vsix"
             },
             {
                 "date": "2012-11-01T00:00:00.000Z",
