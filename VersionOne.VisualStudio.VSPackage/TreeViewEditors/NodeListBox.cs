@@ -31,7 +31,7 @@ namespace VersionOne.VisualStudio.VSPackage.TreeViewEditors {
             set { parentTree = value; }
         }
 
-        public event KeyEventHandler KeyListBoxDown;
+        public event PreviewKeyDownEventHandler KeyListBoxDown;
 
         #endregion
 
@@ -60,13 +60,17 @@ namespace VersionOne.VisualStudio.VSPackage.TreeViewEditors {
             SetEditControlProperties(listBox, node);
             listBox.IntegralHeight = false;
             listBox.ScrollAlwaysVisible = true;
-            listBox.KeyDown += listBox_KeyDown;
+            listBox.PreviewKeyDown += listBox_PreviewKeyDown;
             return listBox;
         }
 
-        void listBox_KeyDown(object sender, KeyEventArgs e)
+        void listBox_PreviewKeyDown(object sender, PreviewKeyDownEventArgs e)
         {
-            KeyListBoxDown(sender, e);
+            if (e.Shift && e.KeyCode == Keys.Tab)
+                KeyListBoxDown(sender, e);
+            else
+                if (e.KeyCode == Keys.Tab)
+                    KeyListBoxDown(sender, e);
         }
 
         protected override void DisposeEditor(Control editor)

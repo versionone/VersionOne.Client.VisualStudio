@@ -318,7 +318,7 @@ namespace VersionOne.VisualStudio.VSPackage.Controllers {
             
             view.Refresh();
         }
-
+      
         #endregion
 
         public ICollection<Workitem> GetWorkitems() {
