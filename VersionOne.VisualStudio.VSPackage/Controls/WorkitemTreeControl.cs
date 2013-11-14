@@ -145,101 +145,114 @@ namespace VersionOne.VisualStudio.VSPackage.Controls {
             tvWorkitems.LoadOnDemand = true;
             tvWorkitems.Expanding += tvWorkitems_Expanding;
             tvWorkitems.Expanded += tvWorkitems_Expanded;
-
+            
             tvWorkitems.KeyDown += tvWorkitems_KeyDown;
         }
 
-        void tvWorkitems_PreviewKeyDown(object sender, KeyEventArgs e)
+        void tvWorkitems_PreviewKeyDown(object sender, PreviewKeyDownEventArgs e)
         {
             if (e.KeyCode == Keys.Tab)
             {
+                var list = columnToAttributeMappings.ToList();
                 try
                 {
-                    tvWorkitems.HideEditor();
+                    var index = list.FindIndex(fi => fi.Value == lastColumnEdited);
+                    ((BaseTextControl)tvWorkitems.NodeControls[index + 1]).EndEdit(true);
                 }
                 catch
                 {
-                    //DO Nothing. Just for the case that if this component is NodeComboBox
+                    //Prevent NodeComboBox Behavior.
                 }
-                tvWorkitems_KeyDown(sender, e);
+                moveTabFunctionality(e.Shift);
             }
         }
 
         void tvWorkitems_KeyDown(object sender, KeyEventArgs e)
         {
             if (e.KeyCode == Keys.Tab)
+                moveTabFunctionality(e.Shift);
+        }
+
+        private void moveTabFunctionality(bool shiftPress)
+        {
+            if (tvWorkitems.SelectedNode != null)
             {
-                if (tvWorkitems.SelectedNode != null)
+                var list = columnToAttributeMappings.ToList();
+                var index = list.FindIndex(fi => fi.Value == lastColumnEdited);
+                index = (index == -1) ? 0 : index + 1;
+                var canEdit = false;
+                var idx = index;
+                CustomNodeTextBox texBoxNodeCast = null;
+                NodeListBox listBoxNodeCast = null;
+                NodeComboBox comboBoxNodeCast = null;
+
+                var item = ((WorkitemDescriptor)tvWorkitems.CurrentNode.Tag).Workitem;
+
+                while (!canEdit)
                 {
-                    var list = columnToAttributeMappings.ToList();
-                    var index = list.FindIndex(fi => fi.Key == lastColumnEdited);
-                    index = index == -1 ? 0 : index + 1;
-                    var canEdit = false;
-                    var idx = index;
-                    CustomNodeTextBox texBoxNodeCast = null;
-                    NodeListBox listBoxNodeCast = null;
-                    NodeComboBox comboBoxNodeCast = null;
-
-                    while (!canEdit)
+                    idx = shiftPress ? idx - 1 : idx + 1;
+                    if (idx > list.Count)
                     {
-                        idx = e.Shift ? idx - 1 : idx + 1;
-                        if (idx > list.Count)
-                        {
-                            idx = 0;
-                        }
-                        if (idx < 0)
-                        {
-                            idx = list.Count;
-                        }
-                        if (idx == index)
-                        {
-                            return;
-                        }
-                        texBoxNodeCast = tvWorkitems.NodeControls[idx] as CustomNodeTextBox;
-                        listBoxNodeCast = tvWorkitems.NodeControls[idx] as NodeListBox;
-                        comboBoxNodeCast = tvWorkitems.NodeControls[idx] as NodeComboBox;
+                        idx = 1;
+                    }
+                    if (idx < 1)
+                    {
+                        idx = list.Count;
+                    }
 
-                        if (texBoxNodeCast != null)
-                        {
-                            if (!texBoxNodeCast.IsReadOnly)
-                            {
-                                canEdit = true;
-                            }
-                        }
-                        if (listBoxNodeCast != null)
-                        {
-                            canEdit = true;
-                        }
-                        if (comboBoxNodeCast != null)
+                    texBoxNodeCast = tvWorkitems.NodeControls[idx] as CustomNodeTextBox;
+                    listBoxNodeCast = tvWorkitems.NodeControls[idx] as NodeListBox;
+                    comboBoxNodeCast = tvWorkitems.NodeControls[idx] as NodeComboBox;
+
+                    var propertyName = columnToAttributeMappings[list[idx - 1].Key];
+                    var isReadOnly = item.IsPropertyReadOnly(propertyName);
+
+                    if (lastColumnEdited == propertyName)
+                    {
+                        return;
+                    }
+
+                    if (texBoxNodeCast != null)
+                    {
+                        texBoxNodeCast.IsPropertyReadOnly = isReadOnly;
+                        if (!texBoxNodeCast.IsReadOnly)
                         {
                             canEdit = true;
                         }
                     }
-                    if (idx != index)
+                    if (listBoxNodeCast != null)
                     {
-                        if (texBoxNodeCast != null)
-                        {
-                            (tvWorkitems.NodeControls[idx] as CustomNodeTextBox).BeginEdit();
-                        }
-                        else
-                        {
-                            if (listBoxNodeCast != null)
-                            {
-                                (tvWorkitems.NodeControls[idx] as NodeListBox).BeginEdit();
-                            }
-                            else
-                            {
-                                if (comboBoxNodeCast != null)
-                                {
-                                    (tvWorkitems.NodeControls[idx] as NodeComboBox).BeginEdit();
-                                }
-                            }
-                        }
-                        lastColumnEdited = list[idx - 1].Key;
+                        canEdit = true;
+                    }
+                    if (comboBoxNodeCast != null)
+                    {
+                        canEdit = true;
                     }
                 }
+                if (texBoxNodeCast != null)
+                {
+                    (tvWorkitems.NodeControls[idx] as CustomNodeTextBox).BeginEdit();
+                }
+                else
+                {
+                    if (listBoxNodeCast != null)
+                    {
+                        (tvWorkitems.NodeControls[idx] as NodeListBox).BeginEdit();
+                    }
+                    else
+                    {
+                        if (comboBoxNodeCast != null)
+                        {
+                            (tvWorkitems.NodeControls[idx] as NodeComboBox).BeginEdit();
+                        }
+                    }
+                }
+                lastColumnEdited = list[idx - 1].Value;
+
             }
         }
+        
+
         
         private void tvWorkitems_Expanded(object sender, TreeViewAdvEventArgs e) {
             if (!IsHandleCreated || !e.Node.CanExpand)
@@ -395,6 +408,7 @@ namespace VersionOne.VisualStudio.VSPackage.Controls {
 
         private void tvWorkitems_SelectionChanged(object sender, EventArgs e) {
             Controller.HandleTreeSelectionChanged();
+            lastColumnEdited = null;
         }
 
         private void btnShowMyTasks_CheckedChanged(object sender, EventArgs e) {
@@ -483,6 +497,8 @@ namespace VersionOne.VisualStudio.VSPackage.Controls {
             var columnName = (sender as BaseTextControl).DataPropertyName;
             var propertyName = columnToAttributeMappings[columnName];
             var isReadOnly = item.IsPropertyReadOnly(propertyName);
+
+            lastColumnEdited = propertyName;
             
             if(sender is CustomNodeTextBox) {
                 var textBox = (CustomNodeTextBox) sender;
