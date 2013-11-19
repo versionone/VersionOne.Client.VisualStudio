@@ -52,6 +52,7 @@ namespace VersionOne.VisualStudio.VSPackage.TreeViewEditors {
                 EditorTextBox.ReadOnly = IsReadOnly;
             }
         }
+
         protected override TextBox CreateTextBox() {
             this.textBox = new TextBox();
             textBox.ReadOnly = this.IsReadOnly;
