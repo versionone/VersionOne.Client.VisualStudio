@@ -8,6 +8,7 @@ using VersionOne.VisualStudio.DataLayer;
 using VersionOne.VisualStudio.VSPackage.Events;
 using VersionOne.VisualStudio.VSPackage.Settings;
 using Aga.Controls.Tree;
+using VersionOne.VisualStudio.VSPackage.Descriptors;
 
 namespace VersionOne.VisualStudio.VSPackage.Controllers {
     public class WorkitemTreeController : BaseController {
@@ -28,6 +29,7 @@ namespace VersionOne.VisualStudio.VSPackage.Controllers {
         }
 
         protected override void HandleModelChanged(object sender, ModelChangedArgs e) {
+            TreePath treePath = new TreePath(view.Tree.Root);
             switch (e.Context) {
                 case EventContext.WorkitemPropertiesUpdatedFromView:
                     HandleWorkitemPropertiesUpdated(PropertyUpdateSource.WorkitemView);
@@ -36,7 +38,11 @@ namespace VersionOne.VisualStudio.VSPackage.Controllers {
                     HandleWorkitemPropertiesUpdated(PropertyUpdateSource.WorkitemPropertyView);
                     break;
                 case EventContext.WorkitemsChanged:
-                    TreePath treePath = view.Tree.GetPath(view.CurrentNode.Level==2 ? view.CurrentNode.Parent : view.CurrentNode);
+                    treePath = view.Tree.GetPath(view.CurrentNode.Level == 2 ? view.CurrentNode.Parent : view.CurrentNode);
+                    model.InvokeStructureChanged(treePath);
+                    break;
+                case EventContext.VirtualWorkitemRemoved:
+                    treePath = view.Tree.GetPath(view.CurrentNode.Parent??view.Tree.Root);
                     model.InvokeStructureChanged(treePath);
                     break;
                 case EventContext.ProjectSelected:
@@ -44,6 +50,10 @@ namespace VersionOne.VisualStudio.VSPackage.Controllers {
                     break;
                 case EventContext.WorkitemsRequested:
                     HandleModelChanged();
+                    break;
+                case EventContext.WorkitemSaved:
+                    treePath = view.Tree.GetPath(view.CurrentNode.Level == 2 ? view.CurrentNode.Parent : view.CurrentNode);
+                    model.InvokeStructureChanged(treePath);
                     break;
                 case EventContext.WorkitemCacheInvalidated:
                     assetCache.Drop();
@@ -119,10 +129,16 @@ namespace VersionOne.VisualStudio.VSPackage.Controllers {
             
             if(descriptor != null) {
                 RunTaskAsync(view.GetWaitCursor(),
-                             () => descriptor.Workitem.CommitChanges(),
-                             () => EventDispatcher.Notify(null, new ModelChangedArgs(EventReceiver.WorkitemView, EventContext.WorkitemsChanged)),
-                             ex => {
-                                 if(ex is ValidatorException) {
+                             () =>
+                             {
+                                 descriptor.Workitem.CommitChanges();
+                                 descriptor.Workitem.IsVirtual = false;
+                             },
+                             () => EventDispatcher.Notify(null, new ModelChangedArgs(EventReceiver.WorkitemView, EventContext.WorkitemSaved)),
+                             ex =>
+                             {
+                                 if (ex is ValidatorException)
+                                 {
                                      view.ShowErrorMessage("Workitem cannot be saved because the following required fields are empty:" + ex.Message);
                                      Logger.Warn("Workitem validation error, item cannot be persisted", ex);
                                  }
@@ -140,7 +156,12 @@ namespace VersionOne.VisualStudio.VSPackage.Controllers {
                 if (item.IsVirtual)
                 {
                     item.Remove();
-                    EventDispatcher.Notify(null, new ModelChangedArgs(EventReceiver.WorkitemView, EventContext.WorkitemsChanged));
+                    var parent = view.CurrentNode.Parent ?? view.Tree.Root;
+                    if (parent.Children.Count == 1)
+                    {
+                        view.CurrentNode = parent;
+                    }
+                    EventDispatcher.Notify(null, new ModelChangedArgs(EventReceiver.WorkitemView, EventContext.VirtualWorkitemRemoved));
                 }
 
                 view.Refresh();

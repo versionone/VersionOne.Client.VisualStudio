@@ -4,30 +4,75 @@ using VersionOne.VisualStudio.DataLayer.Entities;
 
 namespace VersionOne.VisualStudio.DataLayer {
     public class VirtualWorkitem : Workitem {
-        internal VirtualWorkitem(Asset asset, Workitem parent, IEntityContainer entityContainer) : base(asset, parent, entityContainer) { }
+        internal VirtualWorkitem(Asset asset, Workitem parent, IEntityContainer entityContainer) : base(asset, parent, entityContainer) {
+            this.IsVirtual = true;
+        }
 
-        public override bool IsVirtual {
-            get { return true; }
+        public override bool IsVirtual
+        {
+            get;
+            set;
         }
 
         public override bool CanQuickClose {
-            get { return false; }
+            get {
+                if (this.IsVirtual)
+                {
+                    return false;
+                }
+                else
+                {
+                    return base.CanQuickClose;
+                }
+            
+            }
         }
 
         public override bool CanSignup {
-            get { return false; }
+            get {
+                if (this.IsVirtual)
+                {
+                    return false;
+                }
+                else
+                {
+                    return base.CanSignup;
+                }
+            }
         }
 
         public override void Close() {
-            throw new NotSupportedException("Cannot close non-saved workitem.");
+            if (this.IsVirtual)
+            {
+                return;
+            }
+            else
+            {
+                base.Close();
+            }
         }
 
         public override void QuickClose() {
-            throw new NotSupportedException("Cannot close non-saved workitem.");
+
+            if (this.IsVirtual)
+            {
+                return;
+            }
+            else
+            {
+                base.QuickClose();
+            }
         }
 
         public override void Signup() {
-            throw new NotSupportedException("Cannot signup to non-saved workitem.");
+            if (this.IsVirtual)
+            {
+                return;
+            }
+            else
+            {
+                base.Signup();
+            }
         }
 
         public override void CommitChanges() {
@@ -38,10 +83,15 @@ namespace VersionOne.VisualStudio.DataLayer {
                     child.SetProperty("Parent", Asset.Oid);
                 }
 
-                EntityContainer.Refresh(this);
+                this.Asset = EntityContainer.Refresh(this);
             } catch (APIException ex) {
                 Logger.Error("Failed to commit changes.", ex);
             }
+        }
+
+        public Workitem ToWorkitem()
+        {
+            return new Workitem(this.Asset, this.Parent, EntityContainer);
         }
 
         public override void RevertChanges() {

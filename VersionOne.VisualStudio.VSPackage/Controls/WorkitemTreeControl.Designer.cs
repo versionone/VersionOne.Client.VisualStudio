@@ -204,7 +204,7 @@ namespace VersionOne.VisualStudio.VSPackage.Controls {
             // miSignup
             // 
             this.miSignup.Index = 3;
-            this.miSignup.Text = "Signup";
+            this.miSignup.Text = "Sign Me Up";
             // 
             // miSeparator3
             // 
