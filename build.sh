@@ -127,7 +127,7 @@ cat > "$WORKSPACE/$COMPONENT_NAME/source.extension.vsixmanifest" <<EOF
     <DisplayName>VersionOne Tracker</DisplayName>
     <Description xml:space="preserve">VersionOne Package for Microsoft Visual Studio. For more information about VersionOne, see the VersionOne website at http://www.versionone.com.</Description>
     <MoreInfo>http://www.versionone.com</MoreInfo>
-    <License>License.rtf</License>
+    <License>LICENSE.txt</License>
   </Metadata>
   <Installation>
     <InstallationTarget Version="[11.0,13.0)" Id="Microsoft.VisualStudio.Premium"/>

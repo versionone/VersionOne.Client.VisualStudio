@@ -78,7 +78,7 @@ namespace VersionOne.VisualStudio.VSPackage.Controllers {
                     view.RefreshProperties();
                     break;
                 case PropertyUpdateSource.WorkitemPropertyView:
-                    model.InvokeStructureChanged();
+                    model.InvokeStructureChanged(view.Tree.GetPath(view.CurrentNode));
                     break;
             }
         }
