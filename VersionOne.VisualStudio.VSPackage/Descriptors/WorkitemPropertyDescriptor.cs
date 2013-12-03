@@ -105,7 +105,12 @@ namespace VersionOne.VisualStudio.VSPackage.Descriptors {
                 
                 if(value is double) {
                     return ((double)value).ToString("0.00", CultureInfo.CurrentCulture);
-                } 
+                }
+
+                if (Attribute == "Description")
+                {
+                    return RemoveHTMLTags(value.ToString());
+                }
 
                 return value;
             } catch (Exception ex) {
@@ -126,6 +131,41 @@ namespace VersionOne.VisualStudio.VSPackage.Descriptors {
             }
 
             return base.GetEditor(editorBaseType);
+        }
+
+        private static string RemoveHTMLTags(string content)
+        {
+            var cleaned = string.Empty;
+            string textOnly = string.Empty;
+            System.Text.RegularExpressions.Regex tagRemove = new System.Text.RegularExpressions.Regex(@"<[^>]*(>|$)");
+            System.Text.RegularExpressions.Regex compressSpaces = new System.Text.RegularExpressions.Regex(@"[\s\r\n]+");
+            textOnly = tagRemove.Replace(content, " ").Trim();
+            textOnly = compressSpaces.Replace(textOnly, " ");
+            textOnly = System.Text.RegularExpressions.Regex.Replace(textOnly, @"<[^>]+>|&nbsp;", "").Trim();
+            cleaned = textOnly;
+            return cleaned;
+        }
+
+        public string GetDescriptionRow()
+        {
+            var item = entity;
+
+            try
+            {
+                var value = item.GetProperty(Attribute);
+
+                if (Attribute == "Description")
+                {
+                    return value.ToString();
+                }
+                return string.Empty;
+            }
+            catch (Exception ex)
+            {
+                // TODO possibly log this, but this would the only Logger usage among descriptors
+                Debug.WriteLine(string.Format("Cannot get value of {0} of asset {1}.", Attribute, item), ex);
+                return string.Empty;
+            }
         }
     }
 }
