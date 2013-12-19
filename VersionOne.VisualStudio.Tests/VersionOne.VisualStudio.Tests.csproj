@@ -93,9 +93,9 @@
       <SpecificVersion>False</SpecificVersion>
       <HintPath>..\packages\VersionOne.SDK.APIClient.14.1.0.243\lib\net45\VersionOne.SDK.APIClient.dll</HintPath>
     </Reference>
-    <Reference Include="VersionOne.SDK.ObjectModel, Version=14.1.0.904, Culture=neutral, processorArchitecture=MSIL">
+    <Reference Include="VersionOne.SDK.ObjectModel, Version=14.1.0.907, Culture=neutral, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\packages\VersionOne.SDK.ObjectModel.14.1.0.904\lib\net45\VersionOne.SDK.ObjectModel.dll</HintPath>
+      <HintPath>..\packages\VersionOne.SDK.ObjectModel.14.1.0.907\lib\net45\VersionOne.SDK.ObjectModel.dll</HintPath>
     </Reference>
   </ItemGroup>
   <ItemGroup>
