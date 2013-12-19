@@ -42,9 +42,21 @@
     <AssemblyOriginatorKeyFile>..\Common\SigningKey\VersionOne.snk</AssemblyOriginatorKeyFile>
   </PropertyGroup>
   <ItemGroup>
+    <Reference Include="FSharp.Data, Version=1.1.10.0, Culture=neutral, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\packages\FSharp.Data.1.1.10\lib\net40\FSharp.Data.dll</HintPath>
+    </Reference>
+    <Reference Include="FSharp.Data.DesignTime, Version=1.1.10.0, Culture=neutral, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\packages\FSharp.Data.1.1.10\lib\net40\FSharp.Data.DesignTime.dll</HintPath>
+    </Reference>
     <Reference Include="Ninject, Version=3.0.0.0, Culture=neutral, PublicKeyToken=c7192dc5380945e7, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
       <HintPath>..\packages\Ninject.3.0.1.10\lib\net45-full\Ninject.dll</HintPath>
+    </Reference>
+    <Reference Include="OAuth2Client, Version=1.4.13309.2515, Culture=neutral, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\packages\OAuth2Client.1.4.13309.2515\lib\net45\OAuth2Client.dll</HintPath>
     </Reference>
     <Reference Include="System" />
     <Reference Include="System.Core" />
@@ -52,9 +64,9 @@
     <Reference Include="Microsoft.CSharp" />
     <Reference Include="System.Data" />
     <Reference Include="System.Xml" />
-    <Reference Include="VersionOne.SDK.APIClient, Version=12.5.0.181, Culture=neutral, PublicKeyToken=e0f410c10d2e7630, processorArchitecture=MSIL">
+    <Reference Include="VersionOne.SDK.APIClient, Version=14.1.0.243, Culture=neutral, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\packages\VersionOne.SDK.APIClient.12.5.0.181\lib\net40\VersionOne.SDK.APIClient.dll</HintPath>
+      <HintPath>..\packages\VersionOne.SDK.APIClient.14.1.0.243\lib\net45\VersionOne.SDK.APIClient.dll</HintPath>
     </Reference>
   </ItemGroup>
   <ItemGroup>
