@@ -1,8 +1,7 @@
 #!/bin/bash -e
 . ./build.properties
-if [ -d build-tools ]; then cd build-tools && git fetch && git stash && git pull && cd ..; else git clone https://github.com/versionone/openAgile-build-tools.git build-tools; fi
+if [ -d build-tools ]; then cd build-tools && git fetch && git stash  && git pull && cd ..; else git clone https://github.com/versionone/openAgile-build-tools.git build-tools; fi
 source ./build-tools/common.sh
-
 
 # ---- Produce vsixmanifest -------------------------------------------------
 COMPONENTS="VersionOne.VisualStudio.VSPackage"
@@ -59,19 +58,18 @@ using System.Runtime.InteropServices;
 EOF
 done
 
-
 # ---- Clean solution ---------------------------------------------------------
 
 rm -rf $WORKSPACE/*.nupkg
-MSBuild.exe $SOLUTION_FILE \
+MSBuild.exe $SOLUTION_FILE -m \
   -t:Clean \
   -p:Configuration="$Configuration" \
   -p:Platform="$Platform" \
   -p:Verbosity=Diagnostic
 
-
 # ---- Refresh nuget packages ---------------------------------------------------------
-  nuget_packages_refresh
+
+nuget_packages_refresh
 
 # ---- Build solution using msbuild -------------------------------------------
 
