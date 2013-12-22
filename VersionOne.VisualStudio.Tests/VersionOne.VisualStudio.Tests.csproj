@@ -13,7 +13,6 @@
     <TargetFrameworkVersion>v4.5</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
     <SolutionDir Condition="$(SolutionDir) == '' Or $(SolutionDir) == '*Undefined*'">..\</SolutionDir>
-    <RestorePackages>true</RestorePackages>
     <TargetFrameworkProfile />
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
@@ -70,13 +69,12 @@
     <Reference Include="Ninject">
       <HintPath>..\packages\Ninject.3.0.1.10\lib\net45-full\Ninject.dll</HintPath>
     </Reference>
-    <Reference Include="nunit.framework, Version=2.6.2.12296, Culture=neutral, PublicKeyToken=96d09a1eb7f44a77, processorArchitecture=MSIL">
-      <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\packages\NUnit.2.6.2\lib\nunit.framework.dll</HintPath>
+    <Reference Include="nunit.framework">
+      <HintPath>..\packages\NUnit.2.6.3\lib\nunit.framework.dll</HintPath>
     </Reference>
-    <Reference Include="OAuth2Client, Version=1.5.0.2558, Culture=neutral, processorArchitecture=MSIL">
+    <Reference Include="OAuth2Client, Version=1.6.0.2560, Culture=neutral, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\packages\OAuth2Client.1.5.0.2558\lib\net45\OAuth2Client.dll</HintPath>
+      <HintPath>..\packages\OAuth2Client.1.6.0.2560\lib\net45\OAuth2Client.dll</HintPath>
     </Reference>
     <Reference Include="Rhino.Mocks, Version=3.6.0.0, Culture=neutral, PublicKeyToken=0b3305902db7183f, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
@@ -89,13 +87,13 @@
     <Reference Include="Microsoft.CSharp" />
     <Reference Include="System.Data" />
     <Reference Include="System.Xml" />
-    <Reference Include="VersionOne.SDK.APIClient, Version=14.1.0.243, Culture=neutral, processorArchitecture=MSIL">
+    <Reference Include="VersionOne.SDK.APIClient, Version=14.1.1.249, Culture=neutral, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\packages\VersionOne.SDK.APIClient.14.1.0.243\lib\net45\VersionOne.SDK.APIClient.dll</HintPath>
+      <HintPath>..\packages\VersionOne.SDK.APIClient.14.1.1.249\lib\net45\VersionOne.SDK.APIClient.dll</HintPath>
     </Reference>
-    <Reference Include="VersionOne.SDK.ObjectModel, Version=14.1.0.904, Culture=neutral, processorArchitecture=MSIL">
+    <Reference Include="VersionOne.SDK.ObjectModel, Version=14.1.1.913, Culture=neutral, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\packages\VersionOne.SDK.ObjectModel.14.1.0.904\lib\net45\VersionOne.SDK.ObjectModel.dll</HintPath>
+      <HintPath>..\packages\VersionOne.SDK.ObjectModel.14.1.1.913\lib\net45\VersionOne.SDK.ObjectModel.dll</HintPath>
     </Reference>
   </ItemGroup>
   <ItemGroup>
@@ -131,7 +129,6 @@
     </None>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
-  <Import Project="$(SolutionDir)\.nuget\NuGet.targets" Condition="Exists('$(SolutionDir)\.nuget\NuGet.targets')" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it.
        Other similar extension points exist, see Microsoft.Common.targets.
   <Target Name="BeforeBuild">

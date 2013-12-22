@@ -33,15 +33,15 @@ namespace VersionOne.VisualStudio.DataLayer {
             VersionOneSettings = settings;
 
             var metaConnector = new V1APIConnector(path + MetaUrlSuffix, username, password, integrated, proxy);
-            metaConnector.SetCallerUserAgent("VersionOne.Client.VisualStudio/9.0.0");
+            metaConnector.SetUpstreamUserAgent("VersionOne.Client.VisualStudio/9.0.0");
             MetaModel = new MetaModel(metaConnector);
 
             var localizerConnector = new V1APIConnector(path + LocalizerUrlSuffix, username, password, integrated, proxy);
-            localizerConnector.SetCallerUserAgent("VersionOne.Client.VisualStudio/9.0.0");
+            localizerConnector.SetUpstreamUserAgent("VersionOne.Client.VisualStudio/9.0.0");
             Localizer = new Localizer(localizerConnector);
 
             var dataConnector = new V1APIConnector(path + DataUrlSuffix, username, password, integrated, proxy);
-            dataConnector.SetCallerUserAgent("VersionOne.Client.VisualStudio/9.0.0");
+            dataConnector.SetUpstreamUserAgent("VersionOne.Client.VisualStudio/9.0.0");
             Services = new Services(MetaModel, dataConnector);
 
             V1Configuration = LoadV1Configuration();            
@@ -58,7 +58,7 @@ namespace VersionOne.VisualStudio.DataLayer {
             var proxy = GetProxy(VersionOneSettings.ProxySettings);
 
             var apiConnector = new V1APIConnector(path + ConfigUrlSuffix, null, null, integrated, proxy);
-            apiConnector.SetCallerUserAgent("VersionOne.Client.VisualStudio/9.0.0");
+            apiConnector.SetUpstreamUserAgent("VersionOne.Client.VisualStudio/9.0.0");
             return new V1Configuration(apiConnector);
         }
 
