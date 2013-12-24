@@ -15,8 +15,8 @@
     "linksSection": [
         {
             "type": "download",
-            "title": "Download Latest Early Access Build",
-            "href": "http://platform.versionone.com.s3.amazonaws.com/downloads/VersionOne.Client.VisualStudio_9.0.0.103.vsix"
+            "title": "Download Latest Build",
+            "href": "http://platform.versionone.com.s3.amazonaws.com/downloads/VersionOne.Client.VisualStudio_9.0.0.110.vsix"
         },
         {
             "type": "documentation",
@@ -42,54 +42,54 @@
     "updatesSection": {
         "updates": [
             {
-                "date": "2013-12-04T15:00:00.000Z",
-                "description": "Winter 2014 Early Access",
-                "version": "9.0.0.103",
-                "releaseNotes": "* VS Support: Added VS2013, keeping VS2012, removed VS2010.\n* Added: Open a Workitem detail page in a browser.\n* Added: Context menu option to open properties view for workitem details.\n* Added: Context menu option to save new workitem.\n* Added: New secondary workitems are selected for editing after adding them.\n* Added: Tab and Shift-Tab to cycle through editable fields for a selected workitem.\n* Fixed: Don't allow edits to read-only fields.\n* Fixed: Show plain text description in property inspector.\n* Fixed: Change values from property inspector.\n* Fixed: Inactivated owners now annotated. Context menu now available for items owned by inactivated members.\n* Fixed: Task window throws error on first run when opened before project window.\n* Fixed: State of the workitem tree is not reset for every user action (such as create new workitem and signup)",
+                "date": "2013-12-24T12:00:00.000Z",
+                "description": "Winter 2014",
+                "version": "9.0.0.110",
+                "releaseNotes": "* VS Support: Added VS2013, keeping VS2012, removed VS2010.\n* Added: Open a Workitem detail page in a browser.\n* Added: Context menu option to open properties view for workitem details.\n* Added: Context menu option to save new workitem.\n* Added: New secondary workitems are selected for editing after adding them.\n* Added: Tab and Shift-Tab to cycle through editable fields for a selected workitem.\n* Fixed: Don't allow edits to read-only fields.\n* Fixed: Show plain text description in property inspector.\n* Fixed: Change values from property inspector.\n* Fixed: Inactivated owners now annotated. Context menu now available for items owned by inactivated members.\n* Fixed: Task window throws error on first run when opened before project window.\n* Fixed: State of the workitem tree is not reset for every user action (such as create new workitem and signup)\n* Fixed: Updated SDK.NET Libraries",
                 "qualityBand": "seed",
-                "downloadUrl": "http://platform.versionone.com.s3.amazonaws.com/downloads/VersionOne.Client.VisualStudio_9.0.0.103.vsix"
+                "downloadUrl": "http://platform.versionone.com.s3.amazonaws.com/downloads/VersionOne.Client.VisualStudio_9.0.0.110.vsix"
             },
             {
                 "date": "2012-11-01T00:00:00.000Z",
                 "description": "Fall 2012",
                 "version": "8.3.0.115",
                 "releaseNotes": "Added: Support for installing into Visual Studio 2012",
-                "qualityBand": "mature"
+                "qualityBand": "seed"
             },
             {
                 "date": "2012-03-06T00:00:00.000Z",
                 "description": "Spring 2012",
                 "version": "101",
                 "releaseNotes": "* Fixed: Honor effort tracking settings from server\n* Fixed: Refresh data after changing VersionOne instance\n* Fixed: Closing and quick closing require manual data refresh\n* Fixed: ToDo not updating after edit\n* Fixed: Owner editor combobox with multi-select",
-                "qualityBand": "mature"
+                "qualityBand": "seed"
             },
             {
                 "date": "2011-12-01T00:00:00.000Z",
                 "description": "Winter 2011",
                 "version": "85",
                 "releaseNotes": "* Added: Asynchronous server calls to reduce UI locking.\n* Added: Refresh project tree on demand to reduce network latency.\n* Added: Add tests via context menu.\n* Fixed: Proxy settings.",
-                "qualityBand": "mature"
+                "qualityBand": "seed"
             },
             {
                 "date": "2011-07-01T00:00:00.000Z",
                 "description": "Summer 2011",
                 "version": "41",
                 "releaseNotes": "Initial Release",
-                "qualityBand": "mature"
+                "qualityBand": "seed"
             },
             {
                 "date": "2010-11-15T00:00:00.000Z",
                 "description": "Launch",
                 "version": "30",
                 "releaseNotes": "Fixed: Task and Test order match VersionOne UI",
-                "qualityBand": "mature"
+                "qualityBand": "seed"
             },
             {
                 "date": "2010-03-07T00:00:00.000Z",
                 "description": "Winter 2010",
                 "version": "28",
                 "releaseNotes": "Support for Winter 2010",
-                "qualityBand": "mature"
+                "qualityBand": "seed"
             }
         ],
         "qualityBands": {
