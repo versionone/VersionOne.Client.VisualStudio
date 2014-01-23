@@ -26,7 +26,7 @@ If you are not yet familiar with the way GitHub works (forking, pull requests, e
 
 ### Open Source Licenses and Attribution
 
-Regardless of whether attribution is required by a dependency, we want to acknowledge the work that we depend up on and make it easy for people to evaluate the legal implications of using this project. Therefore, we require all dependencies be attributed in the [ACKNOWLEDGEMENTS.md](https://github.com/versionone/VersionOne.SDK.NET.APIClient/blob/master/ACKNOWLEDGEMENTS.md). This should include the persons or organizations who contributed the libraries, a link to the source code, and a link to the underlying license (even when this project sub-licenses under the modified BSD license).
+Regardless of whether attribution is required by a dependency, we want to acknowledge the work that we depend up on and make it easy for people to evaluate the legal implications of using this project. Therefore, we require all dependencies be attributed in the [ACKNOWLEDGEMENTS.md](https://github.com/versionone/VersionOne.Client.VisualStudio/blob/master/ACKNOWLEDGEMENTS.md). This should include the persons or organizations who contributed the libraries, a link to the source code, and a link to the underlying license (even when this project sub-licenses under the modified BSD license).
 
 ## Quality Bands
 
