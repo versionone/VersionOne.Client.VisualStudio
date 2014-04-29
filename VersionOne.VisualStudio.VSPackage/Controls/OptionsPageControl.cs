@@ -43,8 +43,8 @@ namespace VersionOne.VisualStudio.VSPackage.Controls {
         }
 
         private void UpdateModel(ISettings model) {
-            model.Username = txtUserName.Text.Trim();
-            model.Password = txtPassword.Text.Trim();
+            model.Username = chkIntegrated.Checked ? null : txtUserName.Text.Trim();
+            model.Password = chkIntegrated.Checked ? null : txtPassword.Text.Trim();
             model.ApplicationUrl = GetUrl(txtUrl.Text);
             model.IntegratedAuth = chkIntegrated.Checked;
             model.UseProxy = chkUseProxy.Checked;
