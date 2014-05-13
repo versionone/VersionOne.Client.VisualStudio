@@ -16,7 +16,7 @@
         {
             "type": "download",
             "title": "Download Latest Build",
-            "href": "http://platform.versionone.com.s3.amazonaws.com/downloads/VersionOne.Client.VisualStudio_9.0.0.110.vsix"
+            "href": "http://platform.versionone.com.s3.amazonaws.com/downloads/VersionOne.Client.VisualStudio_9.0.1.144.vsix"
         },
         {
             "type": "documentation",
@@ -41,6 +41,14 @@
     ],
     "updatesSection": {
         "updates": [
+            {
+                "date": "2014-05-13T12:00:00.000Z",
+                "description": "Spring 2014",
+                "version": "9.0.1.144",
+                "releaseNotes": "* Fixed: Authentication with Windows Integrated Authentication",
+                "qualityBand": "seed",
+                "downloadUrl": "http://platform.versionone.com.s3.amazonaws.com/downloads/VersionOne.Client.VisualStudio_9.0.1.144.vsix"
+            },
             {
                 "date": "2013-12-24T12:00:00.000Z",
                 "description": "Winter 2014",
