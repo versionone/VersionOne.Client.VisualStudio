@@ -51,6 +51,7 @@ Assuming you have followed the previous steps and your environment is all setup 
 * Open a Windows Command prompt as `Administrator`
 * Change directory to `VersionOne.Client.VisualStudio`
 * Type `build.bat "runPreExtensions,local"`
+
 **NOTE:** This parameter is not optional. It is indicating psake which tasks to execute.
 
 This should build the client successfully. TODO: what about tests?
