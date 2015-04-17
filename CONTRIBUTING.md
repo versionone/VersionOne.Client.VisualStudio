@@ -1,15 +1,8 @@
-# Contributing to VersionOne Client for Visual Studio
+# Contributing to the VersionOne Integration for Visual Studio
 
- 1. [Getting Involved](#getting-involved)
- 2. [Reporting Bugs](#reporting-bugs)
- 3. [Contributing Code](#contributing-code)
- 4. [Quality Bands](#quality-bands)
+We need your help to make VersionOne Integration for Visual Studio! You don't have to write code to help, you can also help by discovering and reporting issues.
 
-## Getting Involved
-
-We need your help to make VersionOne Client for Visual Studio a useful integration. You don't have to write code to help! You can help the project by discovering and [reporting issues](#reporting-bugs).
-
-## Reporting Bugs
+## Reporting Issues
 
 Before reporting an [issue][issues], search the already reported issues for similar cases, and if it has been reported already, just add any additional details in the comments. Whether you are writing a new issue or adding comments, here are some tips for creating a helpful report that will make fixing it much easier and quicker:
 
@@ -28,20 +21,88 @@ If you are not yet familiar with the way GitHub works (forking, pull requests, e
 
 Regardless of whether attribution is required by a dependency, we want to acknowledge the work that we depend up on and make it easy for people to evaluate the legal implications of using this project. Therefore, we require all dependencies be attributed in the [ACKNOWLEDGEMENTS.md](https://github.com/versionone/VersionOne.Client.VisualStudio/blob/master/ACKNOWLEDGEMENTS.md). This should include the persons or organizations who contributed the libraries, a link to the source code, and a link to the underlying license (even when this project sub-licenses under the modified BSD license).
 
-## Quality Bands
+## Download a build
 
-Open source software evolves over time. A young project may be little more than some ideas and a kernel of unstable code. As a project matures, source code, UI, tests, and APIs will become more stable. To help consumers understand what they are getting, we characterize every release with one of the following quality bands.
+You can find the latest public build for the extension in the [VersionOne App Catalog](http://v1appcatalog.azurewebsites.net/app/index.html#/Details/VersionOne.Client.VisualStudio).
 
-### Seed
+## Build Prerequisites
 
-A seed has a lot of potential, but expect to put in your own time, expertise, and materials. We put this release into the wild in order to get feedback and to attract contributors. Use with caution. Please expect to work with developers to use and maintain this release.
+### Step 1: Install or upgrade to the latest NuGet
 
-### Sapling
+[Install NuGet 2.7](http://docs.nuget.org/docs/release-notes/nuget-2.7) or greater.
 
-The product is undergoing rapid growth. The code works. Test coverage is on the rise. Documentation is firming up. Some APIs may be public but are subject to change. Please expect to inform developers where information is insufficient to self-serve.
+We use NuGet to manage external dependencies that this project requires. -- **Most importantly, as of NuGet 2.7, there is a simplified package restore workflow for NuGet packages that this code requires via `packages.config` files in each project.** [See this post](http://docs.nuget.org/docs/release-notes/nuget-2.7) for all the details.
 
-### Mature
+### Step 2: Automate the installation of required developer tools
 
-The product is stable. The code will continue to evolve with minimum breaking changes. Documentation is sufficient for self-service. APIs are stable.
+We build with Visual Studio 2012 Professional and Premium, and several other tools, all of which are listed in
+the Chocolatey [packages.config](packages.config) file.
 
-[issues]: https://github.com/versionone/VersionOne.Client.VisualStudio/issues
+### Step 3: Install Chocolatey
+
+Not familiar with Chocolatey? It's a package manager for Windows, similar to apt-get in the Linux world. It actually uses NuGet internally. To installl Chocolatey:
+
+* First, see [Chocolatey's requirements](https://github.com/chocolatey/chocolatey/wiki)
+* Next, assuming you already Cloned or Downloaded this repository from GitHub into `C:\Projects\VersionOne.Client.VisualStudio`, open an `Admininstrator` command prompt in that folder and run `install_chocolatey.bat`
+
+### Step 4: Use Chocolatey to install the developer tools
+
+If the Chocolatey install worked, then:
+
+* **First:** if you already have Visual Studio 2012 installed without using Chocolatey, you can open up [packages.config](packages.config) and remove the line for it. That will avoid downloading the large file over the internet.
+* Close the command prompt and open a new `Administrator` command prompt so that you get an updated PATH environment variable and navigate back to the repository folder.
+* Run `install_dev_tools.bat`
+
+This should start downloading and automatically installling the tools listed in [packages.config](packages.config).
+
+### Alternatively: If you don't want or cannot use Chocolatey, you can manually install developer tools
+
+* [Install Visual Studio 2012 Professional or higher](http://msdn.microsoft.com/en-US/library/vstudio/e2h7fzkw.aspx)
+* [Install Update 3 for Visual Studio 2012](http://support.microsoft.com/kb/2835600)
+* [Install Visual Studio 2012 SDK](http://www.microsoft.com/en-us/download/details.aspx?id=30668) -- *includes project templates, tools, tests, and reference assemblies that are required to build extensions for Visual Studio 2012*
+* **Install Bash shell** -- our `build.sh` and other scripts are written in Bash, so you need a good Bash shell to execute them. People on the VersionOne team use both [http://git-scm.com/download/win](Git Bash) and 
+[Cygwin with the Bash package](http://www.cygwin.com/) successfully.
+
+## How to Build
+
+Assuming you have followed the previous steps and your environment is all setup correctly now:
+
+* Open a Windows Command prompt as `Administrator`
+* Change directory to `VersionOne.Client.VisualStudio`
+* Type `build.bat "runPreExtensions,local"`
+
+**NOTE:** This parameter is not optional. It is indicating psake which tasks to execute.
+
+This should build the client successfully. TODO: what about tests?
+
+## Build known issues and solutions or workarounds
+
+### Symptom: Build says failed, but with 0 apparent errors
+
+#### Likely cause
+
+If you have already installed the extension before, and then tried to uninstall it, sometimes Visual Studio has a stray "pending deletion" in the registry.
+
+#### Remedy
+
+While we do not know yet how to prevent this issue, see the issue [Build completes with FAILED message, despite no visible Errors, but Detailed logging shows Task "EnableExtension" FAILED](https://github.com/versionone/VersionOne.Client.VisualStudio/issues/10) which documents the resolution for when it happens.
+
+## Advanced Builds
+
+### How to Build with Visual Studio 2013
+
+The steps below assume you have Chocolatey installed. If you do not, you can find the downloads on Microsoft's web site.
+
+* Install Visual Studio 2013: `cinst VisualStudio2013Professional`. Other editions exist as Chocolatey packages too.
+* Install the Visual Studio 2013 SDK: `cinst VS2013SDK`
+* Using a text editor, open `VersionOne.VisualStudio.VSPackage\VersionOne.VisualStudio.VSPackage.csproj`
+* Change `11.0` to `12.0` in the line that reads `<MinimumVisualStudioVersion>11.0</MinimumVisualStudioVersion>` -- this tells Visual Studio that the project can work with Visual Studio 2013, which happens to be version 12.
+* You should now be able to open the solution with Visual Studio and compile the VSIX package.
+* **NOTE:** We have also tested that when you build with 2013, you can still successfully install the extension into 2012.
+
+### How to target lower Visual Studio editions (like 2010)
+
+Historically, we have only supported 2 versions of Visual Studio: the current and current - 1 versions. However, this code is open source, and we welcome your assistance in building the projecct with targets for other editions if you will also test them and demo your findings with us. If it appears that all test cases work, then you can send us a pull request for the additional target.
+
+Since we have not been able to fully test against 2010, we do not currently have the installation target for it. But, if you'd like to help this project by building and testing against 2010, please contact us because we can work with you to make this happen. We have the previous versions of the code that did target 2010, and as we understand it [from this post on StackOverflow](http://stackoverflow.com/questions/12499133/develop-vsix-for-vs2010-under-vs2012), it may be possible to still target 2010 from 2012 or higher.
+
